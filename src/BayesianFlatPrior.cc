@@ -42,7 +42,7 @@ bool BayesianFlatPrior::run(RooWorkspace *w, RooStats::ModelConfig *mc_s, RooSta
 
   RooRealVar *r = dynamic_cast<RooRealVar *>(poi.first());
   double rMax = r->getMax();
-  std::unique_ptr<RooStats::ModelConfig> mc_noNuis(0);
+  std::unique_ptr<RooStats::ModelConfig> mc_noNuis = nullptr;
   if (!withSystematics && mc_s->GetNuisanceParameters() != 0) {
     mc_noNuis.reset(new RooStats::ModelConfig(w));
     mc_noNuis->SetPdf(*mc_s->GetPdf());

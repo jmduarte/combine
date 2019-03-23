@@ -1332,7 +1332,7 @@ RooStats::HypoTestResult * HybridNew::evalGeneric(RooStats::HybridCalculator &hc
 
 RooStats::HypoTestResult * HybridNew::evalWithFork(RooStats::HybridCalculator &hc) {
     TStopwatch timer;
-    std::unique_ptr<RooStats::HypoTestResult> result(0);
+    std::unique_ptr<RooStats::HypoTestResult> result = nullptr;
     char tmpfile[999]; snprintf(tmpfile, 998, "%s/rstats-XXXXXX", P_tmpdir);
     
     int fd = mkstemp(tmpfile); close(fd);

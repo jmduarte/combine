@@ -115,7 +115,7 @@ bool Significance::run(RooWorkspace *w, RooStats::ModelConfig *mc_s, RooStats::M
   RooRealVar *r = dynamic_cast<RooRealVar *>(mc_s->GetParametersOfInterest()->first());
   bool success = false;
   std::vector<double> limits; double rMax = r->getMax();  
-  std::unique_ptr<RooAbsPdf> nuisancePdf(0);
+  std::unique_ptr<RooAbsPdf> nuisancePdf = nullptr;
   for (int i = 0; i < maxTries_; ++i) {
       w->loadSnapshot("clean");
       if (i > 0) { // randomize starting point

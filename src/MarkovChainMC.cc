@@ -200,7 +200,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w, RooStats::ModelConfig *mc_s, RooStat
   }
   
   w->loadSnapshot("clean");
-  std::unique_ptr<RooFitResult> fit(0);
+  std::unique_ptr<RooFitResult> fit = nullptr;
   if (proposalType_ == FitP || (cropNSigmas_ > 0)) {
       CloseCoutSentry coutSentry(verbose <= 1); // close standard output and error, so that we don't flood them with minuit messages
       fit.reset(mc_s->GetPdf()->fitTo(data, RooFit::Save(), RooFit::Minos(runMinos_)));

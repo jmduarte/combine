@@ -293,7 +293,7 @@ void Combine::run(TString hlfFile, const std::string &dataset, double &limit, do
   if (verbose <= 2) RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
   // Load the model, but going in a temporary directory to avoid polluting the current one with garbage from 'cexpr'
   RooWorkspace *w = 0; RooStats::ModelConfig *mc = 0, *mc_bonly = 0;
-  std::unique_ptr<RooStats::HLFactory> hlf(0);
+  std::unique_ptr<RooStats::HLFactory> hlf = nullptr;
 
   if (isBinary) {
     TFile *fIn = TFile::Open(fileToLoad); 
