@@ -1,4 +1,3 @@
-#include "../interface/Combine.h"
 #include <TString.h>
 #include <TSystem.h>
 #include <TFile.h>
@@ -11,22 +10,24 @@
 #include <string>
 #include <stdexcept>
 #include <boost/program_options.hpp>
-#include "../interface/Significance.h"
-#include "../interface/HybridNew.h"
-#include "../interface/BayesianFlatPrior.h"
-#include "../interface/BayesianToyMC.h"
-#include "../interface/MarkovChainMC.h"
-#include "../interface/FeldmanCousins.h"
-#include "../interface/FitDiagnostics.h"
-#include "../interface/AsymptoticLimits.h"
-#include "../interface/GoodnessOfFit.h"
-#include "../interface/ChannelCompatibilityCheck.h"
-#include "../interface/MultiDimFit.h"
-#include "../interface/CascadeMinimizer.h"
-#include "../interface/ProfilingTools.h"
-#include "../interface/GenerateOnly.h"
-#include "../interface/Logger.h"
 #include <map>
+
+#include "Combine.h"
+#include "Significance.h"
+#include "HybridNew.h"
+#include "BayesianFlatPrior.h"
+#include "BayesianToyMC.h"
+#include "MarkovChainMC.h"
+#include "FeldmanCousins.h"
+#include "FitDiagnostics.h"
+#include "AsymptoticLimits.h"
+#include "GoodnessOfFit.h"
+#include "ChannelCompatibilityCheck.h"
+#include "MultiDimFit.h"
+#include "CascadeMinimizer.h"
+#include "ProfilingTools.h"
+#include "GenerateOnly.h"
+#include "Logger.h"
 
 using namespace std;
 

@@ -1,5 +1,5 @@
-HiggsAnalysis-CombinedLimit
-===========================
+Combine
+=======
 
 ### Official documentation
 
