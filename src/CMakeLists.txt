@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.2)
-project(combine-exe C CXX)
 
 set(SOURCE_FILES
     AsimovUtils.cc
@@ -107,18 +106,14 @@ set(SOURCE_FILES
     VectorizedCB.cc
 )
 
-#add_library(combine SHARED STATIC ${SOURCE_FILES})
-
-find_package(ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad ROOTVecOps Tree TreePlayer Rint Postscript Matrix Physics MathCore Thread MultiProc ROOTDataFrame MathMore RooFit RooFitCore RooStats Minuit Foam HistFactory)
+find_package(ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad ROOTVecOps Tree TreePlayer Rint Postscript
+                                      Matrix Physics MathCore Thread MultiProc ROOTDataFrame MathMore RooFit RooFitCore
+                                      RooStats Minuit Foam HistFactory)
 include(${ROOT_USE_FILE})
-message(STATUS "ROOT_LIBRARIES: " ${ROOT_LIBRARIES})
 
-#include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS})
-#add_definitions(${ROOT_CXX_FLAGS})
+ROOT_GENERATE_DICTIONARY(combine_xr classes.h LINKDEF classesLinkDef.h)
+add_library(Combine SHARED ${SOURCE_FILES} combine_xr.cxx)
+target_link_libraries(Combine PUBLIC ${ROOT_LIBRARIES})
 
-ROOT_GENERATE_DICTIONARY(G__combine classes.h LINKDEF classesLinkDef.h)
-add_library(combine SHARED ${SOURCE_FILES} G__combine.cxx)
-target_link_libraries(combine PUBLIC ${ROOT_LIBRARIES})
-
-add_executable(combine-exe combine.cpp)
-target_link_libraries(combine-exe PUBLIC ${ROOT_LIBRARIES} combine)
+install(FILES ${PROJECT_BINARY_DIR}/src/libcombine_xr_rdict.pcm DESTINATION ${COMBINE_INSTALL_LIB_DIR})
+install(TARGETS Combine DESTINATION ${COMBINE_INSTALL_LIB_DIR})
