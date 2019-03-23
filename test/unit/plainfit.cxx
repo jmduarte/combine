@@ -11,7 +11,7 @@
 
 #define CMS_RUNTIME_DEFINES
 #ifdef CMS_RUNTIME_DEFINES
-#include "combine/interface/ProfilingTools.h"
+#include "ProfilingTools.h"
 void init_rtd() {
   // CMSDAS Defaults
   runtimedef::set("OPTIMIZE_BOUNDS", 1);

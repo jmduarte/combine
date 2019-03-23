@@ -12,9 +12,9 @@
 #include "Rtypes.h"
 #include "TH1F.h"
 #include "TMatrix.h"
-#include "combine/interface/CMSHistV.h"
-#include "combine/interface/FastTemplate_Old.h"
-#include "combine/interface/SimpleCacheSentry.h"
+#include "CMSHistV.h"
+#include "FastTemplate_Old.h"
+#include "SimpleCacheSentry.h"
 
 class CMSHistFuncWrapper;
 

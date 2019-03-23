@@ -9,8 +9,8 @@ class RooMinimizer;
 #include <RooAbsData.h>
 #include <RooArgSet.h>
 #include <RooStats/TestStatistic.h>
-#include "combine/interface/RooSimultaneousOpt.h"
-#include "combine/interface/CachingNLL.h"
+#include "RooSimultaneousOpt.h"
+#include "CachingNLL.h"
 
 class BestFitSigmaTestStat : public RooStats::TestStatistic {
     public:

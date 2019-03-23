@@ -1,4 +1,4 @@
-#include "combine/interface/VectorizedHistFactoryPdfs.h"
+#include "VectorizedHistFactoryPdfs.h"
 #include <memory>
 #include <RooRealVar.h>
 

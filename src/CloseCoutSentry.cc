@@ -1,4 +1,4 @@
-#include "combine/interface/CloseCoutSentry.h"
+#include "CloseCoutSentry.h"
 
 #include <cstdio>
 #include <cassert>

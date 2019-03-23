@@ -33,7 +33,7 @@
 #include "Riostream.h"
 #include "TMath.h"
 
-#include "combine/interface/RooBernsteinFast.h"
+#include "RooBernsteinFast.h"
 #include "RooAbsReal.h"
 #include "RooRealVar.h"
 #include "RooArgList.h"

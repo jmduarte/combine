@@ -8,8 +8,8 @@
  *
  *
  */
-#include "combine/interface/LimitAlgo.h"
-#include "combine/interface/utils.h"
+#include "LimitAlgo.h"
+#include "utils.h"
 #include <memory>
 class RooRealVar;
 #include <RooAbsReal.h>

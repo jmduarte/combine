@@ -1,5 +1,5 @@
-#include "combine/interface/RooSimultaneousOpt.h"
-#include "combine/interface/CachingNLL.h"
+#include "RooSimultaneousOpt.h"
+#include "CachingNLL.h"
 #include <RooCmdConfig.h>
 
 RooAbsReal* 

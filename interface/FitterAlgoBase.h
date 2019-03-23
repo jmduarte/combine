@@ -8,8 +8,8 @@
  *
  *
  */
-#include "combine/interface/LimitAlgo.h"
-#include "combine/interface/Significance.h"
+#include "LimitAlgo.h"
+#include "Significance.h"
 class RooFitResult;
 class RooMinimizer;
 class RooCmdArg;

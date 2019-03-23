@@ -1,4 +1,4 @@
-#include "combine/interface/RooPiecewisePolynomial.h"
+#include "RooPiecewisePolynomial.h"
 #include <iostream>
 #include <cassert>
 #include <cmath>

@@ -1,4 +1,4 @@
-#include "combine/interface/th1fmorph.h"
+#include "th1fmorph.h"
 #include "TROOT.h"
 #include "TAxis.h"
 #include "TArrayD.h"

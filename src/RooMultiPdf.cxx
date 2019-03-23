@@ -10,7 +10,7 @@
 #include "Riostream.h"
 #include <math.h>
 
-#include "combine/interface/RooMultiPdf.h"
+#include "RooMultiPdf.h"
 #include "RooRealVar.h"
 #include "RooAddPdf.h"
 #include <stdexcept>

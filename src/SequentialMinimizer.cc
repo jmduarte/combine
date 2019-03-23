@@ -1,4 +1,4 @@
-#include "combine/interface/SequentialMinimizer.h"
+#include "SequentialMinimizer.h"
 
 #include <cmath>
 #include <stdexcept>
@@ -12,7 +12,7 @@
 #include <Math/MinimizerOptions.h>
 #include <Math/Factory.h>
 #include <boost/foreach.hpp>
-#include "combine/interface/ProfilingTools.h"
+#include "ProfilingTools.h"
 #define foreach BOOST_FOREACH
 
 #define DEBUG_ODM_printf if (0) printf

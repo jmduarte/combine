@@ -1,5 +1,5 @@
-#include "combine/interface/GenerateOnly.h"
-#include "combine/interface/Combine.h"
+#include "GenerateOnly.h"
+#include "Combine.h"
 #include <iostream>
 
 using namespace RooStats;

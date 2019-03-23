@@ -1,5 +1,5 @@
-#include "combine/interface/CMSHistErrorPropagator.h"
-#include "combine/interface/CMSHistFuncWrapper.h"
+#include "CMSHistErrorPropagator.h"
+#include "CMSHistFuncWrapper.h"
 #include <stdexcept>
 #include <vector>
 #include <ostream>

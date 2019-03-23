@@ -1,4 +1,4 @@
-#include "combine/interface/RooMorphingPdf.h"
+#include "RooMorphingPdf.h"
 #include <stdexcept>
 #include <vector>
 #include "RooHistPdf.h"

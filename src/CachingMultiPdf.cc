@@ -1,6 +1,6 @@
-#include "combine/interface/CachingMultiPdf.h"
+#include "CachingMultiPdf.h"
 #include "vectorized.h"
-#include "combine/interface/utils.h"
+#include "utils.h"
 
 // Uncomment do do regression testing wrt uncached multipdf
 //#define CachingMultiPdf_VALIDATE

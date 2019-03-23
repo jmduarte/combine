@@ -1,7 +1,7 @@
-#include "combine/interface/VectorizedCB.h"
+#include "VectorizedCB.h"
 #include "RooMath.h"
 #include "vectorized.h"
-#include "combine/interface/ProfilingTools.h"
+#include "ProfilingTools.h"
 #include <RooRealVar.h>
 #include <stdexcept>
 

@@ -1,4 +1,4 @@
-#include "combine/interface/AsymPow.h"
+#include "AsymPow.h"
 
 #include <cmath>
 #include <cassert>

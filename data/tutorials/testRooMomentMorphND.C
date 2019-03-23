@@ -4,7 +4,7 @@
 #include "RooHistPdf.h"
 #include "RooWorkspace.h"
 #include "RooPlot.h"
-#include "combine/interface/RooMomentMorphND.h"
+#include "RooMomentMorphND.h"
 
 #include "TCanvas.h"
 #include "TSystem.h"

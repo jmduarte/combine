@@ -7,7 +7,7 @@
 */
 
 #include <stdexcept>
-#include "combine/interface/Logger.h"
+#include "Logger.h"
 
 using namespace std;
 

@@ -1,4 +1,4 @@
-#include "combine/interface/CMSHistFuncWrapper.h"
+#include "CMSHistFuncWrapper.h"
 #include <vector>
 #include <ostream>
 #include "RooRealProxy.h"

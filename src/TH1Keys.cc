@@ -1,4 +1,4 @@
-#include "combine/interface/TH1Keys.h"
+#include "TH1Keys.h"
 #include <RooBinning.h>
 #include <RooMsgService.h>
 

@@ -1,4 +1,4 @@
-#include "combine/interface/RooNCSplineFactory_1D.h"
+#include "RooNCSplineFactory_1D.h"
 #include <cassert>
 
 using namespace std;

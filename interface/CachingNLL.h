@@ -15,8 +15,8 @@
 #include <RooGaussian.h>
 #include <RooPoisson.h>
 #include <RooProduct.h>
-#include "combine/interface/SimpleGaussianConstraint.h"
-#include "combine/interface/SimplePoissonConstraint.h"
+#include "SimpleGaussianConstraint.h"
+#include "SimplePoissonConstraint.h"
 #include <boost/ptr_container/ptr_vector.hpp>
 
 class RooMultiPdf;

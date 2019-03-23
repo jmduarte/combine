@@ -1,6 +1,6 @@
-#include "combine/interface/CMSHistFunc.h"
-#include "combine/interface/CMSHistFuncWrapper.h"
-#include "combine/interface/Accumulators.h"
+#include "CMSHistFunc.h"
+#include "CMSHistFuncWrapper.h"
+#include "Accumulators.h"
 #include <vector>
 #include <ostream>
 #include <memory>

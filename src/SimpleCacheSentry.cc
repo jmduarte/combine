@@ -1,4 +1,4 @@
-#include "combine/interface/SimpleCacheSentry.h"
+#include "SimpleCacheSentry.h"
 
 SimpleCacheSentry::SimpleCacheSentry() :  _deps("deps","deps",this)   {}
 

@@ -1,6 +1,6 @@
 #include <stdexcept>
-#include "combine/interface/FeldmanCousins.h"
-#include "combine/interface/Combine.h"
+#include "FeldmanCousins.h"
+#include "Combine.h"
 #include <RooRealVar.h>
 #include <RooArgSet.h>
 #include <RooArgSet.h>

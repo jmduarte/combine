@@ -1,4 +1,4 @@
-#include "combine/interface/RooNCSplineCore.h" 
+#include "RooNCSplineCore.h" 
 #include <cmath>
 #include "TMath.h"
 #include "TIterator.h"

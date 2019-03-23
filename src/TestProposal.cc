@@ -1,4 +1,4 @@
-#include "combine/interface/TestProposal.h"
+#include "TestProposal.h"
 #include <RooArgSet.h>
 #include <iostream>
 #include <memory>

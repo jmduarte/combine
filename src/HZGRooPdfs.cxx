@@ -29,7 +29,7 @@
 #include <math.h>
 #include "TMath.h"
 #include "Math/SpecFunc.h"
-#include "combine/interface/HZGRooPdfs.h"
+#include "HZGRooPdfs.h"
 #include "RooAbsReal.h"
 #include "RooRealVar.h"
 #include "RooArgList.h"

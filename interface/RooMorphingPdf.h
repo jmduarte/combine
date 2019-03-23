@@ -9,8 +9,8 @@
 #include "RooAbsReal.h"
 #include "TH1F.h"
 #include "Rtypes.h"
-#include "combine/interface/VerticalInterpHistPdf.h"
-#include "combine/interface/SimpleCacheSentry.h"
+#include "VerticalInterpHistPdf.h"
+#include "SimpleCacheSentry.h"
 
 class RooMorphingPdf : public RooAbsPdf {
  protected:

@@ -1,4 +1,4 @@
-#include "combine/interface/FitDiagnostics.h"
+#include "FitDiagnostics.h"
 #include "RooMinimizer.h"
 #include "RooRealVar.h"
 #include "RooArgSet.h"
@@ -21,15 +21,15 @@
 #include "TH2.h"
 #include "TFile.h"
 #include <RooStats/ModelConfig.h>
-#include "combine/interface/CMSHistErrorPropagator.h"
-#include "combine/interface/Combine.h"
-#include "combine/interface/Significance.h"
-#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "combine/interface/CloseCoutSentry.h"
-#include "combine/interface/CascadeMinimizer.h"
-#include "combine/interface/utils.h"
-#include "combine/interface/Logger.h"
-#include "combine/interface/RobustHesse.h"
+#include "CMSHistErrorPropagator.h"
+#include "Combine.h"
+#include "Significance.h"
+#include "ProfiledLikelihoodRatioTestStatExt.h"
+#include "CloseCoutSentry.h"
+#include "CascadeMinimizer.h"
+#include "utils.h"
+#include "Logger.h"
+#include "RobustHesse.h"
 
 
 #include <Math/MinimizerOptions.h>

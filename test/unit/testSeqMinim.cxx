@@ -1,6 +1,6 @@
 #include <cmath>
 #include <cstdio>
-//#include "combine/interface/RooMinimizerOpt.h"
+//#include "RooMinimizerOpt.h"
 #include <RooMinimizer.h>
 #include <TMath.h>
 #include <TFile.h>
@@ -19,11 +19,11 @@
 #include "Math/Minimizer.h"
 #include "Math/Factory.h"
 
-#include "combine/interface/ProfileLikelihood.h"
-#include "combine/interface/RooSimultaneousOpt.h"
-#include "combine/interface/SequentialMinimizer.h"
-#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "combine/interface/ProfilingTools.h"
+#include "ProfileLikelihood.h"
+#include "RooSimultaneousOpt.h"
+#include "SequentialMinimizer.h"
+#include "ProfiledLikelihoodRatioTestStatExt.h"
+#include "ProfilingTools.h"
 
 
 

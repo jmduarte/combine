@@ -1,4 +1,4 @@
-#include "combine/interface/RooNCSpline_3D_fast.h" 
+#include "RooNCSpline_3D_fast.h" 
 #include <cmath>
 #include "TMath.h"
 #include "Riostream.h" 

@@ -1,4 +1,4 @@
-#include "combine/interface/VerticalInterpPdf.h"
+#include "VerticalInterpPdf.h"
 
 #include "RooFit.h"
 #include "Riostream.h"

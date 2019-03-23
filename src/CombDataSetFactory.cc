@@ -1,5 +1,5 @@
-#include "combine/interface/CombDataSetFactory.h"
-#include "combine/interface/utils.h"
+#include "CombDataSetFactory.h"
+#include "utils.h"
 
 #include <cmath>
 

@@ -8,7 +8,7 @@
  *
  *
  */
-#include "combine/interface/FitterAlgoBase.h"
+#include "FitterAlgoBase.h"
 
 class ChannelCompatibilityCheck : public FitterAlgoBase {
 public:

@@ -1,5 +1,5 @@
-#include "combine/interface/SimplerLikelihoodRatioTestStatExt.h"
-#include "combine/interface/utils.h"
+#include "SimplerLikelihoodRatioTestStatExt.h"
+#include "utils.h"
 
 SimplerLikelihoodRatioTestStatOpt::SimplerLikelihoodRatioTestStatOpt(
         const RooArgSet &obs, 

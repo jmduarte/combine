@@ -13,11 +13,11 @@
 #include <RooStats/RooStatsUtils.h>
 #include <RooStats/ModelConfig.h>
 #include <RooStats/RatioOfProfiledLikelihoodsTestStat.h>
-#include "combine/interface/CachingNLL.h"
-#include "combine/interface/utils.h"
-#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "combine/interface/VerticalInterpHistPdf.h"
-#include "combine/interface/RooSimultaneousOpt.h"
+#include "CachingNLL.h"
+#include "utils.h"
+#include "ProfiledLikelihoodRatioTestStatExt.h"
+#include "VerticalInterpHistPdf.h"
+#include "RooSimultaneousOpt.h"
 
 RooWorkspace *w;
 

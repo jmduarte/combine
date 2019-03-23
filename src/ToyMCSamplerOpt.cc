@@ -1,6 +1,6 @@
-#include "combine/interface/ToyMCSamplerOpt.h"
-#include "combine/interface/utils.h"
-#include "combine/interface/Logger.h"
+#include "ToyMCSamplerOpt.h"
+#include "utils.h"
+#include "Logger.h"
 #include <memory>
 #include <stdexcept>
 #include <TH1.h>

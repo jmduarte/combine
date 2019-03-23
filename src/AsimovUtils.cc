@@ -1,4 +1,4 @@
-#include "combine/interface/AsimovUtils.h"
+#include "AsimovUtils.h"
 
 #include <memory>
 #include <stdexcept>
@@ -7,11 +7,11 @@
 #include <RooArgSet.h>
 #include <RooProdPdf.h>
 #include <RooUniform.h>
-#include "combine/interface/utils.h"
-#include "combine/interface/ToyMCSamplerOpt.h"
-#include "combine/interface/CloseCoutSentry.h"
-#include "combine/interface/CascadeMinimizer.h"
-#include "combine/interface/Logger.h"
+#include "utils.h"
+#include "ToyMCSamplerOpt.h"
+#include "CloseCoutSentry.h"
+#include "CascadeMinimizer.h"
+#include "Logger.h"
 
 RooAbsData *asimovutils::asimovDatasetNominal(RooStats::ModelConfig *mc, double poiValue, int verbose) {
         RooArgSet  poi(*mc->GetParametersOfInterest());

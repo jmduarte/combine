@@ -1,4 +1,4 @@
-#include "combine/interface/DebugProposal.h"
+#include "DebugProposal.h"
 #include <RooAbsData.h>
 #include <RooAbsPdf.h>
 #include <iostream>

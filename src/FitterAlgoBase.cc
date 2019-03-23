@@ -1,4 +1,4 @@
-#include "combine/interface/FitterAlgoBase.h"
+#include "FitterAlgoBase.h"
 #include <limits>
 #include <cmath>
 
@@ -13,24 +13,24 @@
 #include "RooGaussian.h"
 #include "RooConstVar.h"
 #include "RooPlot.h"
-//#include "combine/interface/RooMinimizerOpt.h"
+//#include "RooMinimizerOpt.h"
 #include "RooMinimizer.h"
 #include "TCanvas.h"
 #include "TStyle.h"
 #include "TH2.h"
 #include "TFile.h"
 #include <RooStats/ModelConfig.h>
-#include "combine/interface/Combine.h"
-#include "combine/interface/Significance.h"
-#include "combine/interface/CascadeMinimizer.h"
-#include "combine/interface/CloseCoutSentry.h"
-#include "combine/interface/utils.h"
-#include "combine/interface/ToyMCSamplerOpt.h"
-#include "combine/interface/RobustHesse.h"
+#include "Combine.h"
+#include "Significance.h"
+#include "CascadeMinimizer.h"
+#include "CloseCoutSentry.h"
+#include "utils.h"
+#include "ToyMCSamplerOpt.h"
+#include "RobustHesse.h"
 
-#include "combine/interface/ProfilingTools.h"
-#include "combine/interface/CachingNLL.h"
-#include "combine/interface/Logger.h"
+#include "ProfilingTools.h"
+#include "CachingNLL.h"
+#include "Logger.h"
 
 #include <Math/MinimizerOptions.h>
 #include <Math/QuantFuncMathCore.h>

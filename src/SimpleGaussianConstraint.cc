@@ -1,4 +1,4 @@
-#include "combine/interface/SimpleGaussianConstraint.h"
+#include "SimpleGaussianConstraint.h"
 
 #include <string>
 #include <memory>

@@ -1,4 +1,4 @@
-#include "combine/interface/Accumulators.h"
+#include "Accumulators.h"
 
 #include <cmath>
 #include <cstdlib>

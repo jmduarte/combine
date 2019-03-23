@@ -1,4 +1,4 @@
-#include "combine/interface/RooSpline1D.h"
+#include "RooSpline1D.h"
 
 #include <stdexcept>
 

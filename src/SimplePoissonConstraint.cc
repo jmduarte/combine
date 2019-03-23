@@ -1,4 +1,4 @@
-#include "combine/interface/SimplePoissonConstraint.h"
+#include "SimplePoissonConstraint.h"
 
 #include <string>
 #include <memory>

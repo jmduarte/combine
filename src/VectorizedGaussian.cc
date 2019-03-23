@@ -1,4 +1,4 @@
-#include "combine/interface/VectorizedGaussian.h"
+#include "VectorizedGaussian.h"
 #include "RooMath.h"
 #include "vectorized.h"
 #include <RooRealVar.h>

@@ -1,4 +1,4 @@
-#include "combine/interface/MultiDimFit.h"
+#include "MultiDimFit.h"
 #include <stdexcept>
 #include <cmath>
 
@@ -10,14 +10,14 @@
 #include "RooAbsData.h"
 #include "RooCategory.h"
 #include "RooFitResult.h"
-//#include "combine/interface/RooMinimizerOpt.h"
+//#include "RooMinimizerOpt.h"
 #include "RooMinimizer.h"
 #include <RooStats/ModelConfig.h>
-#include "combine/interface/Combine.h"
-#include "combine/interface/CascadeMinimizer.h"
-#include "combine/interface/CloseCoutSentry.h"
-#include "combine/interface/utils.h"
-#include "combine/interface/RobustHesse.h"
+#include "Combine.h"
+#include "CascadeMinimizer.h"
+#include "CloseCoutSentry.h"
+#include "utils.h"
+#include "RobustHesse.h"
 
 #include <Math/Minimizer.h>
 #include <Math/MinimizerOptions.h>

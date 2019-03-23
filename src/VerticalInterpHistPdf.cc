@@ -1,4 +1,4 @@
-#include "combine/interface/VerticalInterpHistPdf.h"
+#include "VerticalInterpHistPdf.h"
 
 #include <cassert>
 #include <memory>
@@ -13,7 +13,7 @@
 
 //#define TRACE_CALLS
 #ifdef TRACE_CALLS
-#include "combine/interface/ProfilingTools.h"
+#include "ProfilingTools.h"
 #define TRACEME()   PerfCounter::add( __PRETTY_FUNCTION__ );
 #else
 #define TRACEME() 
@@ -24,7 +24,7 @@
 #ifdef PATCH_FOR_HZZ_TEMPLATES
 #include "RooHistPdf.h"
 #include "RooDataHist.h"
-#include "combine/interface/utils.h"
+#include "utils.h"
 namespace {
     std::auto_ptr<TH1> safeCreateHist2D(RooAbsPdf *pdf, const RooRealVar &x, const RooRealVar &y, bool conditional) {
         if (!pdf->getAttribute("safeCreateHist2D:ok") && typeid(*pdf) == typeid(RooHistPdf)) {

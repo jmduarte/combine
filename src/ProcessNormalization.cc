@@ -1,4 +1,4 @@
-#include "combine/interface/ProcessNormalization.h"
+#include "ProcessNormalization.h"
 
 #include <cmath>
 #include <cassert>

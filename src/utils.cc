@@ -1,5 +1,5 @@
-#include "combine/interface/utils.h"
-#include "combine/interface/RooSimultaneousOpt.h"
+#include "utils.h"
+#include "RooSimultaneousOpt.h"
 
 #include <cstdio>
 #include <iostream>
@@ -34,9 +34,9 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <regex>
 
-#include "combine/interface/CloseCoutSentry.h"
-#include "combine/interface/ProfilingTools.h"
-#include "combine/interface/Logger.h"
+#include "CloseCoutSentry.h"
+#include "ProfilingTools.h"
+#include "Logger.h"
 
 using namespace std;
 

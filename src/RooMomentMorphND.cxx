@@ -6,7 +6,7 @@
 
 #include "Riostream.h"
 
-#include "combine/interface/RooMomentMorphND.h"
+#include "RooMomentMorphND.h"
 #include "RooAbsCategory.h"
 #include "RooRealIntegral.h"
 #include "RooRealConstant.h"

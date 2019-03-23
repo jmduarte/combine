@@ -1,7 +1,7 @@
 /**************************************
   Simple multiChannel significance & limit calculator
 ***************************************/
-#include "combine/interface/Combine.h"
+#include "Combine.h"
 #include <cstring>
 #include <cerrno>
 #include <iostream>
@@ -51,16 +51,16 @@
 #include <boost/algorithm/string.hpp> 
 #include <regex>
 
-#include "combine/interface/LimitAlgo.h"
-#include "combine/interface/utils.h"
-#include "combine/interface/CloseCoutSentry.h"
-#include "combine/interface/RooSimultaneousOpt.h"
-#include "combine/interface/ToyMCSamplerOpt.h"
-#include "combine/interface/AsimovUtils.h"
-#include "combine/interface/CascadeMinimizer.h"
-#include "combine/interface/ProfilingTools.h"
+#include "LimitAlgo.h"
+#include "utils.h"
+#include "CloseCoutSentry.h"
+#include "RooSimultaneousOpt.h"
+#include "ToyMCSamplerOpt.h"
+#include "AsimovUtils.h"
+#include "CascadeMinimizer.h"
+#include "ProfilingTools.h"
 
-#include "combine/interface/Logger.h"
+#include "Logger.h"
 
 using namespace RooStats;
 using namespace RooFit;

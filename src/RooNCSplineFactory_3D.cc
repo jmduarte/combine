@@ -1,4 +1,4 @@
-#include "combine/interface/RooNCSplineFactory_3D.h"
+#include "RooNCSplineFactory_3D.h"
 
 using namespace std;
 

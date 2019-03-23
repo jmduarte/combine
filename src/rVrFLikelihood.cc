@@ -1,4 +1,4 @@
-#include "combine/interface/rVrFLikelihood.h"
+#include "rVrFLikelihood.h"
 #include <cstdio>
 
 rVrFLikelihood::rVrFLikelihood(const char *name, const char *title) :

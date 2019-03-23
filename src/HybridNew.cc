@@ -5,8 +5,8 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-#include "combine/interface/HybridNew.h"
-#include "combine/interface/CascadeMinimizer.h" // must be early
+#include "HybridNew.h"
+#include "CascadeMinimizer.h" // must be early
 #include <TFile.h>
 #include <TF1.h>
 #include <TKey.h>
@@ -31,19 +31,19 @@
 #include <RooStats/ProfileLikelihoodTestStat.h>
 #include <RooStats/ToyMCSampler.h>
 #include <RooStats/HypoTestPlot.h>
-#include "combine/interface/Combine.h"
-#include "combine/interface/CloseCoutSentry.h"
-#include "combine/interface/RooFitGlobalKillSentry.h"
-#include "combine/interface/SimplerLikelihoodRatioTestStat.h"
-#include "combine/interface/ProfiledLikelihoodRatioTestStat.h"
-#include "combine/interface/SimplerLikelihoodRatioTestStatExt.h"
-#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "combine/interface/BestFitSigmaTestStat.h"
-#include "combine/interface/ToyMCSamplerOpt.h"
-#include "combine/interface/utils.h"
-#include "combine/interface/Significance.h"
-#include "combine/interface/ProfilingTools.h"
-#include "combine/interface/Logger.h"
+#include "Combine.h"
+#include "CloseCoutSentry.h"
+#include "RooFitGlobalKillSentry.h"
+#include "SimplerLikelihoodRatioTestStat.h"
+#include "ProfiledLikelihoodRatioTestStat.h"
+#include "SimplerLikelihoodRatioTestStatExt.h"
+#include "ProfiledLikelihoodRatioTestStatExt.h"
+#include "BestFitSigmaTestStat.h"
+#include "ToyMCSamplerOpt.h"
+#include "utils.h"
+#include "Significance.h"
+#include "ProfilingTools.h"
+#include "Logger.h"
 
 
 #include <boost/algorithm/string/split.hpp>

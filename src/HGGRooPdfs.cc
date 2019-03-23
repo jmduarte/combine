@@ -27,7 +27,7 @@
 #include "Riostream.h"
 #include <math.h>
 
-#include "combine/interface/HGGRooPdfs.h"
+#include "HGGRooPdfs.h"
 #include "RooRealVar.h"
 
 ClassImp(RooPower)

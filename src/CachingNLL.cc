@@ -1,12 +1,12 @@
-#include "combine/interface/CachingNLL.h"
-#include "combine/interface/utils.h"
-#include "combine/interface/FnTimer.h"
+#include "CachingNLL.h"
+#include "utils.h"
+#include "FnTimer.h"
 #include <stdexcept>
 #include <RooCategory.h>
 #include <RooDataSet.h>
 #include <RooProduct.h>
 
-#include "combine/interface/ProfilingTools.h"
+#include "ProfilingTools.h"
 #include <combine/interface/RooMultiPdf.h>
 #include <combine/interface/VerticalInterpHistPdf.h>
 #include <combine/interface/CMSHistV.h>
@@ -20,7 +20,7 @@
 #include <combine/interface/CachingMultiPdf.h>
 #include <combine/interface/RooCheapProduct.h>
 #include <combine/interface/Accumulators.h>
-#include "combine/interface/Logger.h"
+#include "Logger.h"
 #include "vectorized.h"
 
 namespace cacheutils {
@@ -63,7 +63,7 @@ namespace cacheutils {
 //---- Uncomment to dump PDF values inside CachingAddNLL
 //#define LOG_ADDPDFS
 
-#include "combine/interface/ProfilingTools.h"
+#include "ProfilingTools.h"
 
 //std::map<std::string,double> cacheutils::CachingAddNLL::offsets_;
 bool cacheutils::CachingSimNLL::noDeepLEE_ = false;

@@ -1,4 +1,4 @@
-#include "combine/interface/MarkovChainMC.h"
+#include "MarkovChainMC.h"
 #include <stdexcept> 
 #include <cmath> 
 #include "TKey.h"
@@ -18,15 +18,15 @@ class THnSparse;
 #include "RooStats/ProposalHelper.h"
 #include "RooStats/ProposalFunction.h"
 #include "RooStats/RooStatsUtils.h"
-#include "combine/interface/Combine.h"
-#include "combine/interface/TestProposal.h"
-#include "combine/interface/DebugProposal.h"
-#include "combine/interface/CloseCoutSentry.h"
-#include "combine/interface/RooFitGlobalKillSentry.h"
-#include "combine/interface/JacknifeQuantile.h"
+#include "Combine.h"
+#include "TestProposal.h"
+#include "DebugProposal.h"
+#include "CloseCoutSentry.h"
+#include "RooFitGlobalKillSentry.h"
+#include "JacknifeQuantile.h"
 
-#include "combine/interface/ProfilingTools.h"
-#include "combine/interface/utils.h"
+#include "ProfilingTools.h"
+#include "utils.h"
 
 using namespace RooStats;
 using namespace std;

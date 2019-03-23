@@ -1,6 +1,6 @@
 #include "Riostream.h" 
 
-#include "combine/interface/HWWLVJJRooPdfs.h" 
+#include "HWWLVJJRooPdfs.h" 
 #include "RooAbsReal.h" 
 //#include "RooAbsCategory.h" 
 #include "RooMath.h"

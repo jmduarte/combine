@@ -1,3 +1,3 @@
-#include "combine/interface/RooFuncPdf.h" 
+#include "RooFuncPdf.h" 
 
 ClassImp(RooFuncPdf)

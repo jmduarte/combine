@@ -1,5 +1,5 @@
-#include "combine/interface/FastTemplate_Old.h"
-#include "combine/interface/Accumulators.h"
+#include "FastTemplate_Old.h"
+#include "Accumulators.h"
 
 #include <cmath>
 #include <cstdlib>

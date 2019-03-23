@@ -9,10 +9,10 @@
 #include "RooRealProxy.h"
 #include "Rtypes.h"
 #include "TH1F.h"
-#include "combine/interface/FastTemplate_Old.h"
-#include "combine/interface/SimpleCacheSentry.h"
-#include "combine/interface/CMSHistFunc.h"
-#include "combine/interface/CMSHistV.h"
+#include "FastTemplate_Old.h"
+#include "SimpleCacheSentry.h"
+#include "CMSHistFunc.h"
+#include "CMSHistV.h"
 
 class CMSHistErrorPropagator : public RooAbsReal {
 private:

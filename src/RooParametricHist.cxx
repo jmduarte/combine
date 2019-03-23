@@ -6,7 +6,7 @@
 
 #include "RooAbsData.h"
 #include "RooAbsPdf.h"
-#include "combine/interface/RooParametricHist.h" 
+#include "RooParametricHist.h" 
 
 #include <math.h> 
 #include "TMath.h" 
