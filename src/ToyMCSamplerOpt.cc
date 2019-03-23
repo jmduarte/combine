@@ -13,7 +13,7 @@
 #include <RooDataHist.h>
 #include <RooDataSet.h>
 #include <RooRandom.h>
-#include <combine/interface/ProfilingTools.h>
+#include <ProfilingTools.h>
 #include "RooStats/DetailedOutputAggregator.h"
 
 using namespace std;

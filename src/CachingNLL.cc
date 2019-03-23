@@ -7,19 +7,19 @@
 #include <RooProduct.h>
 
 #include "ProfilingTools.h"
-#include <combine/interface/RooMultiPdf.h>
-#include <combine/interface/VerticalInterpHistPdf.h>
-#include <combine/interface/CMSHistV.h>
-#include <combine/interface/CMSHistFunc.h>
-#include <combine/interface/CMSHistErrorPropagator.h>
-#include <combine/interface/CMSHistFuncWrapper.h>
-#include <combine/interface/VectorizedGaussian.h>
-#include <combine/interface/VectorizedCB.h>
-#include <combine/interface/VectorizedSimplePdfs.h>
-#include <combine/interface/VectorizedHistFactoryPdfs.h>
-#include <combine/interface/CachingMultiPdf.h>
-#include <combine/interface/RooCheapProduct.h>
-#include <combine/interface/Accumulators.h>
+#include <RooMultiPdf.h>
+#include <VerticalInterpHistPdf.h>
+#include <CMSHistV.h>
+#include <CMSHistFunc.h>
+#include <CMSHistErrorPropagator.h>
+#include <CMSHistFuncWrapper.h>
+#include <VectorizedGaussian.h>
+#include <VectorizedCB.h>
+#include <VectorizedSimplePdfs.h>
+#include <VectorizedHistFactoryPdfs.h>
+#include <CachingMultiPdf.h>
+#include <RooCheapProduct.h>
+#include <Accumulators.h>
 #include "Logger.h"
 #include "vectorized.h"
 

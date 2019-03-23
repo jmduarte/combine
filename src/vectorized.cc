@@ -1,5 +1,5 @@
 #include "vectorized.h"
-#include <combine/interface/Accumulators.h>
+#include <Accumulators.h>
 
 void vectorized::mul_add(const uint32_t size, double coeff, double const * __restrict__ iarray, double* __restrict__ oarray) {
     for (uint32_t i = 0; i < size; ++i) {

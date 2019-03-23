@@ -1,5 +1,5 @@
-#include <combine/interface/VVHZZ4L_RooSpinZeroPdf_1D_fast.h>
-#include <combine/interface/FastTemplateFunc.h>
+#include <VVHZZ4L_RooSpinZeroPdf_1D_fast.h>
+#include <FastTemplateFunc.h>
 #include <cmath>
 #include <cassert>
 #include "TMath.h"

@@ -1,5 +1,5 @@
 #include "Riostream.h" 
-#include <combine/interface/HZZ4L_RooSpinZeroPdf_1D.h>
+#include <HZZ4L_RooSpinZeroPdf_1D.h>
 #include "RooAbsReal.h" 
 #include "RooAbsCategory.h" 
 #include <math.h>
