@@ -101,11 +101,10 @@ namespace {
 }  // namespace
 #endif
 
-ClassImp(VerticalInterpHistPdf)
+ClassImp(VerticalInterpHistPdf);
 
-    //_____________________________________________________________________________
-    VerticalInterpHistPdf::VerticalInterpHistPdf()
-    : _cacheTotal(0), _cacheSingle(0), _cacheSingleGood(0) {
+//_____________________________________________________________________________
+VerticalInterpHistPdf::VerticalInterpHistPdf() : _cacheTotal(0), _cacheSingle(0), _cacheSingleGood(0) {
   // Default constructor
   _funcIter = _funcList.createIterator();
   _coefIter = _coefList.createIterator();
@@ -310,11 +309,13 @@ void VerticalInterpHistPdf::setupCaches() const {
 }
 
 //=============================================================================================
-ClassImp(FastVerticalInterpHistPdfBase) ClassImp(FastVerticalInterpHistPdf) ClassImp(FastVerticalInterpHistPdf2D)
-    ClassImp(FastVerticalInterpHistPdf3D)
+ClassImp(FastVerticalInterpHistPdfBase);
+ClassImp(FastVerticalInterpHistPdf);
+ClassImp(FastVerticalInterpHistPdf2D);
+ClassImp(FastVerticalInterpHistPdf3D);
 
-    //_____________________________________________________________________________
-    FastVerticalInterpHistPdfBase::FastVerticalInterpHistPdfBase() {
+//_____________________________________________________________________________
+FastVerticalInterpHistPdfBase::FastVerticalInterpHistPdfBase() {
   // Default constructor
   _funcIter = _funcList.createIterator();
   _coefIter = _coefList.createIterator();
@@ -797,12 +798,12 @@ void FastVerticalInterpHistPdfV::fill(std::vector<Double_t> &out) const {
 }
 
 //=============================================================================================
-ClassImp(FastVerticalInterpHistPdf2Base) ClassImp(FastVerticalInterpHistPdf2)
-    //ClassImp(FastVerticalInterpHistPdf2D)
+ClassImp(FastVerticalInterpHistPdf2Base);
+ClassImp(FastVerticalInterpHistPdf2);
+//ClassImp(FastVerticalInterpHistPdf2D);
 
-    //_____________________________________________________________________________
-    FastVerticalInterpHistPdf2Base::FastVerticalInterpHistPdf2Base()
-    : _initBase(false) {
+//_____________________________________________________________________________
+FastVerticalInterpHistPdf2Base::FastVerticalInterpHistPdf2Base() : _initBase(false) {
   // Default constructor
 }
 

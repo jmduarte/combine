@@ -160,9 +160,11 @@ ProfiledLikelihoodTestStatOpt::ProfiledLikelihoodTestStatOpt(const RooArgSet &ob
   DBG(DBG_PLTestStat_ctor, (std::cout << "Observables: " << std::endl))
   DBG(DBG_PLTestStat_ctor, (observables.Print("V")))
   DBG(DBG_PLTestStat_ctor, (std::cout << "All params: " << std::endl))
-  DBG(DBG_PLTestStat_ctor, (params_->Print("V"))) DBG(DBG_PLTestStat_ctor, (std::cout << "Snapshot: " << std::endl))
-      DBG(DBG_PLTestStat_ctor, (snap_.Print("V"))) DBG(DBG_PLTestStat_ctor, (std::cout << "POI: " << std::endl))
-          DBG(DBG_PLTestStat_ctor, (poi_.Print("V"))) RooLinkedListIter it = poi.iterator();
+  DBG(DBG_PLTestStat_ctor, (params_->Print("V")))
+  DBG(DBG_PLTestStat_ctor, (std::cout << "Snapshot: " << std::endl))
+  DBG(DBG_PLTestStat_ctor, (snap_.Print("V")))
+  DBG(DBG_PLTestStat_ctor, (std::cout << "POI: " << std::endl)) DBG(DBG_PLTestStat_ctor, (poi_.Print("V")))
+      RooLinkedListIter it = poi.iterator();
   for (RooAbsArg *a = (RooAbsArg *)it.Next(); a != 0; a = (RooAbsArg *)it.Next()) {
     // search for this poi in the parameters and in the snapshot
     RooAbsArg *ps = snap_.find(a->GetName());
@@ -232,11 +234,12 @@ Double_t ProfiledLikelihoodTestStatOpt::Evaluate(RooAbsData &data, RooArgSet & /
   DBG(DBG_PLTestStat_pars, (std::cout << "r In: "))
   DBG(DBG_PLTestStat_pars, (rIn->Print("")))
   DBG(DBG_PLTestStat_pars, std::cout << std::endl)
-  DBG(DBG_PLTestStat_pars, std::cout << "r before the fit: ") DBG(DBG_PLTestStat_pars, r->Print(""))
-      DBG(DBG_PLTestStat_pars, std::cout << std::endl)
+  DBG(DBG_PLTestStat_pars, std::cout << "r before the fit: ")
+  DBG(DBG_PLTestStat_pars, r->Print(""))
+  DBG(DBG_PLTestStat_pars, std::cout << std::endl)
 
-      //std::cout << "PERFORMING UNCONSTRAINED FIT " << r->GetName() << " [ " << r->getMin() << " - " << r->getMax() << " ] "<< std::endl;
-      double nullNLL = minNLL(/*constrained=*/false, r);
+  //std::cout << "PERFORMING UNCONSTRAINED FIT " << r->GetName() << " [ " << r->getMin() << " - " << r->getMax() << " ] "<< std::endl;
+  double nullNLL = minNLL(/*constrained=*/false, r);
   double bestFitR = r->getVal();
 
   DBG(DBG_PLTestStat_pars, (std::cout << "r after the fit: "))
@@ -373,12 +376,13 @@ std::vector<Double_t> ProfiledLikelihoodTestStatOpt::Evaluate(RooAbsData &data,
   DBG(DBG_PLTestStat_pars, (std::cout << "r In: "))
   DBG(DBG_PLTestStat_pars, (rIn->Print("")))
   DBG(DBG_PLTestStat_pars, std::cout << std::endl)
-      DBG(DBG_PLTestStat_pars, std::cout << "r before the fit: ") DBG(DBG_PLTestStat_pars, r->Print(""))
-          DBG(DBG_PLTestStat_pars, std::cout << std::endl)
+  DBG(DBG_PLTestStat_pars, std::cout << "r before the fit: ")
+  DBG(DBG_PLTestStat_pars, r->Print(""))
+  DBG(DBG_PLTestStat_pars, std::cout << std::endl)
 
-              if (do_debug) std::cout
-      << "PERFORMING UNCONSTRAINED FIT " << r->GetName() << " [ " << r->getMin() << " - " << r->getVal() << " - "
-      << r->getMax() << " ] " << std::endl;
+  if (do_debug)
+    std::cout << "PERFORMING UNCONSTRAINED FIT " << r->GetName() << " [ " << r->getMin() << " - " << r->getVal()
+              << " - " << r->getMax() << " ] " << std::endl;
   double nullNLL = minNLL(/*constrained=*/false, r);
   double bestFitR = r->getVal();
   // Take snapshot of initial state, to restore it at the end

@@ -7870,18 +7870,18 @@ namespace RooFit {
 
 /**********RooqqZZPdf*********/
 
-ClassImp(RooqqZZPdf)
+ClassImp(RooqqZZPdf);
 
-    RooqqZZPdf::RooqqZZPdf(const char* name,
-                           const char* title,
-                           RooAbsReal& _m4l,
-                           RooAbsReal& _a1,
-                           RooAbsReal& _a2,
-                           RooAbsReal& _a3,
-                           RooAbsReal& _b1,
-                           RooAbsReal& _b2,
-                           RooAbsReal& _b3,
-                           RooAbsReal& _frac)
+RooqqZZPdf::RooqqZZPdf(const char* name,
+                       const char* title,
+                       RooAbsReal& _m4l,
+                       RooAbsReal& _a1,
+                       RooAbsReal& _a2,
+                       RooAbsReal& _a3,
+                       RooAbsReal& _b1,
+                       RooAbsReal& _b2,
+                       RooAbsReal& _b3,
+                       RooAbsReal& _frac)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       a1("a1", "a1", this, _a1),
@@ -7937,18 +7937,18 @@ Double_t RooqqZZPdf::evaluate() const {
 
 /************RooggZZPdf***********/
 
-ClassImp(RooggZZPdf)
+ClassImp(RooggZZPdf);
 
-    RooggZZPdf::RooggZZPdf(const char* name,
-                           const char* title,
-                           RooAbsReal& _m4l,
-                           RooAbsReal& _a1,
-                           RooAbsReal& _a2,
-                           RooAbsReal& _a3,
-                           RooAbsReal& _b1,
-                           RooAbsReal& _b2,
-                           RooAbsReal& _b3,
-                           RooAbsReal& _frac)
+RooggZZPdf::RooggZZPdf(const char* name,
+                       const char* title,
+                       RooAbsReal& _m4l,
+                       RooAbsReal& _a1,
+                       RooAbsReal& _a2,
+                       RooAbsReal& _a3,
+                       RooAbsReal& _b1,
+                       RooAbsReal& _b2,
+                       RooAbsReal& _b3,
+                       RooAbsReal& _frac)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       a1("a1", "a1", this, _a1),
@@ -8010,25 +8010,25 @@ Double_t RooggZZPdf::evaluate() const {
 
 //// ------- v2 below ------
 
-ClassImp(RooqqZZPdf_v2)
+ClassImp(RooqqZZPdf_v2);
 
-    RooqqZZPdf_v2::RooqqZZPdf_v2(const char* name,
-                                 const char* title,
-                                 RooAbsReal& _m4l,
-                                 RooAbsReal& _a0,
-                                 RooAbsReal& _a1,
-                                 RooAbsReal& _a2,
-                                 RooAbsReal& _a3,
-                                 RooAbsReal& _a4,
-                                 RooAbsReal& _a5,
-                                 RooAbsReal& _a6,
-                                 RooAbsReal& _a7,
-                                 RooAbsReal& _a8,
-                                 RooAbsReal& _a9,
-                                 RooAbsReal& _a10,
-                                 RooAbsReal& _a11,
-                                 RooAbsReal& _a12,
-                                 RooAbsReal& _a13)
+RooqqZZPdf_v2::RooqqZZPdf_v2(const char* name,
+                             const char* title,
+                             RooAbsReal& _m4l,
+                             RooAbsReal& _a0,
+                             RooAbsReal& _a1,
+                             RooAbsReal& _a2,
+                             RooAbsReal& _a3,
+                             RooAbsReal& _a4,
+                             RooAbsReal& _a5,
+                             RooAbsReal& _a6,
+                             RooAbsReal& _a7,
+                             RooAbsReal& _a8,
+                             RooAbsReal& _a9,
+                             RooAbsReal& _a10,
+                             RooAbsReal& _a11,
+                             RooAbsReal& _a12,
+                             RooAbsReal& _a13)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       a0("a0", "a0", this, _a0),
@@ -8079,21 +8079,21 @@ Double_t RooqqZZPdf_v2::evaluate() const {
 
 /************RooggZZPdf_v2***********/
 
-ClassImp(RooggZZPdf_v2)
+ClassImp(RooggZZPdf_v2);
 
-    RooggZZPdf_v2::RooggZZPdf_v2(const char* name,
-                                 const char* title,
-                                 RooAbsReal& _m4l,
-                                 RooAbsReal& _a0,
-                                 RooAbsReal& _a1,
-                                 RooAbsReal& _a2,
-                                 RooAbsReal& _a3,
-                                 RooAbsReal& _a4,
-                                 RooAbsReal& _a5,
-                                 RooAbsReal& _a6,
-                                 RooAbsReal& _a7,
-                                 RooAbsReal& _a8,
-                                 RooAbsReal& _a9)
+RooggZZPdf_v2::RooggZZPdf_v2(const char* name,
+                             const char* title,
+                             RooAbsReal& _m4l,
+                             RooAbsReal& _a0,
+                             RooAbsReal& _a1,
+                             RooAbsReal& _a2,
+                             RooAbsReal& _a3,
+                             RooAbsReal& _a4,
+                             RooAbsReal& _a5,
+                             RooAbsReal& _a6,
+                             RooAbsReal& _a7,
+                             RooAbsReal& _a8,
+                             RooAbsReal& _a9)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       a0("a0", "a0", this, _a0),
@@ -8133,28 +8133,28 @@ Double_t RooggZZPdf_v2::evaluate() const {
 
 //// ------- RooVBFZZPdf ------
 
-ClassImp(RooVBFZZPdf)
+ClassImp(RooVBFZZPdf);
 
-    RooVBFZZPdf::RooVBFZZPdf(const char* name,
-                             const char* title,
-                             RooAbsReal& _m4l,
-                             RooAbsReal& _a0,
-                             RooAbsReal& _a1,
-                             RooAbsReal& _a2,
-                             RooAbsReal& _a3,
-                             RooAbsReal& _a4,
-                             RooAbsReal& _a5,
-                             RooAbsReal& _a6,
-                             RooAbsReal& _a7,
-                             RooAbsReal& _a8,
-                             RooAbsReal& _a9,
-                             RooAbsReal& _a10,
-                             RooAbsReal& _a11,
-                             RooAbsReal& _a12,
-                             RooAbsReal& _a13,
-                             RooAbsReal& _a14,
-                             RooAbsReal& _a15,
-                             RooAbsReal& _a16)
+RooVBFZZPdf::RooVBFZZPdf(const char* name,
+                         const char* title,
+                         RooAbsReal& _m4l,
+                         RooAbsReal& _a0,
+                         RooAbsReal& _a1,
+                         RooAbsReal& _a2,
+                         RooAbsReal& _a3,
+                         RooAbsReal& _a4,
+                         RooAbsReal& _a5,
+                         RooAbsReal& _a6,
+                         RooAbsReal& _a7,
+                         RooAbsReal& _a8,
+                         RooAbsReal& _a9,
+                         RooAbsReal& _a10,
+                         RooAbsReal& _a11,
+                         RooAbsReal& _a12,
+                         RooAbsReal& _a13,
+                         RooAbsReal& _a14,
+                         RooAbsReal& _a15,
+                         RooAbsReal& _a16)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       a0("a0", "a0", this, _a0),
@@ -8218,24 +8218,24 @@ Double_t RooVBFZZPdf::evaluate() const {
 
 //// ------- RooVBFZZPdf_v2 ------
 
-ClassImp(RooVBFZZPdf_v2)
+ClassImp(RooVBFZZPdf_v2);
 
-    RooVBFZZPdf_v2::RooVBFZZPdf_v2(const char* name,
-                                   const char* title,
-                                   RooAbsReal& _m4l,
-                                   RooAbsReal& _a4,
-                                   RooAbsReal& _a5,
-                                   RooAbsReal& _a6,
-                                   RooAbsReal& _a7,
-                                   RooAbsReal& _a8,
-                                   RooAbsReal& _a9,
-                                   RooAbsReal& _a10,
-                                   RooAbsReal& _a11,
-                                   RooAbsReal& _a12,
-                                   RooAbsReal& _a13,
-                                   RooAbsReal& _a14,
-                                   RooAbsReal& _a15,
-                                   RooAbsReal& _a16)
+RooVBFZZPdf_v2::RooVBFZZPdf_v2(const char* name,
+                               const char* title,
+                               RooAbsReal& _m4l,
+                               RooAbsReal& _a4,
+                               RooAbsReal& _a5,
+                               RooAbsReal& _a6,
+                               RooAbsReal& _a7,
+                               RooAbsReal& _a8,
+                               RooAbsReal& _a9,
+                               RooAbsReal& _a10,
+                               RooAbsReal& _a11,
+                               RooAbsReal& _a12,
+                               RooAbsReal& _a13,
+                               RooAbsReal& _a14,
+                               RooAbsReal& _a15,
+                               RooAbsReal& _a16)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       a4("a4", "a4", this, _a4),
@@ -8282,9 +8282,9 @@ Double_t RooVBFZZPdf_v2::evaluate() const {
   return ZZ;
 }
 
-ClassImp(RooBetaFunc_v2)
+ClassImp(RooBetaFunc_v2);
 
-    RooBetaFunc_v2::RooBetaFunc_v2() {}
+RooBetaFunc_v2::RooBetaFunc_v2() {}
 
 RooBetaFunc_v2::RooBetaFunc_v2(const char* name,
                                const char* title,
@@ -8355,9 +8355,9 @@ double RooBetaFunc_v2::evaluate() const {
   return final;
 }
 
-ClassImp(Roo4lMasses2D_Bkg)
+ClassImp(Roo4lMasses2D_Bkg);
 
-    Roo4lMasses2D_Bkg::Roo4lMasses2D_Bkg() {}
+Roo4lMasses2D_Bkg::Roo4lMasses2D_Bkg() {}
 
 Roo4lMasses2D_Bkg::Roo4lMasses2D_Bkg(
     const char* name, const char* title, RooAbsReal& _mZstar, RooAbsReal& _mZZ, RooAbsReal& _channelVal)
@@ -8645,9 +8645,9 @@ double Roo4lMasses2D_Bkg::evaluate() const {
 
 // 2D ggzz
 
-ClassImp(Roo4lMasses2D_BkgGGZZ)
+ClassImp(Roo4lMasses2D_BkgGGZZ);
 
-    Roo4lMasses2D_BkgGGZZ::Roo4lMasses2D_BkgGGZZ() {}
+Roo4lMasses2D_BkgGGZZ::Roo4lMasses2D_BkgGGZZ() {}
 
 Roo4lMasses2D_BkgGGZZ::Roo4lMasses2D_BkgGGZZ(
     const char* name, const char* title, RooAbsReal& _mZstar, RooAbsReal& _mZZ, RooAbsReal& _channelVal)
@@ -8886,9 +8886,9 @@ double Roo4lMasses2D_BkgGGZZ::evaluate() const {
 // --------------------------------------------------------------------
 // 2D signal
 
-ClassImp(Roo4lMasses2D)
+ClassImp(Roo4lMasses2D);
 
-    Roo4lMasses2D::Roo4lMasses2D() {}
+Roo4lMasses2D::Roo4lMasses2D() {}
 
 Roo4lMasses2D::Roo4lMasses2D(const char* name,
                              const char* title,
@@ -9004,12 +9004,9 @@ double Roo4lMasses2D::evaluate() const {
 
 /************RooFourMuMassShapePdf2***********/
 
-ClassImp(RooFourMuMassShapePdf2)
+ClassImp(RooFourMuMassShapePdf2);
 
-    RooFourMuMassShapePdf2::RooFourMuMassShapePdf2(const char* name,
-                                                   const char* title,
-                                                   RooAbsReal& _m4l,
-                                                   RooAbsReal& _mH)
+RooFourMuMassShapePdf2::RooFourMuMassShapePdf2(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
     : RooAbsPdf(name, title), m4l("m4l", "m4l", this, _m4l), mH("mH", "mH", this, _mH) {}
 
 RooFourMuMassShapePdf2::RooFourMuMassShapePdf2(const RooFourMuMassShapePdf2& other, const char* name)
@@ -9077,9 +9074,9 @@ Double_t RooFourMuMassShapePdf2::evaluate() const {
 
 /************RooFourEMassShapePdf2***********/
 
-ClassImp(RooFourEMassShapePdf2)
+ClassImp(RooFourEMassShapePdf2);
 
-    RooFourEMassShapePdf2::RooFourEMassShapePdf2(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
+RooFourEMassShapePdf2::RooFourEMassShapePdf2(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
     : RooAbsPdf(name, title), m4l("m4l", "m4l", this, _m4l), mH("mH", "mH", this, _mH) {}
 
 RooFourEMassShapePdf2::RooFourEMassShapePdf2(const RooFourEMassShapePdf2& other, const char* name)
@@ -9146,12 +9143,12 @@ Double_t RooFourEMassShapePdf2::evaluate() const {
 
 /************RooTwoETwoMuMassShapePdf2*************/
 
-ClassImp(RooTwoETwoMuMassShapePdf2)
+ClassImp(RooTwoETwoMuMassShapePdf2);
 
-    RooTwoETwoMuMassShapePdf2::RooTwoETwoMuMassShapePdf2(const char* name,
-                                                         const char* title,
-                                                         RooAbsReal& _m4l,
-                                                         RooAbsReal& _mH)
+RooTwoETwoMuMassShapePdf2::RooTwoETwoMuMassShapePdf2(const char* name,
+                                                     const char* title,
+                                                     RooAbsReal& _m4l,
+                                                     RooAbsReal& _mH)
     : RooAbsPdf(name, title), m4l("m4l", "m4l", this, _m4l), mH("mH", "mH", this, _mH) {}
 
 RooTwoETwoMuMassShapePdf2::RooTwoETwoMuMassShapePdf2(const RooTwoETwoMuMassShapePdf2& other, const char* name)
@@ -9218,9 +9215,9 @@ Double_t RooTwoETwoMuMassShapePdf2::evaluate() const {
 
 /************RooRelBWUF*************/
 
-ClassImp(RooRelBWUF)
+ClassImp(RooRelBWUF);
 
-    RooRelBWUF::RooRelBWUF(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
+RooRelBWUF::RooRelBWUF(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
     : RooAbsPdf(name, title), m4l("m4l", "m4l", this, _m4l), mH("mH", "mH", this, _mH) {}
 
 RooRelBWUF::RooRelBWUF(const RooRelBWUF& other, const char* name)
@@ -9253,9 +9250,9 @@ Double_t RooRelBWUF::evaluate() const {
 
 /************RooRelBWUF_SM4*************/
 
-ClassImp(RooRelBWUF_SM4)
+ClassImp(RooRelBWUF_SM4);
 
-    RooRelBWUF_SM4::RooRelBWUF_SM4(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
+RooRelBWUF_SM4::RooRelBWUF_SM4(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
     : RooAbsPdf(name, title), m4l("m4l", "m4l", this, _m4l), mH("mH", "mH", this, _mH) {}
 
 RooRelBWUF_SM4::RooRelBWUF_SM4(const RooRelBWUF_SM4& other, const char* name)
@@ -9277,10 +9274,10 @@ Double_t RooRelBWUF_SM4::evaluate() const {
 
 /************RooRelBWUFParamWidth*************/
 
-ClassImp(RooRelBWUFParamWidth)
+ClassImp(RooRelBWUFParamWidth);
 
-    RooRelBWUFParamWidth::RooRelBWUFParamWidth(
-        const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH, RooAbsReal& _width)
+RooRelBWUFParamWidth::RooRelBWUFParamWidth(
+    const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH, RooAbsReal& _width)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       mH("mH", "mH", this, _mH),
@@ -9311,14 +9308,10 @@ Double_t RooRelBWUFParamWidth::evaluate() const {
 
 /************RooRelBWUFParam*************/
 
-ClassImp(RooRelBWUFParam)
+ClassImp(RooRelBWUFParam);
 
-    RooRelBWUFParam::RooRelBWUFParam(const char* name,
-                                     const char* title,
-                                     RooAbsReal& _m4l,
-                                     RooAbsReal& _mH,
-                                     RooAbsReal& _scaleParam,
-                                     Double_t _widthSF)
+RooRelBWUFParam::RooRelBWUFParam(
+    const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH, RooAbsReal& _scaleParam, Double_t _widthSF)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       mH("mH", "mH", this, _mH),
@@ -9360,10 +9353,10 @@ Double_t RooRelBWUFParam::evaluate() const {
 
 /************RooRelBWHighMass*************/
 
-ClassImp(RooRelBWHighMass)
+ClassImp(RooRelBWHighMass);
 
-    RooRelBWHighMass::RooRelBWHighMass(
-        const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH, RooAbsReal& _gamma)
+RooRelBWHighMass::RooRelBWHighMass(
+    const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH, RooAbsReal& _gamma)
     : RooAbsPdf(name, title),
       m4l("m4l", "m4l", this, _m4l),
       mH("mH", "mH", this, _mH),
@@ -9384,9 +9377,9 @@ Double_t RooRelBWHighMass::evaluate() const {
 
 /***********************RooFourMuMassRes*************/
 
-ClassImp(RooFourMuMassRes)
+ClassImp(RooFourMuMassRes);
 
-    RooFourMuMassRes::RooFourMuMassRes(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
+RooFourMuMassRes::RooFourMuMassRes(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
     : RooAbsPdf(name, title), m4l("m4l", "m4l", this, _m4l), mH("mH", "mH", this, _mH) {}
 
 RooFourMuMassRes::RooFourMuMassRes(const RooFourMuMassRes& other, const char* name)
@@ -9428,9 +9421,9 @@ Double_t RooFourMuMassRes::evaluate() const {
 
 /***********RooFourEMassRes**************/
 
-ClassImp(RooFourEMassRes)
+ClassImp(RooFourEMassRes);
 
-    RooFourEMassRes::RooFourEMassRes(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
+RooFourEMassRes::RooFourEMassRes(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
     : RooAbsPdf(name, title), m4l("m4l", "m4l", this, _m4l), mH("mH", "mH", this, _mH) {}
 
 RooFourEMassRes::RooFourEMassRes(const RooFourEMassRes& other, const char* name)
@@ -9472,9 +9465,9 @@ Double_t RooFourEMassRes::evaluate() const {
 
 /************RooTwoETwoMuMassRes************/
 
-ClassImp(RooTwoETwoMuMassRes)
+ClassImp(RooTwoETwoMuMassRes);
 
-    RooTwoETwoMuMassRes::RooTwoETwoMuMassRes(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
+RooTwoETwoMuMassRes::RooTwoETwoMuMassRes(const char* name, const char* title, RooAbsReal& _m4l, RooAbsReal& _mH)
     : RooAbsPdf(name, title), m4l("m4l", "m4l", this, _m4l), mH("mH", "mH", this, _mH) {}
 
 RooTwoETwoMuMassRes::RooTwoETwoMuMassRes(const RooTwoETwoMuMassRes& other, const char* name)
@@ -9516,9 +9509,9 @@ Double_t RooTwoETwoMuMassRes::evaluate() const {
 
 /*************RooRelBW1***********/
 
-ClassImp(RooRelBW1)
+ClassImp(RooRelBW1);
 
-    RooRelBW1::RooRelBW1(const char* name, const char* title, RooAbsReal& _m, RooAbsReal& _mean, RooAbsReal& _gamma)
+RooRelBW1::RooRelBW1(const char* name, const char* title, RooAbsReal& _m, RooAbsReal& _mean, RooAbsReal& _gamma)
     : RooAbsPdf(name, title),
       m("m", "m", this, _m),
       mean("mean", "mean", this, _mean),
@@ -9538,9 +9531,9 @@ Double_t RooRelBW1::evaluate() const {
 
 /****************RooTsallis******************/
 
-ClassImp(RooTsallis)
+ClassImp(RooTsallis);
 
-    RooTsallis::RooTsallis() {}
+RooTsallis::RooTsallis() {}
 
 RooTsallis::RooTsallis(const char* name,
                        const char* title,
@@ -9582,9 +9575,9 @@ double RooTsallis::evaluate() const {
 
 /*************RooaDoubleCBxBW***********/
 
-ClassImp(RooaDoubleCBxBW)
+ClassImp(RooaDoubleCBxBW);
 
-    RooaDoubleCBxBW::RooaDoubleCBxBW() {}
+RooaDoubleCBxBW::RooaDoubleCBxBW() {}
 
 RooaDoubleCBxBW::RooaDoubleCBxBW(const char* name,
                                  const char* title,
@@ -9806,9 +9799,9 @@ double RooaDoubleCBxBW::evaluate() const {
 }
 
 /*************RooCPSHighMassGGH***********/
-ClassImp(RooCPSHighMassGGH)
+ClassImp(RooCPSHighMassGGH);
 
-    RooCPSHighMassGGH::RooCPSHighMassGGH() {}
+RooCPSHighMassGGH::RooCPSHighMassGGH() {}
 
 RooCPSHighMassGGH::RooCPSHighMassGGH(const char* name,
                                      const char* title,
@@ -10487,9 +10480,9 @@ Double_t RooCPSHighMassGGH::Spline(Double_t xx) const {
 }
 
 /*************RooBWHighMassGGH***********/
-ClassImp(RooBWHighMassGGH)
+ClassImp(RooBWHighMassGGH);
 
-    RooBWHighMassGGH::RooBWHighMassGGH() {}
+RooBWHighMassGGH::RooBWHighMassGGH() {}
 
 RooBWHighMassGGH::RooBWHighMassGGH(const char* name,
                                    const char* title,
@@ -12866,9 +12859,9 @@ Double_t RooBWHighMassGGH::H_width(Double_t mass) const {
 }
 
 /*************RooCPSHighMassGGHNoInterf***********/
-ClassImp(RooCPSHighMassGGHNoInterf)
+ClassImp(RooCPSHighMassGGHNoInterf);
 
-    RooCPSHighMassGGHNoInterf::RooCPSHighMassGGHNoInterf() {}
+RooCPSHighMassGGHNoInterf::RooCPSHighMassGGHNoInterf() {}
 
 RooCPSHighMassGGHNoInterf::RooCPSHighMassGGHNoInterf(const char* name,
                                                      const char* title,
@@ -13263,9 +13256,9 @@ Double_t RooCPSHighMassGGHNoInterf::Spline(Double_t xx) const {
 }
 
 /*************RooCPSHighMassVBF***********/
-ClassImp(RooCPSHighMassVBF)
+ClassImp(RooCPSHighMassVBF);
 
-    RooCPSHighMassVBF::RooCPSHighMassVBF() {}
+RooCPSHighMassVBF::RooCPSHighMassVBF() {}
 
 RooCPSHighMassVBF::RooCPSHighMassVBF(const char* name,
                                      const char* title,
@@ -14048,9 +14041,9 @@ Double_t RooCPSHighMassVBF::Spline(Double_t xx) const {
 }
 
 /*************RooCPSHighMassVBFNoInterf***********/
-ClassImp(RooCPSHighMassVBFNoInterf)
+ClassImp(RooCPSHighMassVBFNoInterf);
 
-    RooCPSHighMassVBFNoInterf::RooCPSHighMassVBFNoInterf() {}
+RooCPSHighMassVBFNoInterf::RooCPSHighMassVBFNoInterf() {}
 
 RooCPSHighMassVBFNoInterf::RooCPSHighMassVBFNoInterf(const char* name,
                                                      const char* title,
@@ -14547,9 +14540,9 @@ Double_t RooCPSHighMassVBFNoInterf::Spline(Double_t xx) const {
 }
 
 /*************RooSigPlusInt***********/
-ClassImp(RooSigPlusInt)
+ClassImp(RooSigPlusInt);
 
-    RooSigPlusInt::RooSigPlusInt() {}
+RooSigPlusInt::RooSigPlusInt() {}
 
 RooSigPlusInt::RooSigPlusInt(const char* name,
                              const char* title,

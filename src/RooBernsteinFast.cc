@@ -40,4 +40,5 @@
 
 using namespace std;
 
-templateClassImp(RooBernsteinCoeffs) templateClassImp(RooBernsteinFast)
+templateClassImp(RooBernsteinCoeffs);
+templateClassImp(RooBernsteinFast);

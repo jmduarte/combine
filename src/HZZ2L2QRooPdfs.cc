@@ -13,9 +13,9 @@
 using namespace RooFit;
 using namespace std;
 
-ClassImp(RooCB)
+ClassImp(RooCB);
 
-    RooCB::RooCB() {}
+RooCB::RooCB() {}
 
 RooCB::RooCB(const char* name,
              const char* title,
@@ -62,9 +62,9 @@ double RooCB::evaluate() const {
   }
 }
 
-ClassImp(RooDoubleCB)
+ClassImp(RooDoubleCB);
 
-    RooDoubleCB::RooDoubleCB()
+RooDoubleCB::RooDoubleCB()
     : RooAbsPdf(),
       x("x", "x", this),
       xp("xp", "xp", this),
@@ -314,9 +314,9 @@ Double_t RooDoubleCB::analyticalIntegral(Int_t code, const char* rangeName) cons
   return left + central + right;
 }
 
-ClassImp(RooFermi)
+ClassImp(RooFermi);
 
-    RooFermi::RooFermi() {}
+RooFermi::RooFermi() {}
 
 RooFermi::RooFermi(const char* name, const char* title, RooAbsReal& _x, RooAbsReal& _cutOff, RooAbsReal& _beta)
     : RooAbsPdf(name, title),
@@ -334,9 +334,9 @@ RooFermi::RooFermi(const RooFermi& other, const char* name)
 
 double RooFermi::evaluate() const { return 1.0 / (exp((cutOff - x) / beta) + 1); }
 
-ClassImp(RooRelBW)
+ClassImp(RooRelBW);
 
-    RooRelBW::RooRelBW() {}
+RooRelBW::RooRelBW() {}
 
 RooRelBW::RooRelBW(
     const char* name, const char* title, RooAbsReal& _x, RooAbsReal& _mean, RooAbsReal& _width, RooAbsReal& _n)
@@ -360,9 +360,9 @@ double RooRelBW::evaluate() const {
                           pow(x * x / (mean * mean), 2 * n) * mean * mean * width * width);
 }
 
-ClassImp(Triangle)
+ClassImp(Triangle);
 
-    Triangle::Triangle() {}
+Triangle::Triangle() {}
 
 Triangle::Triangle(
     const char* name, const char* title, RooAbsReal& _m, RooAbsReal& _start, RooAbsReal& _turn, RooAbsReal& _stop)
@@ -411,9 +411,9 @@ Double_t Triangle::analyticalIntegral(Int_t code, const char* rangeName) const {
   return sumleft + sumright;
 }
 
-ClassImp(RooLevelledExp)
+ClassImp(RooLevelledExp);
 
-    RooLevelledExp::RooLevelledExp() {}
+RooLevelledExp::RooLevelledExp() {}
 
 RooLevelledExp::RooLevelledExp(const char* name,
                                const char* title,
