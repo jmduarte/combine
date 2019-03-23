@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++17 -m64 -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -std=c++17 -m64 -O2 -L/usr/lib/root -lCore -lImt -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lROOTVecOps -lTree -lTreePlayer -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lMultiProc -lROOTDataFrame -pthread -lm -ldl -lvdt -lRooFit -lRooFitCore -lRooStats -lMinuit -lFoam -lHistFactory -lboost_filesystem -lboost_program_options -lboost_system -rdynamic")
 
 #set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 
@@ -36,6 +36,7 @@ include_directories($ENV{ROOTSYS}/include/root)
 #message(STATUS "CMAKE_PREFIX_PATH: " ${CMAKE_PREFIX_PATH})
 #message(STATUS "CMAKE_SOURCE_DIR: " ${CMAKE_SOURCE_DIR})
 message(STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS})
+
 
 #---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
 #find_package(ROOT REQUIRED COMPONENTS Graf3d Graf Gpad MathCore RIO Hist Tree Net Thread Core)

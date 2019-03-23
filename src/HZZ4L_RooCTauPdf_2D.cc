@@ -45,7 +45,7 @@ ctau_max(_ctau_max)
 	delete coefIter;
 
 	nbins_ctau = _coefList.getSize();
-	Integral_T = new double[nbins_ctau];
+	Integral_T = std::vector<double>(nbins_ctau);
 	for(int mp=0;mp<nbins_ctau;mp++) Integral_T[mp] = dynamic_cast<const RooHistFunc*>(_coefList.at(mp))->analyticalIntegral(1000);
 }
 
@@ -62,7 +62,7 @@ ctau_min(other.ctau_min),
 ctau_max(other.ctau_max)
 {
 	nbins_ctau = _coefList.getSize();
-	Integral_T = new double[nbins_ctau];
+	Integral_T = std::vector<double>(nbins_ctau);
 	for(int mp=0;mp<nbins_ctau;mp++) Integral_T[mp] = (other.Integral_T)[mp];
 }
 

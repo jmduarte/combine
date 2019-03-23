@@ -44,14 +44,14 @@ public:
 
 	HZZ4L_RooCTauPdf_2D(const HZZ4L_RooCTauPdf_2D& other, const char* name = 0);
 	virtual TObject* clone(const char* newname) const { return new HZZ4L_RooCTauPdf_2D(*this, newname); }
-	inline virtual ~HZZ4L_RooCTauPdf_2D() { delete[] Integral_T; }
+	inline virtual ~HZZ4L_RooCTauPdf_2D() { }
 
 	Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
 	Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
 	const RooArgList& coefList() const { return _coefList; }
 
 	int nbins_ctau;
-	double* Integral_T;
+    std::vector<double> Integral_T;
 	double ctau_min;
 	double ctau_max;
 
