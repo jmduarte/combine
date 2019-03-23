@@ -236,8 +236,8 @@ def addDatacardParserOptions(parser):
     )
 
 
-from .Datacard import Datacard
-from .NuisanceModifier import doEditNuisance
+from combine.Datacard import Datacard
+from combine.NuisanceModifier import doEditNuisance
 
 
 def isVetoed(name, vetoList):
