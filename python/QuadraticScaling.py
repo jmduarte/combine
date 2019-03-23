@@ -25,38 +25,40 @@ class Quadratic(PhysicsModel):
     def setPhysicsOptions(self, options):
         self.coefficient = None
         self.processes = []
-        for option, value in [x.split('=') for x in options]:
-            if option == 'coefficient':
+        for option, value in [x.split("=") for x in options]:
+            if option == "coefficient":
                 if self.coefficient is not None:
-                    raise NotImplementedError('only one coefficient currently supported')
+                    raise NotImplementedError("only one coefficient currently supported")
                 self.coefficient = value
-            if option == 'process':  # processes which will be scaled
+            if option == "process":  # processes which will be scaled
                 self.processes.append(value)
-            if option == 'scaling':
+            if option == "scaling":
                 self.scaling = value
 
     def setup(self):
         scaling = np.load(self.scaling)[()]
         for process in self.processes:
             self.modelBuilder.out.var(process)
-            name = 'r_{0}_{1}'.format(process, self.coefficient)
+            name = "r_{0}_{1}".format(process, self.coefficient)
             if not self.modelBuilder.out.function(name):
                 template = "expr::{name}('{a0} + ({a1} * {c}) + ({a2} * {c} * {c})', {c})"
                 a0, a1, a2 = scaling[self.coefficient][process]
-                quadratic = self.modelBuilder.factory_(template.format(name=name, a0=a0, a1=a1, a2=a2, c=self.coefficient))
+                quadratic = self.modelBuilder.factory_(
+                    template.format(name=name, a0=a0, a1=a1, a2=a2, c=self.coefficient)
+                )
                 self.modelBuilder.out._import(quadratic)
 
     def doParametersOfInterest(self):
         # user should call combine with `--setPhysicsModelParameterRanges` set to sensible ranges
-        self.modelBuilder.doVar('{0}[0, -inf, inf]'.format(self.coefficient))
-        self.modelBuilder.doSet('POI', self.coefficient)
+        self.modelBuilder.doVar("{0}[0, -inf, inf]".format(self.coefficient))
+        self.modelBuilder.doSet("POI", self.coefficient)
         self.setup()
 
     def getYieldScale(self, bin, process):
         if process not in self.processes:
             return 1
         else:
-            name = 'r_{0}_{1}'.format(process, self.coefficient)
+            name = "r_{0}_{1}".format(process, self.coefficient)
 
             return name
 

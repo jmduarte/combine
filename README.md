@@ -18,3 +18,8 @@ To format the whole C++ code:
 ```
 find . -regex '.*\.\(cpp\|hpp\|cc\|cxx\|hh\|hxx\|h\)' -exec clang-format -style=file -i {} \;
 ```
+
+To format the whole Python code:
+```
+black --line-length 120 .
+```

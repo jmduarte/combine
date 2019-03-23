@@ -13,12 +13,12 @@
 # can generate 10K toys in ~1 min
 #
 # Can use the --toysFreqentist to generate frequentist toys.  See:
-# https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/572/1/2/1/1/1.html 
+# https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/572/1/2/1/1/1.html
 #
 ##############
 # Usage: python parseCombine.py name_of_output_root_file_from_combine_command ntoys
 ##############
-# 
+#
 #
 #!/usr/bin/env python
 
@@ -33,31 +33,31 @@ import re
 import subprocess
 import glob
 
-from ROOT import TF1, TFile, TH2F, gROOT, gStyle,TH1F, TCanvas, TString, TLegend, TPaveLabel, TH2D, TPave, Double
+from ROOT import TF1, TFile, TH2F, gROOT, gStyle, TH1F, TCanvas, TString, TLegend, TPaveLabel, TH2D, TPave, Double
 from six.moves import range
 
 if len(sys.argv) < 2:
     print("Must specify the root file that you wish to parse.")
     sys.exit()
-    
+
 if len(sys.argv) < 3:
     print("Must specify the number of toys that you ran over.")
     sys.exit()
-    
+
 inputFile = str(sys.argv[1])
 nToys = int(sys.argv[2])
 
 file = TFile.Open(inputFile)
 file.cd()
 
-for key in  file.GetListOfKeys():
-    if (key.GetClassName() != "TDirectoryFile"):
+for key in file.GetListOfKeys():
+    if key.GetClassName() != "TDirectoryFile":
         continue
     rootDirectory = key.GetName()
 
-#loop over the toys and extract nToyBkgd
+# loop over the toys and extract nToyBkgd
 nToyBkgdList = []
-for i in range (1,nToys+1):
+for i in range(1, nToys + 1):
     toyTemp = file.Get(rootDirectory + "/toy_" + str(i)).Clone()
     nToyBkgd = toyTemp.get(0).getRealValue("n_obs_binMyChan")
     nToyBkgdList.append(nToyBkgd)
@@ -73,4 +73,4 @@ h.Write()
 outputFile.Write()
 outputFile.Close()
 
-print("Finished writing output to " + outputFile.GetName()) 
+print("Finished writing output to " + outputFile.GetName())
