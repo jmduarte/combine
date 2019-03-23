@@ -12,10 +12,10 @@ ROOT.gROOT.SetBatch(True)
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 argv.remove("-b-")
 
-from HiggsAnalysis.CombinedLimit.DatacardParser import *
-from HiggsAnalysis.CombinedLimit.ModelTools import *
-from HiggsAnalysis.CombinedLimit.ShapeTools import *
-from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+from combine.DatacardParser import *
+from combine.ModelTools import *
+from combine.ShapeTools import *
+from combine.PhysicsModel import *
 
 parser = OptionParser(usage="usage: %prog [options] datacard.txt -o output \nrun with --help to get list of options")
 addDatacardParserOptions(parser)
@@ -23,7 +23,7 @@ parser.add_option(
     "-P",
     "--physics-model",
     dest="physModel",
-    default="HiggsAnalysis.CombinedLimit.PhysicsModel:defaultModel",
+    default="combine.PhysicsModel:defaultModel",
     type="string",
     help="Physics model to use. It should be in the form (module name):(object name)",
 )
