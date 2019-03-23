@@ -35,7 +35,7 @@ class DebugProposal : public RooStats::ProposalFunction {
 
     private:
         RooStats::ProposalFunction *prop_;
-        std::auto_ptr<RooAbsReal> nll_;
+        std::unique_ptr<RooAbsReal> nll_;
         RooAbsPdf                 *pdf_;
         RooArgSet                 params_;
         int  tries_;
