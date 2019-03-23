@@ -9,13 +9,10 @@
 
 #define HFVERBOSE 0
 
-CMSHistFuncWrapper::CMSHistFuncWrapper()
-    : pfunc_(nullptr), perr_(nullptr), initialized_(false) {
-  idx_ = 0;
-}
+CMSHistFuncWrapper::CMSHistFuncWrapper() : pfunc_(nullptr), perr_(nullptr), initialized_(false) { idx_ = 0; }
 
-CMSHistFuncWrapper::CMSHistFuncWrapper(const char* name, const char* title, RooRealVar& x,
-              CMSHistFunc & func, CMSHistErrorPropagator & err, unsigned idx)
+CMSHistFuncWrapper::CMSHistFuncWrapper(
+    const char* name, const char* title, RooRealVar& x, CMSHistFunc& func, CMSHistErrorPropagator& err, unsigned idx)
     : RooAbsReal(name, title),
       x_("x", "", this, x),
       func_("func", "", this, func),
@@ -38,18 +35,18 @@ CMSHistFuncWrapper::CMSHistFuncWrapper(CMSHistFuncWrapper const& other, const ch
       sentry_(name ? TString(name) + "_sentry" : TString(other.sentry_.GetName()), ""),
       pfunc_(nullptr),
       perr_(nullptr),
-      initialized_(false) {
-}
+      initialized_(false) {}
 
 void CMSHistFuncWrapper::initialize() const {
-  if (initialized_) return;
+  if (initialized_)
+    return;
   sentry_.SetName(TString(this->GetName()) + "_sentry");
   pfunc_ = dynamic_cast<CMSHistFunc const*>(&(func_.arg()));
-  perr_ = dynamic_cast<CMSHistErrorPropagator *>(err_.absArg());
+  perr_ = dynamic_cast<CMSHistErrorPropagator*>(err_.absArg());
   auto sentry_args = perr_->getSentryArgs();
-  RooFIter iter = sentry_args->fwdIterator() ;
+  RooFIter iter = sentry_args->fwdIterator();
   RooAbsArg* arg;
-  while((arg = iter.next())) {
+  while ((arg = iter.next())) {
     sentry_.addArg(*arg);
   }
   sentry_.setValueDirty();
@@ -76,11 +73,9 @@ void CMSHistFuncWrapper::updateCache() const {
 Double_t CMSHistFuncWrapper::evaluate() const {
   updateCache();
   return cache_.GetAt(x_);
-
 }
 
-void CMSHistFuncWrapper::printMultiline(std::ostream& os, Int_t contents,
-                                 Bool_t verbose, TString indent) const {
+void CMSHistFuncWrapper::printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const {
   RooAbsReal::printMultiline(os, contents, verbose, indent);
   std::cout << ">> Current cache:\n";
   cache_.Dump();
@@ -89,14 +84,14 @@ void CMSHistFuncWrapper::printMultiline(std::ostream& os, Int_t contents,
 }
 
 Int_t CMSHistFuncWrapper::getAnalyticalIntegral(RooArgSet& allVars,
-                                         RooArgSet& analVars,
-                                         const char* /*rangeName*/) const {
-  if (matchArgs(allVars, analVars, x_)) return 1;
+                                                RooArgSet& analVars,
+                                                const char* /*rangeName*/) const {
+  if (matchArgs(allVars, analVars, x_))
+    return 1;
   return 0;
 }
 
-Double_t CMSHistFuncWrapper::analyticalIntegral(Int_t code,
-                                         const char* rangeName) const {
+Double_t CMSHistFuncWrapper::analyticalIntegral(Int_t code, const char* rangeName) const {
   switch (code) {
     case 1: {
       updateCache();

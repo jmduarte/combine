@@ -18,63 +18,57 @@
 #include "RooListProxy.h"
 
 class RooRealVar;
-class RooArgList ;
+class RooArgList;
 
 class RooStepBernstein : public RooAbsPdf {
 public:
-
-  RooStepBernstein() ;
-  RooStepBernstein(const char *name, const char *title,
-		   RooAbsReal& _x, RooAbsReal& _stepThresh,
-		   const RooArgList& _coefList) ;
+  RooStepBernstein();
+  RooStepBernstein(
+      const char* name, const char* title, RooAbsReal& _x, RooAbsReal& _stepThresh, const RooArgList& _coefList);
 
   RooStepBernstein(const RooStepBernstein& other, const char* name = 0);
   virtual TObject* clone(const char* newname) const { return new RooStepBernstein(*this, newname); }
-  inline virtual ~RooStepBernstein() { }
+  inline virtual ~RooStepBernstein() {}
 
-  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const ;
-  Double_t analyticalIntegral(Int_t code, const char* rangeName=0) const ;
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
+  Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
 
 private:
-
   RooRealProxy _x;
   RooRealProxy _stepThresh;
-  RooListProxy _coefList ;
+  RooListProxy _coefList;
 
   Double_t evaluate() const;
 
-  ClassDef(RooStepBernstein,1) // Bernstein polynomial PDF with step function
+  ClassDef(RooStepBernstein, 1)  // Bernstein polynomial PDF with step function
 };
 
 class RooGaussStepBernstein : public RooAbsPdf {
 public:
+  RooGaussStepBernstein();
+  RooGaussStepBernstein(const char* name,
+                        const char* title,
+                        RooAbsReal& _x,
+                        RooAbsReal& _mean,
+                        RooAbsReal& _sigma,
+                        RooAbsReal& _stepVal,
+                        const RooArgList& _coefList);
 
-  RooGaussStepBernstein() ;
-  RooGaussStepBernstein(const char *name, const char *title,
-			RooAbsReal& _x, RooAbsReal& _mean,
-			RooAbsReal& _sigma, RooAbsReal& _stepVal,
-			const RooArgList& _coefList) ;
+  RooGaussStepBernstein(const RooGaussStepBernstein& other, const char* name = 0);
+  virtual TObject* clone(const char* newname) const { return new RooGaussStepBernstein(*this, newname); }
+  inline virtual ~RooGaussStepBernstein() {}
 
-  RooGaussStepBernstein(const RooGaussStepBernstein& other,
-const char* name = 0);
-  virtual TObject* clone(const char* newname) const
-  { return new RooGaussStepBernstein(*this, newname); }
-  inline virtual ~RooGaussStepBernstein() { }
-
-  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const ;
-  Double_t analyticalIntegral(Int_t code, const char* rangeName=0) const ;
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
+  Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
 
 private:
-
   RooRealProxy _x;
-  RooRealProxy _mean,_sigma,_stepVal;
-  RooListProxy _coefList ;
+  RooRealProxy _mean, _sigma, _stepVal;
+  RooListProxy _coefList;
 
   Double_t evaluate() const;
 
-  ClassDef(RooGaussStepBernstein,1) // Bernstein polynomial PDF with step function convoluted with gaussian
+  ClassDef(RooGaussStepBernstein, 1)  // Bernstein polynomial PDF with step function convoluted with gaussian
 };
-
-
 
 #endif

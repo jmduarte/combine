@@ -16,29 +16,47 @@ END_HTML
 */
 //
 class RooSpline1D : public RooAbsReal {
+public:
+  RooSpline1D() : interp_(0) {}
+  RooSpline1D(const char *name,
+              const char *title,
+              RooAbsReal &xvar,
+              const char *path,
+              const unsigned short xcol,
+              const unsigned short ycol,
+              const unsigned short skipLines = 0,
+              const char *algo = "CSPLINE");
+  RooSpline1D(const char *name,
+              const char *title,
+              RooAbsReal &xvar,
+              unsigned int npoints,
+              const double *xvals,
+              const double *yvals,
+              const char *algo = "CSPLINE");
+  RooSpline1D(const char *name,
+              const char *title,
+              RooAbsReal &xar,
+              unsigned int npoints,
+              const float *xvals,
+              const float *yvals,
+              const char *algo = "CSPLINE");
+  RooSpline1D(const RooSpline1D &other, const char *newname = 0);
+  ~RooSpline1D();
 
-   public:
-      RooSpline1D() : interp_(0) {}
-      RooSpline1D(const char *name, const char *title, RooAbsReal &xvar, const char *path, const unsigned short xcol, const unsigned short ycol, const unsigned short skipLines=0, const char *algo="CSPLINE") ;
-      RooSpline1D(const char *name, const char *title, RooAbsReal &xvar, unsigned int npoints, const double *xvals, const double *yvals, const char *algo="CSPLINE") ;
-      RooSpline1D(const char *name, const char *title, RooAbsReal &xar, unsigned int npoints, const float *xvals, const float *yvals, const char *algo="CSPLINE") ;
-      RooSpline1D(const RooSpline1D &other, const char *newname=0) ;
-      ~RooSpline1D() ;
+  TObject *clone(const char *newname) const;
 
-      TObject * clone(const char *newname) const ;
+protected:
+  Double_t evaluate() const;
 
-    protected:
-        Double_t evaluate() const;
+private:
+  RooRealProxy xvar_;
+  std::vector<double> x_, y_;
+  std::string type_;
 
-    private:
-        RooRealProxy xvar_;
-        std::vector<double> x_, y_;
-        std::string type_;
+  mutable ROOT::Math::Interpolator *interp_;  //! not to be serialized
+  void init() const;
 
-        mutable ROOT::Math::Interpolator *interp_; //! not to be serialized        
-        void init() const ;
-
-  ClassDef(RooSpline1D,1) // Smooth interpolation	
+  ClassDef(RooSpline1D, 1)  // Smooth interpolation
 };
 
 #endif

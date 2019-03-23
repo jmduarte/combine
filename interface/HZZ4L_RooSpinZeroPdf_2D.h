@@ -20,10 +20,8 @@
 
 using namespace RooFit;
 
-
 class HZZ4L_RooSpinZeroPdf_2D : public RooAbsPdf {
 protected:
-
   RooRealProxy kd;
   RooRealProxy kdint;
   RooRealProxy ksmd;
@@ -34,24 +32,26 @@ protected:
   RooListProxy _coefList;  //  List of funcficients
   //  TIterator* _coefIter ;    //! Iterator over funcficient lis
   Double_t evaluate() const;
-public:
-  HZZ4L_RooSpinZeroPdf_2D() {};
-  HZZ4L_RooSpinZeroPdf_2D(const char *name, const char *title,
-    RooAbsReal& _kd,
-    RooAbsReal& _kdint,
-    RooAbsReal& _ksmd,
-    RooAbsReal& _fai1,
-    RooAbsReal& _fai2,
-    RooAbsReal& _phi1,
-    RooAbsReal& _phi2,
-    const RooArgList& inCoefList);
 
-  HZZ4L_RooSpinZeroPdf_2D(const HZZ4L_RooSpinZeroPdf_2D& other, const char* name=0);
+public:
+  HZZ4L_RooSpinZeroPdf_2D(){};
+  HZZ4L_RooSpinZeroPdf_2D(const char* name,
+                          const char* title,
+                          RooAbsReal& _kd,
+                          RooAbsReal& _kdint,
+                          RooAbsReal& _ksmd,
+                          RooAbsReal& _fai1,
+                          RooAbsReal& _fai2,
+                          RooAbsReal& _phi1,
+                          RooAbsReal& _phi2,
+                          const RooArgList& inCoefList);
+
+  HZZ4L_RooSpinZeroPdf_2D(const HZZ4L_RooSpinZeroPdf_2D& other, const char* name = 0);
   virtual TObject* clone(const char* newname) const { return new HZZ4L_RooSpinZeroPdf_2D(*this, newname); }
   inline virtual ~HZZ4L_RooSpinZeroPdf_2D() {}
 
-  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const;
-  Double_t analyticalIntegral(Int_t code, const char* rangeName=0) const;
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
+  Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
   const RooArgList& coefList() const { return _coefList; }
 
   double Integral_T1;
@@ -65,8 +65,7 @@ public:
   double Integral_T9;
 
 private:
-
-  ClassDef(HZZ4L_RooSpinZeroPdf_2D, 1) // Your description goes here...
+  ClassDef(HZZ4L_RooSpinZeroPdf_2D, 1)  // Your description goes here...
 };
- 
+
 #endif

@@ -1,2 +1,2 @@
 
-#include "../interface/GBRMath.h" 
+#include "../interface/GBRMath.h"

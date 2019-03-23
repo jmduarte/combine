@@ -9,17 +9,18 @@ struct RooAbsPdf;
 #include <RooArgList.h>
 
 class PdfDiagonalizer {
-    public:
-        PdfDiagonalizer(const char *name, RooWorkspace *w, RooFitResult &result);
+public:
+  PdfDiagonalizer(const char *name, RooWorkspace *w, RooFitResult &result);
 
-        RooAbsPdf *diagonalize(RooAbsPdf &pdf) ;
-        const RooArgList & originalParams() { return parameters_; }
-        const RooArgList & diagonalParams() { return eigenVars_; }
-    private:
-        std::string name_;
-        RooArgList  parameters_;
-        RooArgList  eigenVars_;
-        RooArgList  replacements_;
+  RooAbsPdf *diagonalize(RooAbsPdf &pdf);
+  const RooArgList &originalParams() { return parameters_; }
+  const RooArgList &diagonalParams() { return eigenVars_; }
+
+private:
+  std::string name_;
+  RooArgList parameters_;
+  RooArgList eigenVars_;
+  RooArgList replacements_;
 };
 
 #endif

@@ -19,7 +19,7 @@
 class CMSHistFuncWrapper;
 
 class CMSHistFunc : public RooAbsReal {
- private:
+private:
   struct GlobalCache {
     bool single_point = true;
     unsigned p1 = 0;
@@ -59,32 +59,20 @@ class CMSHistFunc : public RooAbsReal {
     bool meansig_set = false;
   };
 
- public:
+public:
   enum HorizontalType { Closest, Integral, Moment };
 
-  enum MomentSetting {
-    Linear,
-    NonLinear,
-    NonLinearPosFractions,
-    NonLinearLinFractions,
-    SineLinear
-  };
+  enum MomentSetting { Linear, NonLinear, NonLinearPosFractions, NonLinearLinFractions, SineLinear };
 
-  enum VerticalSetting {
-    QuadLinear,
-    LogQuadLinear
-  };
+  enum VerticalSetting { QuadLinear, LogQuadLinear };
 
   CMSHistFunc();
 
-  CMSHistFunc(const char* name, const char* title, RooRealVar& x,
-              TH1 const& hist, bool divideByWidth = true);
+  CMSHistFunc(const char* name, const char* title, RooRealVar& x, TH1 const& hist, bool divideByWidth = true);
 
   CMSHistFunc(CMSHistFunc const& other, const char* name = 0);
 
-  virtual TObject* clone(const char* newname) const {
-    return new CMSHistFunc(*this, newname);
-  }
+  virtual TObject* clone(const char* newname) const { return new CMSHistFunc(*this, newname); }
   virtual ~CMSHistFunc() {}
 
   void addHorizontalMorph(RooAbsReal& hvar, TVectorD hpoints);
@@ -95,8 +83,7 @@ class CMSHistFunc : public RooAbsReal {
 
   void setActiveBins(unsigned bins);
 
-  void setShape(unsigned hindex, unsigned hpoint, unsigned vindex,
-                unsigned vpoint, TH1 const& hist);
+  void setShape(unsigned hindex, unsigned hpoint, unsigned vindex, unsigned vpoint, TH1 const& hist);
 
   Double_t evaluate() const;
 
@@ -104,11 +91,9 @@ class CMSHistFunc : public RooAbsReal {
 
   std::unique_ptr<RooArgSet> getSentryArgs() const;
 
-  void printMultiline(std::ostream& os, Int_t contents, Bool_t verbose,
-                      TString indent) const;
+  void printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const;
 
-  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars,
-                              const char* rangeName = 0) const;
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
 
   Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
 
@@ -154,7 +139,7 @@ class CMSHistFunc : public RooAbsReal {
    Level 2 – Print one-line message each time a PDF is recalculated
    Level 3 – Provide details of convolution integral recalculations
   */
- protected:
+protected:
   RooRealProxy x_;
   RooListProxy vmorphs_;
   RooListProxy hmorphs_;
@@ -167,11 +152,11 @@ class CMSHistFunc : public RooAbsReal {
   FastTemplate binerrors_;
   std::vector<FastTemplate> storage_;
 
-  mutable GlobalCache global_;  //! not to be serialized
+  mutable GlobalCache global_;         //! not to be serialized
   mutable std::vector<Cache> mcache_;  //! not to be serialized
 
   unsigned morph_strategy_;
-  mutable bool initialized_; //! not to be serialized
+  mutable bool initialized_;  //! not to be serialized
   bool rebin_;
   std::vector<unsigned> rebin_scheme_;
   HorizontalType htype_;
@@ -182,14 +167,13 @@ class CMSHistFunc : public RooAbsReal {
 
   double vsmooth_par_;
 
- private:
+private:
   void initialize() const;
   void setGlobalCache() const;
 
   void resetCaches();
 
-  unsigned getIdx(unsigned hindex, unsigned hpoint, unsigned vindex,
-                  unsigned vpoint) const;
+  unsigned getIdx(unsigned hindex, unsigned hpoint, unsigned vindex, unsigned vpoint) const;
 
   inline double smoothStepFunc(double x) const;
 
@@ -199,8 +183,7 @@ class CMSHistFunc : public RooAbsReal {
 
   void prepareInterpCache(Cache& c1, Cache const& c2) const;
 
-  FastTemplate cdfMorph(unsigned idx, double par1, double par2,
-                        double parinterp) const;
+  FastTemplate cdfMorph(unsigned idx, double par1, double par2, double parinterp) const;
 
   double integrateTemplate(FastTemplate const& t) const;
 
@@ -208,6 +191,5 @@ class CMSHistFunc : public RooAbsReal {
 
   ClassDef(CMSHistFunc, 1)
 };
-
 
 #endif

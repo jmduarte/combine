@@ -12,13 +12,12 @@
 #include "Rtypes.h"
 #include "RooRealVar.h"
 
-template <class T>
-class CMSHistV {
- public:
+template <class T> class CMSHistV {
+public:
   CMSHistV(const T&, const RooAbsData& data, bool includeZeroWeights = false);
   void fill(std::vector<Double_t>& out) const;
 
- private:
+private:
   const T& hpdf_;
   int begin_, end_, nbins_;
   struct Block {
@@ -30,8 +29,7 @@ class CMSHistV {
 };
 
 template <class T>
-CMSHistV<T>::CMSHistV(const T& hpdf, const RooAbsData& data,
-                      bool includeZeroWeights)
+CMSHistV<T>::CMSHistV(const T& hpdf, const RooAbsData& data, bool includeZeroWeights)
     : hpdf_(hpdf), begin_(0), end_(0) {
   hpdf.updateCache();
   std::vector<int> bins;
@@ -40,9 +38,11 @@ CMSHistV<T>::CMSHistV(const T& hpdf, const RooAbsData& data,
   bool aligned = true;
   for (int i = 0, n = data.numEntries(); i < n; ++i) {
     obs = *data.get(i);
-    if (data.weight() == 0 && !includeZeroWeights) continue;
+    if (data.weight() == 0 && !includeZeroWeights)
+      continue;
     int idx = hpdf.cache().FindBin(x.getVal());
-    if (!bins.empty() && idx != bins.back() + 1) aligned = false;
+    if (!bins.empty() && idx != bins.back() + 1)
+      aligned = false;
     bins.push_back(idx);
   }
   if (bins.empty()) {
@@ -79,18 +79,16 @@ CMSHistV<T>::CMSHistV(const T& hpdf, const RooAbsData& data,
   }
 }
 
-template <class T>
-void CMSHistV<T>::fill(std::vector<Double_t>& out) const {
+template <class T> void CMSHistV<T>::fill(std::vector<Double_t>& out) const {
   hpdf_.updateCache();
   if (begin_ != end_) {
     out.resize(end_ - begin_);
-    std::copy(&hpdf_.cache().GetBinContent(begin_),
-              (&hpdf_.cache().GetBinContent(end_-1))+1, out.begin());
+    std::copy(&hpdf_.cache().GetBinContent(begin_), (&hpdf_.cache().GetBinContent(end_ - 1)) + 1, out.begin());
   } else if (!blocks_.empty()) {
     out.resize(nbins_);
     for (auto b : blocks_)
-      std::copy(&hpdf_.cache().GetBinContent(b.begin),
-                (&hpdf_.cache().GetBinContent(b.end-1))+1, out.begin() + b.index);
+      std::copy(
+          &hpdf_.cache().GetBinContent(b.begin), (&hpdf_.cache().GetBinContent(b.end - 1)) + 1, out.begin() + b.index);
   } else {
     out.resize(bins_.size());
     for (int i = 0, n = bins_.size(); i < n; ++i) {

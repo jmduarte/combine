@@ -1,41 +1,49 @@
 #ifdef __CINT__
- 
+
 #pragma link off all globals;
 #pragma link off all classes;
 #pragma link off all functions;
 #pragma link C++ nestedclasses;
 
-#pragma link C++ class std::vector<std::vector<Float_t>>;
-#pragma link C++ class std::vector<std::vector<std::vector<Float_t>>>;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<Float_t>>>>;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<Float_t>>>>>;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<Float_t>>>>>>;
-#pragma link C++ class std::vector<std::vector<Float_t>>::iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<Float_t>>>::iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<Float_t>>>>::iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<Float_t>>>>>::iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<Float_t>>>>>>::iterator;
-#pragma link C++ class std::vector<std::vector<Float_t>>::const_iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<Float_t>>>::const_iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<Float_t>>>>::const_iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<Float_t>>>>>::const_iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<Float_t>>>>>>::const_iterator;
+#pragma link C++ class std::vector < std::vector < Float_t>>;
+#pragma link C++ class std::vector < std::vector < std::vector < Float_t>>>;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < Float_t>>>>;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < Float_t>>>>>;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < std::vector < \
+    Float_t>>>>>>;
+#pragma link C++ class std::vector < std::vector < Float_t>> ::iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < Float_t>>> ::iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < Float_t>>>> ::iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < Float_t>>>>> ::iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < std::vector < \
+    Float_t>>>>>> ::iterator;
+#pragma link C++ class std::vector < std::vector < Float_t>> ::const_iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < Float_t>>> ::const_iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < Float_t>>>> ::const_iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < Float_t>>>>> \
+    ::const_iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < std::vector < \
+    Float_t>>>>>> ::const_iterator;
 
-#pragma link C++ class std::vector<std::vector<Double_t>>;
-#pragma link C++ class std::vector<std::vector<std::vector<Double_t>>>;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<Double_t>>>>;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<Double_t>>>>>;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<Double_t>>>>>>;
-#pragma link C++ class std::vector<std::vector<Double_t>>::iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<Double_t>>>::iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<Double_t>>>>::iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<Double_t>>>>>::iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<Double_t>>>>>>::iterator;
-#pragma link C++ class std::vector<std::vector<Double_t>>::const_iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<Double_t>>>::const_iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<Double_t>>>>::const_iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<Double_t>>>>>::const_iterator;
-#pragma link C++ class std::vector<std::vector<std::vector<std::vector<std::vector<std::vector<Double_t>>>>>>::const_iterator;
+#pragma link C++ class std::vector < std::vector < Double_t>>;
+#pragma link C++ class std::vector < std::vector < std::vector < Double_t>>>;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < Double_t>>>>;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < Double_t>>>>>;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < std::vector < \
+    Double_t>>>>>>;
+#pragma link C++ class std::vector < std::vector < Double_t>> ::iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < Double_t>>> ::iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < Double_t>>>> ::iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < Double_t>>>>> ::iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < std::vector < \
+    Double_t>>>>>> ::iterator;
+#pragma link C++ class std::vector < std::vector < Double_t>> ::const_iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < Double_t>>> ::const_iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < Double_t>>>> ::const_iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < Double_t>>>>> \
+    ::const_iterator;
+#pragma link C++ class std::vector < std::vector < std::vector < std::vector < std::vector < std::vector < \
+    Double_t>>>>>> ::const_iterator;
 
 #pragma link C++ class AsymPow;
 #pragma link C++ class AsymQuad;
@@ -115,13 +123,13 @@
 #pragma link C++ class RooAnaExpNPdf;
 #pragma link C++ class RooBWHighMassGGH;
 #pragma link C++ class RooBWRunPdf;
-#pragma link C++ class RooBernsteinFast<1>;
-#pragma link C++ class RooBernsteinFast<2>;
-#pragma link C++ class RooBernsteinFast<3>;
-#pragma link C++ class RooBernsteinFast<4>;
-#pragma link C++ class RooBernsteinFast<5>;
-#pragma link C++ class RooBernsteinFast<6>;
-#pragma link C++ class RooBernsteinFast<7>;
+#pragma link C++ class RooBernsteinFast < 1>;
+#pragma link C++ class RooBernsteinFast < 2>;
+#pragma link C++ class RooBernsteinFast < 3>;
+#pragma link C++ class RooBernsteinFast < 4>;
+#pragma link C++ class RooBernsteinFast < 5>;
+#pragma link C++ class RooBernsteinFast < 6>;
+#pragma link C++ class RooBernsteinFast < 7>;
 #pragma link C++ class RooBetaFunc_v2;
 #pragma link C++ class RooCB;
 #pragma link C++ class RooCPSHighMassGGH;
@@ -209,5 +217,5 @@
 #pragma link C++ class cmsmath::SequentialMinimizer;
 #pragma link C++ class rVrFLikelihood;
 #pragma link C++ class TestProposal;
- 
+
 #endif

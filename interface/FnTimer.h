@@ -4,7 +4,6 @@
 #include <iostream>
 #include <chrono>
 
-
 /**
  * \brief Extracts the fully-qualified function name from a complete function
  *signature
@@ -17,7 +16,7 @@
  *
  *      GetQualififedName
  */
-std::string GetQualififedName(std::string const& str);
+std::string GetQualififedName(std::string const &str);
 
 /**
  * Conveniently initialise a FnTimer instance
@@ -32,7 +31,7 @@ std::string GetQualififedName(std::string const& str);
  * FnTimer::Token) that will be created by this macro. Note that the
  * FnTimer will be assigned the current function name automatically.
  */
-#define LAUNCH_FUNCTION_TIMER(x, y)                             \
+#define LAUNCH_FUNCTION_TIMER(x, y)                         \
   static FnTimer x(GetQualififedName(__PRETTY_FUNCTION__)); \
   auto y = x.Inc();
 
@@ -51,31 +50,29 @@ std::string GetQualififedName(std::string const& str);
  *  macro
  */
 class FnTimer {
- public:
+public:
   class Token {
-    public:
-      explicit Token(FnTimer *src);
-      ~Token();
-    private:
-      FnTimer *src_;
+  public:
+    explicit Token(FnTimer *src);
+    ~Token();
+
+  private:
+    FnTimer *src_;
   };
 
   explicit FnTimer(std::string name);
   ~FnTimer();
   Token Inc();
-  inline void StartTimer() {
-    start_ = std::chrono::high_resolution_clock::now();
-  }
+  inline void StartTimer() { start_ = std::chrono::high_resolution_clock::now(); }
   inline void StopTimer() {
     end_ = std::chrono::high_resolution_clock::now();
     elapsed_ += std::chrono::duration<double>(end_ - start_).count();
     start_ = std::chrono::high_resolution_clock::now();
     end_ = std::chrono::high_resolution_clock::now();
     elapsed_overhead_ += std::chrono::duration<double>(end_ - start_).count();
-
   }
 
- private:
+private:
   std::string name_;
   unsigned calls_;
   std::chrono::time_point<std::chrono::high_resolution_clock> start_;
@@ -83,6 +80,5 @@ class FnTimer {
   double elapsed_;
   double elapsed_overhead_;
 };
-
 
 #endif

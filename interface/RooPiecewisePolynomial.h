@@ -8,7 +8,7 @@
 
 // Piecewise polynomial that looks like
 // -- . -- ... -- . --
-class RooPiecewisePolynomial : public RooAbsReal{
+class RooPiecewisePolynomial : public RooAbsReal {
 protected:
   RooRealProxy xvar;
 
@@ -24,27 +24,31 @@ protected:
   // Continuity between the fcns is guaranteed, but notice that smoothness is not.
   RooListProxy parList;
 
-  const int nfcn; // Number of piecewise functions
-  const int polyndof; // Ndof of the polynomial (e.g. 4: cubic)
-  const int nnodes; // How many nodes are in between (= nfcn-1)
-  const int ndof_endfcn; // Number of degrees of freedom in fcns in the middle of the nodes (= polyndof-1)
-  const int ndof_middlefcn; // Number of degrees of freedom in fcns outside the nodes (= polyndof-2)
+  const int nfcn;            // Number of piecewise functions
+  const int polyndof;        // Ndof of the polynomial (e.g. 4: cubic)
+  const int nnodes;          // How many nodes are in between (= nfcn-1)
+  const int ndof_endfcn;     // Number of degrees of freedom in fcns in the middle of the nodes (= polyndof-1)
+  const int ndof_middlefcn;  // Number of degrees of freedom in fcns outside the nodes (= polyndof-2)
 
-  double eval(double x, std::vector<double> const& par)const;
+  double eval(double x, std::vector<double> const& par) const;
 
 public:
-  RooPiecewisePolynomial(const int nfcn_=1, const int polyndof_=1);
-  RooPiecewisePolynomial(const char* name, const char* title, const int nfcn_=1, const int polyndof_=1);
-  RooPiecewisePolynomial(const char* name, const char* title, RooAbsReal& xvar_, RooArgList const& parList_, const int nfcn_, const int polyndof_);
-  RooPiecewisePolynomial(RooPiecewisePolynomial const& other, const char* name=0);
-  virtual TObject* clone(const char* newname)const{ return new RooPiecewisePolynomial(*this, newname); }
-  inline virtual ~RooPiecewisePolynomial(){}
+  RooPiecewisePolynomial(const int nfcn_ = 1, const int polyndof_ = 1);
+  RooPiecewisePolynomial(const char* name, const char* title, const int nfcn_ = 1, const int polyndof_ = 1);
+  RooPiecewisePolynomial(const char* name,
+                         const char* title,
+                         RooAbsReal& xvar_,
+                         RooArgList const& parList_,
+                         const int nfcn_,
+                         const int polyndof_);
+  RooPiecewisePolynomial(RooPiecewisePolynomial const& other, const char* name = 0);
+  virtual TObject* clone(const char* newname) const { return new RooPiecewisePolynomial(*this, newname); }
+  inline virtual ~RooPiecewisePolynomial() {}
 
-  double evaluate()const;
-  double evaluate(double* x, double* p)const; // For calling in a TF1 object
+  double evaluate() const;
+  double evaluate(double* x, double* p) const;  // For calling in a TF1 object
 
   ClassDef(RooPiecewisePolynomial, 1)
-
 };
 
 #endif

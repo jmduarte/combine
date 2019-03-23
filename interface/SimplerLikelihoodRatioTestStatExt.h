@@ -30,48 +30,53 @@
 #include <RooArgSet.h>
 #include <RooStats/TestStatistic.h>
 
-
 class SimplerLikelihoodRatioTestStatOpt : public RooStats::TestStatistic {
-    public:
-        /// Create a SimplerLikelihoodRatioTestStatOpt. 
-        ///   obs = the observables on which the two pdfs depend
-        ///   pdfNull, pdfAlt = pdfs of the two models
-        ///   paramsNull, paramsAlt = values of the parameters that should be set before evaluating the pdfs
-        ///   factorize: if set to true, the constraint terms not depending on the observables will be removed 
-        SimplerLikelihoodRatioTestStatOpt(const RooArgSet &obs, RooAbsPdf &pdfNull, RooAbsPdf &pdfAlt, const RooArgSet & paramsNull = RooArgSet(), const RooArgSet & paramsAlt = RooArgSet(), bool factorize=true) ;
+public:
+  /// Create a SimplerLikelihoodRatioTestStatOpt.
+  ///   obs = the observables on which the two pdfs depend
+  ///   pdfNull, pdfAlt = pdfs of the two models
+  ///   paramsNull, paramsAlt = values of the parameters that should be set before evaluating the pdfs
+  ///   factorize: if set to true, the constraint terms not depending on the observables will be removed
+  SimplerLikelihoodRatioTestStatOpt(const RooArgSet &obs,
+                                    RooAbsPdf &pdfNull,
+                                    RooAbsPdf &pdfAlt,
+                                    const RooArgSet &paramsNull = RooArgSet(),
+                                    const RooArgSet &paramsAlt = RooArgSet(),
+                                    bool factorize = true);
 
-        virtual ~SimplerLikelihoodRatioTestStatOpt() ;
+  virtual ~SimplerLikelihoodRatioTestStatOpt();
 
-        virtual Double_t Evaluate(RooAbsData& data, RooArgSet& nullPOI) ;
+  virtual Double_t Evaluate(RooAbsData &data, RooArgSet &nullPOI);
 
-        virtual const TString GetVarName() const {
-            return TString::Format("-log(%s/%s)", pdfNull_->GetName(), pdfAlt_->GetName()); 
-        }
-    private:
-        /// observables (global argset)
-        const RooArgSet *obs_; 
-        /// pdfs (cloned, and with constraints factorized away)
-        RooAbsPdf *pdfNull_, *pdfAlt_;
-        /// snapshot with all branch nodes of the pdfs before factorization
-        RooArgSet pdfCompNull_, pdfCompAlt_;
-        /// nodes which depend directly on observables, on which one has to do redirectServers
-        RooArgList pdfDepObs_;
-        /// snapshots of parameters for the two pdfs
-        RooArgSet snapNull_, snapAlt_; 
-        /// parameter sets to apply snapshots to
-        std::unique_ptr<RooArgSet> paramsNull_, paramsAlt_;
-        /// owned copy of the pdfs after factorizing
-        std::unique_ptr<RooAbsPdf> pdfNullOwned_, pdfAltOwned_;
-        /// pdfNull, pdfAlt cast to sympdf (may be null) after factorization
-        RooSimultaneous *simPdfNull_, *simPdfAlt_;
-        /// components of the sim pdfs after factorization, for each bin in sim. category. can contain nulls
-        std::vector<RooAbsPdf *> simPdfComponentsNull_, simPdfComponentsAlt_;
+  virtual const TString GetVarName() const {
+    return TString::Format("-log(%s/%s)", pdfNull_->GetName(), pdfAlt_->GetName());
+  }
 
-        double evalSimNLL(RooAbsData &data,  RooSimultaneous *pdf, std::vector<RooAbsPdf *> &components);
-        double evalSimpleNLL(RooAbsData &data,  RooAbsPdf *pdf);
-        void unrollSimPdf(RooSimultaneous *pdf, std::vector<RooAbsPdf *> &out);
+private:
+  /// observables (global argset)
+  const RooArgSet *obs_;
+  /// pdfs (cloned, and with constraints factorized away)
+  RooAbsPdf *pdfNull_, *pdfAlt_;
+  /// snapshot with all branch nodes of the pdfs before factorization
+  RooArgSet pdfCompNull_, pdfCompAlt_;
+  /// nodes which depend directly on observables, on which one has to do redirectServers
+  RooArgList pdfDepObs_;
+  /// snapshots of parameters for the two pdfs
+  RooArgSet snapNull_, snapAlt_;
+  /// parameter sets to apply snapshots to
+  std::unique_ptr<RooArgSet> paramsNull_, paramsAlt_;
+  /// owned copy of the pdfs after factorizing
+  std::unique_ptr<RooAbsPdf> pdfNullOwned_, pdfAltOwned_;
+  /// pdfNull, pdfAlt cast to sympdf (may be null) after factorization
+  RooSimultaneous *simPdfNull_, *simPdfAlt_;
+  /// components of the sim pdfs after factorization, for each bin in sim. category. can contain nulls
+  std::vector<RooAbsPdf *> simPdfComponentsNull_, simPdfComponentsAlt_;
 
-}; // 
+  double evalSimNLL(RooAbsData &data, RooSimultaneous *pdf, std::vector<RooAbsPdf *> &components);
+  double evalSimpleNLL(RooAbsData &data, RooAbsPdf *pdf);
+  void unrollSimPdf(RooSimultaneous *pdf, std::vector<RooAbsPdf *> &out);
+
+};  //
 
 // ===== This below is identical to the RooStats::SimpleLikelihoodRatioTestStat also in implementation
 //       I've made a copy here just to be able to put some debug hooks inside.

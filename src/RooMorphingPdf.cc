@@ -25,11 +25,14 @@ RooMorphingPdf::RooMorphingPdf()
       mh_lo_(0.),
       mh_hi_(0.) {}
 
-RooMorphingPdf::RooMorphingPdf(const char* name, const char* title,
-                               RooRealVar& x, RooAbsReal& mh,
+RooMorphingPdf::RooMorphingPdf(const char* name,
+                               const char* title,
+                               RooRealVar& x,
+                               RooAbsReal& mh,
                                RooArgList const& pdfs,
                                std::vector<double> const& masses,
-                               bool const& can_morph, TAxis const& target_axis,
+                               bool const& can_morph,
+                               TAxis const& target_axis,
                                TAxis const& morph_axis)
     : RooAbsPdf(name, title),
       x_(x.GetName(), x.GetTitle(), this, x),
@@ -85,7 +88,7 @@ void RooMorphingPdf::SetAxisInfo() {
 
   rebin_ = TArrayI(morph_axis_.GetNbins());
   for (int i = 0; i < rebin_.GetSize(); ++i) {
-    rebin_[i] = target_axis_.FindFixBin(morph_axis_.GetBinCenter(i+1)) - 1;
+    rebin_[i] = target_axis_.FindFixBin(morph_axis_.GetBinCenter(i + 1)) - 1;
     // std::cout << "Morph bin " << i << " goes to target bin " << rebin_[i]
     //           << "\n";
   }
@@ -99,8 +102,7 @@ void RooMorphingPdf::Init() const {
         "stored pdfs!");
   }
   for (unsigned i = 0; i < masses_.size(); ++i) {
-    FastVerticalInterpHistPdf2* tpdf =
-        dynamic_cast<FastVerticalInterpHistPdf2*>(pdfs_.at(i));
+    FastVerticalInterpHistPdf2* tpdf = dynamic_cast<FastVerticalInterpHistPdf2*>(pdfs_.at(i));
     if (!tpdf)
       throw std::runtime_error(
           "RooMorphingPdf: Supplied pdf is not of type "
@@ -113,9 +115,7 @@ void RooMorphingPdf::Init() const {
     }
     hmap_[masses_[i]] = tpdf;
   }
-  cache_ = FastHisto(TH1F("tmp", "tmp", target_axis_.GetNbins(), 0,
-                          static_cast<float>(target_axis_.GetNbins())));
-
+  cache_ = FastHisto(TH1F("tmp", "tmp", target_axis_.GetNbins(), 0, static_cast<float>(target_axis_.GetNbins())));
 
   mc_.nbn = morph_axis_.GetNbins();
   mc_.xminn = (*morph_axis_.GetXbins())[0];
@@ -142,7 +142,8 @@ void RooMorphingPdf::Init() const {
 }
 
 Double_t RooMorphingPdf::evaluate() const {
-  if (!init_ || hmap_.empty()) Init();
+  if (!init_ || hmap_.empty())
+    Init();
 
   // cache is empty: throw exception
   // (something went very wrong...)
@@ -199,8 +200,7 @@ Double_t RooMorphingPdf::evaluate() const {
     if (!(p1_->cacheIsGood() && p2_->cacheIsGood() && sentry_.good())) {
       p1_->evaluate();
       p2_->evaluate();
-      FastTemplate result =
-          morph(p1_->cache(), p2_->cache(), mh_lo_, mh_hi_, mh_);
+      FastTemplate result = morph(p1_->cache(), p2_->cache(), mh_lo_, mh_hi_, mh_);
       cache_.Clear();
       for (unsigned i = 0; i < result.size(); ++i) {
         cache_[rebin_[i]] += result[i];
@@ -213,10 +213,9 @@ Double_t RooMorphingPdf::evaluate() const {
   return cache_.GetAt(x_);
 }
 
-FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
-                                   FastTemplate const& hist2, double par1,
-                                   double par2, double parinterp) const {
- unsigned idebug = 0;
+FastTemplate RooMorphingPdf::morph(
+    FastTemplate const& hist1, FastTemplate const& hist2, double par1, double par2, double parinterp) const {
+  unsigned idebug = 0;
 
   // Extract bin parameters of input histograms 1 and 2.
   // Supports the cases of non-equidistant as well as equidistant binning
@@ -242,30 +241,27 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
 
   // ......Give a warning if this is an extrapolation.
 
-  if (wt1 < 0 || wt1 > 1. || wt2 < 0. || wt2 > 1. ||
-      fabs(1 - (wt1 + wt2)) > 1.0e-4) {
-    std::cout << "Warning! th1fmorph: This is an extrapolation!! Weights are "
-              << wt1 << " and " << wt2 << " (sum=" << wt1 + wt2 << ")"
-              << std::endl;
+  if (wt1 < 0 || wt1 > 1. || wt2 < 0. || wt2 > 1. || fabs(1 - (wt1 + wt2)) > 1.0e-4) {
+    std::cout << "Warning! th1fmorph: This is an extrapolation!! Weights are " << wt1 << " and " << wt2
+              << " (sum=" << wt1 + wt2 << ")" << std::endl;
   }
   if (idebug >= 1)
     std::cout << "th1morph - Weights: " << wt1 << " " << wt2 << std::endl;
 
   if (idebug >= 1)
-    std::cout << "New hist: " << mc_.nbn << " " << mc_.xminn << " " << mc_.xmaxn
-              << std::endl;
+    std::cout << "New hist: " << mc_.nbn << " " << mc_.xminn << " " << mc_.xmaxn << std::endl;
 
   // Treatment for empty histograms: Return an empty histogram
   // with interpolated bins.
 
   if (hist1.Integral() <= 0 || hist2.Integral() <= 0) {
     std::cout << "Warning! th1morph detects an empty input histogram. Empty "
-            "interpolated histogram returned: " << std::endl;
+                 "interpolated histogram returned: "
+              << std::endl;
     return (TH1F("morphed", "morphed", mc_.nbn, mc_.xminn, mc_.xmaxn));
   }
   if (idebug >= 1)
-    std::cout << "Input histogram content sums: " << hist1.Integral() << " "
-         << hist2.Integral() << std::endl;
+    std::cout << "Input histogram content sums: " << hist1.Integral() << " " << hist2.Integral() << std::endl;
   // *
   // *......Extract the single precision histograms into double precision arrays
   // *      for the interpolation computation. The offset is because sigdis(i)
@@ -287,18 +283,18 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   std::fill(mc_.sigdisn.begin(), mc_.sigdisn.end(), 0.);
   std::fill(mc_.xdisn.begin(), mc_.xdisn.end(), 0.);
   std::fill(mc_.sigdisf.begin(), mc_.sigdisf.end(), 0.);
-  Double_t *sigdis1 = &(mc_.sigdis1[0]);
-  Double_t *sigdis2 = &(mc_.sigdis2[0]);
-  Double_t *sigdisn = &(mc_.sigdisn[0]);
-  Double_t *xdisn = &(mc_.xdisn[0]);
-  Double_t *sigdisf = &(mc_.sigdisf[0]);
+  Double_t* sigdis1 = &(mc_.sigdis1[0]);
+  Double_t* sigdis2 = &(mc_.sigdis2[0]);
+  Double_t* sigdisn = &(mc_.sigdisn[0]);
+  Double_t* xdisn = &(mc_.xdisn[0]);
+  Double_t* sigdisf = &(mc_.sigdisf[0]);
 
   sigdis1[0] = 0;
   sigdis2[0] = 0;  // Start with cdf=0 at left edge
 
   for (Int_t i = 0; i < mc_.nbn; i++) {  // Remember, bin i has edges at i-1 and
-    sigdis1[i+1] = hist1[i];               // i and i runs from 1 to nb.
-    sigdis2[i+1] = hist2[i];
+    sigdis1[i + 1] = hist1[i];           // i and i runs from 1 to nb.
+    sigdis2[i + 1] = hist2[i];
   }
 
   if (idebug >= 3) {
@@ -316,7 +312,8 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   for (Int_t i = 0; i < mc_.nbn + 1; i++) {
     total += sigdis1[i];
   }
-  if (idebug >= 1) std::cout << "Total histogram 1: " << total << std::endl;
+  if (idebug >= 1)
+    std::cout << "Total histogram 1: " << total << std::endl;
   for (Int_t i = 1; i < mc_.nbn + 1; i++) {
     sigdis1[i] = sigdis1[i] / total + sigdis1[i - 1];
   }
@@ -325,7 +322,8 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   for (Int_t i = 0; i < mc_.nbn + 1; i++) {
     total += sigdis2[i];
   }
-  if (idebug >= 1) std::cout << "Total histogram 22: " << total << std::endl;
+  if (idebug >= 1)
+    std::cout << "Total histogram 22: " << total << std::endl;
   for (Int_t i = 1; i < mc_.nbn + 1; i++) {
     sigdis2[i] = sigdis2[i] / total + sigdis2[i - 1];
   }
@@ -362,11 +360,9 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   } while (sigdis2[ix2 + 1] <= sigdis2[0]);
 
   if (idebug >= 1) {
-    std::cout << "First and last edge of hist1: " << ix1 << " " << ix1l
-              << std::endl;
+    std::cout << "First and last edge of hist1: " << ix1 << " " << ix1l << std::endl;
     std::cout << "   " << sigdis1[ix1] << " " << sigdis1[ix1 + 1] << std::endl;
-    std::cout << "First and last edge of hist2: " << ix2 << " " << ix2l
-              << std::endl;
+    std::cout << "First and last edge of hist2: " << ix2 << " " << ix2l << std::endl;
     std::cout << "   " << sigdis2[ix2] << " " << sigdis2[ix2 + 1] << std::endl;
   }
 
@@ -380,10 +376,8 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   xdisn[nx3] = x;
   sigdisn[nx3] = 0;
   if (idebug >= 1) {
-    std::cout << "First interpolated point: " << xdisn[nx3] << " "
-              << sigdisn[nx3] << std::endl;
-    std::cout << "                          " << x1 << " <= " << x
-              << " <= " << x2 << std::endl;
+    std::cout << "First interpolated point: " << xdisn[nx3] << " " << sigdisn[nx3] << std::endl;
+    std::cout << "                          " << x1 << " <= " << x << " <= " << x2 << std::endl;
   }
 
   // .....Loop over the remaining point in both curves. Getting the last
@@ -391,8 +385,8 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   //      precision.
 
   if (idebug >= 1) {
-    std::cout << "----BEFORE while with ix1=" << ix1 << ", ix1l=" << ix1l
-         << ", ix2=" << ix2 << ", ix2l=" << ix2l << std::endl;
+    std::cout << "----BEFORE while with ix1=" << ix1 << ", ix1l=" << ix1l << ", ix2=" << ix2 << ", ix2l=" << ix2l
+              << std::endl;
   }
 
   Double_t yprev = -1;  // The probability y of the previous point, it will
@@ -400,8 +394,8 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   Double_t y = 0;
   while ((ix1 < ix1l) | (ix2 < ix2l)) {
     if (idebug >= 1)
-      std::cout << "----Top of while with ix1=" << ix1 << ", ix1l=" << ix1l
-           << ", ix2=" << ix2 << ", ix2l=" << ix2l << std::endl;
+      std::cout << "----Top of while with ix1=" << ix1 << ", ix1l=" << ix1l << ", ix2=" << ix2 << ", ix2l=" << ix2l
+                << std::endl;
 
     // .....Increment to the next lowest point. Step up to the next
     //      kink in case there are several empty (flat in the integral)
@@ -424,8 +418,8 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
     }
     if (i12type == 1) {
       if (idebug >= 3) {
-        std::cout << "Pair for i12type=1: " << sigdis2[ix2] << " "
-                  << sigdis1[ix1] << " " << sigdis2[ix2 + 1] << std::endl;
+        std::cout << "Pair for i12type=1: " << sigdis2[ix2] << " " << sigdis1[ix1] << " " << sigdis2[ix2 + 1]
+                  << std::endl;
       }
       x1 = morph_axis_.GetBinLowEdge(ix1 + 1);
       y = sigdis1[ix1];
@@ -445,8 +439,8 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
       }
     } else {
       if (idebug >= 3) {
-        std::cout << "Pair for i12type=2: " << sigdis1[ix1] << " "
-                  << sigdis2[ix2] << " " << sigdis1[ix1 + 1] << std::endl;
+        std::cout << "Pair for i12type=2: " << sigdis1[ix1] << " " << sigdis2[ix2] << " " << sigdis1[ix1 + 1]
+                  << std::endl;
       }
       x2 = morph_axis_.GetBinLowEdge(ix2 + 1);
       y = sigdis2[ix2];
@@ -476,26 +470,23 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
     if (y > yprev) {
       nx3 = nx3 + 1;
       if (idebug >= 1) {
-        std::cout << " ---> y > yprev: i12type=" << i12type << ", nx3=" << nx3
-             << ", x= " << x << ", y=" << y << ", yprev=" << yprev << std::endl;
+        std::cout << " ---> y > yprev: i12type=" << i12type << ", nx3=" << nx3 << ", x= " << x << ", y=" << y
+                  << ", yprev=" << yprev << std::endl;
       }
       yprev = y;
       xdisn[nx3] = x;
       sigdisn[nx3] = y;
       if (idebug >= 1) {
-        std::cout << "    ix1=" << ix1 << ", ix2= " << ix2
-             << ", i12type= " << i12type << ", sigdis1[ix1]=" << sigdis1[ix1]
-             << std::endl;
+        std::cout << "    ix1=" << ix1 << ", ix2= " << ix2 << ", i12type= " << i12type
+                  << ", sigdis1[ix1]=" << sigdis1[ix1] << std::endl;
         std::cout << "        "
-             << ", nx3=" << nx3 << ", x=" << x << ", y= " << sigdisn[nx3]
-             << std::endl;
+                  << ", nx3=" << nx3 << ", x=" << x << ", y= " << sigdisn[nx3] << std::endl;
       }
     }
   }
   if (idebug >= 3)
     for (Int_t i = 0; i < nx3; i++) {
-      std::cout << " nx " << i << " " << xdisn[i] << " " << sigdisn[i]
-                << std::endl;
+      std::cout << " nx " << i << " " << xdisn[i] << " " << sigdisn[i] << std::endl;
     }
 
   // *......Now we loop over the edges of the bins of the interpolated
@@ -511,18 +502,17 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   Int_t ix = mc_.nbn;
 
   if (idebug >= 1)
-    std::cout << "------> Any final bins to set? " << x << " " << xdisn[nx3]
-              << std::endl;
+    std::cout << "------> Any final bins to set? " << x << " " << xdisn[nx3] << std::endl;
   while (x >= xdisn[nx3]) {
     sigdisf[ix] = sigdisn[nx3];
     if (idebug >= 2)
-      std::cout << "   Setting final bins" << ix << " " << x << " "
-                << sigdisf[ix] << std::endl;
+      std::cout << "   Setting final bins" << ix << " " << x << " " << sigdisf[ix] << std::endl;
     ix = ix - 1;
     x = (*bedgesn)[ix];
   }
   Int_t ixl = ix + 1;
-  if (idebug >= 1) std::cout << " Now ixl=" << ixl << " ix=" << ix << std::endl;
+  if (idebug >= 1)
+    std::cout << " Now ixl=" << ixl << " ix=" << ix << std::endl;
 
   // *
   // *......The beginning may be empty, so we have to step up to the first
@@ -539,8 +529,7 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
   while (x <= xdisn[0]) {
     sigdisf[ix] = sigdisn[0];
     if (idebug >= 1)
-      std::cout << "   Setting initial bins " << ix << " " << x << " "
-                << xdisn[1] << " " << sigdisf[ix] << std::endl;
+      std::cout << "   Setting initial bins " << ix << " " << x << " " << xdisn[1] << " " << sigdisf[ix] << std::endl;
     ix = ix + 1;
     x = (*bedgesn)[ix + 1];
   }
@@ -567,23 +556,18 @@ FastTemplate RooMorphingPdf::morph(FastTemplate const& hist1,
       if (xdisn[ix3 + 1] - x > 1.1 * dx2) {  // Empty bin treatment
         y = sigdisn[ix3 + 1];
       } else if (xdisn[ix3 + 1] > xdisn[ix3]) {  // Normal bins
-        y = sigdisn[ix3] + (sigdisn[ix3 + 1] - sigdisn[ix3]) *
-                               (x - xdisn[ix3]) / (xdisn[ix3 + 1] - xdisn[ix3]);
+        y = sigdisn[ix3] + (sigdisn[ix3 + 1] - sigdisn[ix3]) * (x - xdisn[ix3]) / (xdisn[ix3 + 1] - xdisn[ix3]);
       } else {  // Is this ever used?
         y = 0;
-        std::cout << "Warning - th1fmorph: This probably shoudn't happen! "
-                  << std::endl;
-        std::cout << "Warning - th1fmorph: Zero slope solving x(y)"
-                  << std::endl;
+        std::cout << "Warning - th1fmorph: This probably shoudn't happen! " << std::endl;
+        std::cout << "Warning - th1fmorph: Zero slope solving x(y)" << std::endl;
       }
     }
     sigdisf[ix] = y;
     if (idebug >= 3) {
-      std::cout << ix << ", ix3=" << ix3 << ", xdisn=" << xdisn[ix3]
-                << ", x=" << x << ", next xdisn=" << xdisn[ix3 + 1]
+      std::cout << ix << ", ix3=" << ix3 << ", xdisn=" << xdisn[ix3] << ", x=" << x << ", next xdisn=" << xdisn[ix3 + 1]
                 << std::endl;
-      std::cout << "   cdf n=" << sigdisn[ix3] << ", y=" << y
-           << ", next point=" << sigdisn[ix3 + 1] << std::endl;
+      std::cout << "   cdf n=" << sigdisn[ix3] << ", y=" << y << ", next point=" << sigdisn[ix3 + 1] << std::endl;
     }
   }
 

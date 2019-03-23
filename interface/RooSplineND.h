@@ -27,7 +27,7 @@
 #include <map>
 #include <vector>
 #include <string>
- 
+
 /**********************************************************************
 Original Author -- Nicholas Wardle
 
@@ -58,44 +58,60 @@ END_HTML
 ************************************************************************/
 
 class RooSplineND : public RooAbsReal {
+public:
+  RooSplineND() : ndim_(0), M_(0), eps_(3.) {}
+  RooSplineND(const char *name,
+              const char *title,
+              RooArgList &vars,
+              TTree *tree,
+              const char *fName = "f",
+              double eps = 3.,
+              bool rescale = false,
+              std::string cutstring = "");
+  RooSplineND(const RooSplineND &other, const char *name);
+  RooSplineND(const char *name,
+              const char *title,
+              const RooListProxy &vars,
+              int ndim,
+              int M,
+              double eps,
+              bool rescale,
+              std::vector<double> &w,
+              std::map<int, std::vector<double> > &map,
+              std::map<int, std::pair<double, double> > &,
+              double,
+              double);
+  ~RooSplineND();
 
-   public:
-      RooSplineND() : ndim_(0),M_(0),eps_(3.) {}
-      RooSplineND(const char *name, const char *title, RooArgList &vars, TTree *tree, const char* fName="f", double eps=3., bool rescale=false, std::string cutstring="" ) ;
-      RooSplineND(const RooSplineND& other, const char *name) ; 
-      RooSplineND(const char *name, const char *title, const RooListProxy &vars, int ndim, int M, double eps, bool rescale, std::vector<double> &w, std::map<int,std::vector<double> > &map, std::map<int,std::pair<double,double> > & ,double,double) ;
-      ~RooSplineND() ;
+  TObject *clone(const char *newname) const;
 
-      TObject * clone(const char *newname) const ;
+  TGraph *getGraph(const char *xvar, double step);
 
-      TGraph* getGraph(const char *xvar, double step) ;
+protected:
+  Double_t evaluate() const;
 
-    protected:
-        Double_t evaluate() const;
+private:
+  RooListProxy vars_;
 
-    private:
-        RooListProxy vars_;
- 
-	mutable std::vector<double> w_;
-	mutable std::map<int,std::vector<double> > v_map;
-	mutable std::map<int,std::pair<double,double> > r_map;
-	
-	int ndim_;
-	int M_;
-	double eps_;
-  	double axis_pts_;
-	
-	double w_mean, w_rms;
+  mutable std::vector<double> w_;
+  mutable std::map<int, std::vector<double> > v_map;
+  mutable std::map<int, std::pair<double, double> > r_map;
 
-	void calculateWeights(std::vector<double> &);
-	double getDistSquare(int i, int j);
-	double getDistFromSquare(int i) const;
-	double radialFunc(double d2, double eps) const;
+  int ndim_;
+  int M_;
+  double eps_;
+  double axis_pts_;
 
-	bool rescaleAxis;
-	
+  double w_mean, w_rms;
 
-  ClassDef(RooSplineND,1) 
+  void calculateWeights(std::vector<double> &);
+  double getDistSquare(int i, int j);
+  double getDistFromSquare(int i) const;
+  double radialFunc(double d2, double eps) const;
+
+  bool rescaleAxis;
+
+  ClassDef(RooSplineND, 1)
 };
 
 #endif

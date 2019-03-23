@@ -18,61 +18,58 @@
 #include "RooDataHist.h"
 #include "RooHistFunc.h"
 
-
 class HZZ4L_RooCTauPdf_1D_Expanded : public RooAbsPdf {
 protected:
-
-	RooRealProxy kd;
-	RooRealProxy ctau;
+  RooRealProxy kd;
+  RooRealProxy ctau;
 
   RooListProxy _funcList;  //  List of histogram pdfs
   RooListProxy _coefList;  //  List of pdf modifiers
   Double_t evaluate() const;
+
 public:
-	HZZ4L_RooCTauPdf_1D_Expanded() {};
-	HZZ4L_RooCTauPdf_1D_Expanded(
-		const char *name,
-		const char *title,
-		RooAbsReal& _kd,
-		RooAbsReal& _ctau,
-    const RooArgList& inFuncList,
-    const RooArgList& inCoefList,
+  HZZ4L_RooCTauPdf_1D_Expanded(){};
+  HZZ4L_RooCTauPdf_1D_Expanded(const char* name,
+                               const char* title,
+                               RooAbsReal& _kd,
+                               RooAbsReal& _ctau,
+                               const RooArgList& inFuncList,
+                               const RooArgList& inCoefList,
 
-		double _ctau_min,
-		double _ctau_max,
+                               double _ctau_min,
+                               double _ctau_max,
 
-    Double_t smoothRegion_=1.,
-    Int_t smoothAlgo_=0,
-    Int_t nLinearVariations_=0
-    );
+                               Double_t smoothRegion_ = 1.,
+                               Int_t smoothAlgo_ = 0,
+                               Int_t nLinearVariations_ = 0);
 
-	HZZ4L_RooCTauPdf_1D_Expanded(const HZZ4L_RooCTauPdf_1D_Expanded& other, const char* name = 0);
-	virtual TObject* clone(const char* newname) const { return new HZZ4L_RooCTauPdf_1D_Expanded(*this, newname); }
-	inline virtual ~HZZ4L_RooCTauPdf_1D_Expanded() { }
+  HZZ4L_RooCTauPdf_1D_Expanded(const HZZ4L_RooCTauPdf_1D_Expanded& other, const char* name = 0);
+  virtual TObject* clone(const char* newname) const { return new HZZ4L_RooCTauPdf_1D_Expanded(*this, newname); }
+  inline virtual ~HZZ4L_RooCTauPdf_1D_Expanded() {}
 
-	Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
-	Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
+  Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
   const RooArgList& funcList() const { return _funcList; }
   const RooArgList& coefList() const { return _coefList; }
 
   int nCoef;
   int nFuncs;
   int nbins_ctau;
-	double Integral_T[101*9]; // Only up to 2 coefficients are allowed
-	double ctau_min;
-	double ctau_max;
+  double Integral_T[101 * 9];  // Only up to 2 coefficients are allowed
+  double ctau_min;
+  double ctau_max;
 
   Double_t smoothRegion;
   Int_t smoothAlgo;
   Int_t nLinearVariations;
 
 private:
-	int findNeighborBins() const; // Returns index_low for ctau pdfs
+  int findNeighborBins() const;  // Returns index_low for ctau pdfs
   Double_t interpolateVariation(Double_t theta_, Double_t valueCenter_, Double_t valueHigh_, Double_t valueLow_) const;
   Double_t interpolateBin() const;
-	Double_t interpolateIntegral() const;
+  Double_t interpolateIntegral() const;
 
-	ClassDef(HZZ4L_RooCTauPdf_1D_Expanded, 1) // Your description goes here...
+  ClassDef(HZZ4L_RooCTauPdf_1D_Expanded, 1)  // Your description goes here...
 };
- 
+
 #endif

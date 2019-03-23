@@ -20,8 +20,7 @@
 #include "TDecompBK.h"
 #include "TMatrixDSymEigen.h"
 
-
-RobustHesse::RobustHesse(RooAbsReal &nll, unsigned verbose) : nll_(&nll), verbosity_(verbose) {
+RobustHesse::RobustHesse(RooAbsReal& nll, unsigned verbose) : nll_(&nll), verbosity_(verbose) {
   targetNllForStencils_ = 0.1;
   minNllForStencils_ = 0.095;
   maxNllForStencils_ = 0.105;
@@ -36,10 +35,10 @@ void RobustHesse::initialize() {
   // Get a list of the floating RooRealVars
   std::unique_ptr<RooArgSet> allpars(nll_->getParameters(RooArgSet()));
   RooFIter iter = allpars->fwdIterator();
-  RooAbsArg *item;
+  RooAbsArg* item;
   std::vector<Var> allVars;
   while ((item = iter.next())) {
-    RooRealVar *rrv = dynamic_cast<RooRealVar*>(item);
+    RooRealVar* rrv = dynamic_cast<RooRealVar*>(item);
     if (rrv && !rrv->isConstant()) {
       allVars.push_back(Var());
       allVars.back().v = rrv;
@@ -52,9 +51,7 @@ void RobustHesse::initialize() {
   ReplaceVars(allVars);
 }
 
-double RobustHesse::deltaNLL() {
-  return nll_->getVal() - nll0_;
-}
+double RobustHesse::deltaNLL() { return nll_->getVal() - nll0_; }
 
 double RobustHesse::deltaNLL(std::vector<unsigned> const& indices, std::vector<double> const& vals) {
   if (indices.size() != vals.size()) {
@@ -88,10 +85,9 @@ double RobustHesse::deltaNLL(std::vector<unsigned> const& indices, std::vector<d
   return result;
 }
 
-
 int RobustHesse::setParameterStencil(unsigned i) {
   double x = cVars_[i].nominal;
-  RooRealVar *rrv = cVars_[i].v;
+  RooRealVar* rrv = cVars_[i].v;
 
   double valLo = x - rrv->getError();
   double valHi = x + rrv->getError();
@@ -145,13 +141,16 @@ int RobustHesse::setParameterStencil(unsigned i) {
       valLo = bound_result.second;
       dNllLo = deltaNLL({i}, {valLo});
       if (dNllLo < minNllForStencils_) {
-        if (verbosity_ > 0) std::cout << ">> dNllLo is still too small after [findBound]\n";
+        if (verbosity_ > 0)
+          std::cout << ">> dNllLo is still too small after [findBound]\n";
         notViableLo = true;
       } else {
-        if (verbosity_ > 0) std::cout << ">> dNllLo is now " << dNllLo << "\n";
+        if (verbosity_ > 0)
+          std::cout << ">> dNllLo is now " << dNllLo << "\n";
       }
     }
-    if (notViableLo && verbosity_ > 0) std::cout << ">> dNllLo is not viable\n";
+    if (notViableLo && verbosity_ > 0)
+      std::cout << ">> dNllLo is not viable\n";
   }
 
   if (dNllHi < minNllForStencils_) {
@@ -162,29 +161,38 @@ int RobustHesse::setParameterStencil(unsigned i) {
       valHi = bound_result.second;
       dNllHi = deltaNLL({i}, {valHi});
       if (dNllHi < minNllForStencils_) {
-        if (verbosity_ > 0) std::cout << ">> dNllHi is still too small after [findBound]\n";
+        if (verbosity_ > 0)
+          std::cout << ">> dNllHi is still too small after [findBound]\n";
         notViableHi = true;
       } else {
-        if (verbosity_ > 0) std::cout << ">> dNllHi is now " << dNllHi << "\n";
+        if (verbosity_ > 0)
+          std::cout << ">> dNllHi is now " << dNllHi << "\n";
       }
     }
-    if (notViableHi && verbosity_ > 0) std::cout << ">> dNllHi is not viable\n";
+    if (notViableHi && verbosity_ > 0)
+      std::cout << ">> dNllHi is not viable\n";
   }
 
   if (dNllLo > maxNllForStencils_) {
-    valLo = improveWithBisect(i, x, valLo, targetNllForStencils_, minNllForStencils_,  maxNllForStencils_, 20);
+    valLo = improveWithBisect(i, x, valLo, targetNllForStencils_, minNllForStencils_, maxNllForStencils_, 20);
     dNllLo = deltaNLL({i}, {valLo});
   }
   if (dNllHi > maxNllForStencils_) {
-    valHi = improveWithBisect(i, x, valHi, targetNllForStencils_, minNllForStencils_,  maxNllForStencils_, 20);
+    valHi = improveWithBisect(i, x, valHi, targetNllForStencils_, minNllForStencils_, maxNllForStencils_, 20);
     dNllHi = deltaNLL({i}, {valHi});
   }
 
-
-
   // std::cout << "[setParameterStencil] " << rrv->GetName() << "\t" << x << "\t" << valLo << " (" << dNllLo << ")\t" << valHi << " (" << dNllHi << ")\n";
-  if (verbosity_ > 0) printf("%-80s %-10.3f | %-10.3f %-10.3f %-4.i | %-10.3f (%-10.3f) %-4.i \n",
-    rrv->GetName(), x, valLo, dNllLo, !notViableLo, valHi, dNllHi, !notViableHi);
+  if (verbosity_ > 0)
+    printf("%-80s %-10.3f | %-10.3f %-10.3f %-4.i | %-10.3f (%-10.3f) %-4.i \n",
+           rrv->GetName(),
+           x,
+           valLo,
+           dNllLo,
+           !notViableLo,
+           valHi,
+           dNllHi,
+           !notViableHi);
 
   cVars_[i].rescale = 1.0;
   if (!notViableLo && !notViableHi) {
@@ -194,9 +202,9 @@ int RobustHesse::setParameterStencil(unsigned i) {
     cVars_[i].stencil = {(valLo - x) / cVars_[i].rescale, 0., (valHi - x) / cVars_[i].rescale};
   } else if (notViableLo && !notViableHi) {
     if (doRescale_) {
-      cVars_[i ].rescale = (valHi - x);
+      cVars_[i].rescale = (valHi - x);
     }
-    cVars_[i].stencil = {0.,  (valHi - x) / (2. * cVars_[i].rescale) ,(valHi - x) / cVars_[i].rescale};
+    cVars_[i].stencil = {0., (valHi - x) / (2. * cVars_[i].rescale), (valHi - x) / cVars_[i].rescale};
   } else if (!notViableLo && notViableHi) {
     if (doRescale_) {
       cVars_[i].rescale = (x - valLo);
@@ -209,28 +217,41 @@ int RobustHesse::setParameterStencil(unsigned i) {
   return 0;
 }
 
-std::pair<int, double> RobustHesse::findBound(unsigned i, double x, double initialDelta, double initialMult, double scaleMult, double threshold, double hardBound, unsigned maxIters) {
-  if (verbosity_ > 0) std::cout << ">> [findBound] for parameter " << i << ", best-fit = " << x << ", initialDelta = " << initialDelta << "\n";
+std::pair<int, double> RobustHesse::findBound(unsigned i,
+                                              double x,
+                                              double initialDelta,
+                                              double initialMult,
+                                              double scaleMult,
+                                              double threshold,
+                                              double hardBound,
+                                              unsigned maxIters) {
+  if (verbosity_ > 0)
+    std::cout << ">> [findBound] for parameter " << i << ", best-fit = " << x << ", initialDelta = " << initialDelta
+              << "\n";
   double mult = initialMult;
   double trial = x + initialDelta;
   for (unsigned j = 0; j < maxIters; ++j) {
     bool trial_hit_bound = false;
     trial = x + initialDelta * mult;
     if (hardBound > x && trial > hardBound) {
-      if (verbosity_ > 0) std::cout << "Step would go past bound, reducing\n";
+      if (verbosity_ > 0)
+        std::cout << "Step would go past bound, reducing\n";
       trial = hardBound - 1E-7;
       trial_hit_bound = true;
     }
     if (hardBound < x && trial < hardBound) {
-      if (verbosity_ > 0) std::cout << "Step would go past bound, reducing\n";
+      if (verbosity_ > 0)
+        std::cout << "Step would go past bound, reducing\n";
       trial = hardBound + 1E-7;
       trial_hit_bound = true;
     }
 
     double dNll = deltaNLL({i}, {trial});
-    if (verbosity_ > 0) std::cout << ">> dNLL at " << trial << " (x" << mult << " of original delta) = " << dNll << "\n";
+    if (verbosity_ > 0)
+      std::cout << ">> dNLL at " << trial << " (x" << mult << " of original delta) = " << dNll << "\n";
     if ((mult > 1. && dNll > threshold) || (mult <= 1. && dNll < threshold)) {
-      if (verbosity_ > 0) std::cout << ">> This is past the threshold, returning\n";
+      if (verbosity_ > 0)
+        std::cout << ">> This is past the threshold, returning\n";
       return std::make_pair(0, trial);
     } else if (trial_hit_bound) {
       return std::make_pair(1, trial);
@@ -240,15 +261,17 @@ std::pair<int, double> RobustHesse::findBound(unsigned i, double x, double initi
   return std::make_pair(2, trial);
 }
 
-
-double RobustHesse::improveWithBisect(unsigned i, double x, double max, double target, double targetLo, double targetHi, unsigned maxIters) {
+double RobustHesse::improveWithBisect(
+    unsigned i, double x, double max, double target, double targetLo, double targetHi, unsigned maxIters) {
   double cmin = x;
   double cmax = max;
   double trial = max;
   for (unsigned j = 0; j < maxIters; ++j) {
     trial = (cmin + cmax) / 2.;
     double dNll = deltaNLL({i}, {trial});
-    if (verbosity_ > 0) std::cout << "[Bisect] " << j << " cmin = " << cmin << ", cmax = " << cmax << ", trial = " << trial << " dNll = " << dNll << "\n";
+    if (verbosity_ > 0)
+      std::cout << "[Bisect] " << j << " cmin = " << cmin << ", cmax = " << cmax << ", trial = " << trial
+                << " dNll = " << dNll << "\n";
     if (dNll > targetLo && dNll < targetHi) {
       break;
     }
@@ -281,11 +304,9 @@ std::vector<double> RobustHesse::getFdCoeffs(unsigned n, std::vector<double> con
   return result;
 }
 
-
 void RobustHesse::RemoveFromHessian(std::vector<unsigned> ids) {
-
   std::unique_ptr<TMatrixDSym> hessian2ptr(new TMatrixDSym(cVars_.size() - ids.size()));
-  TMatrixDSym & hessian2 = *(hessian2ptr.get());
+  TMatrixDSym& hessian2 = *(hessian2ptr.get());
 
   unsigned inew = 0;
   unsigned jnew = 0;
@@ -320,10 +341,7 @@ void RobustHesse::RemoveFromHessian(std::vector<unsigned> ids) {
   hessian_ = std::move(hessian2ptr);
 }
 
-
-
 int RobustHesse::hesse() {
-
   // Step 1: try and set parameter stencils at the target NLL values
   for (unsigned i = 0; i < cVars_.size(); ++i) {
     setParameterStencil(i);
@@ -343,11 +361,18 @@ int RobustHesse::hesse() {
     if (cVars_[i].stencil.size() == 3) {
       cVars_[i].d1coeffs = getFdCoeffs(1, cVars_[i].stencil);
       cVars_[i].d2coeffs = getFdCoeffs(2, cVars_[i].stencil);
-      if (verbosity_ > 0) printf("%-80s %-10.3f %-10.3f %-10.3f | %-10.3f %-10.3f %-10.3f | %-10.3f %-10.3f %-10.3f\n",
-        cVars_[i].v->GetName(), cVars_[i].stencil[0], cVars_[i].stencil[1], cVars_[i].stencil[2],
-        cVars_[i].d1coeffs[0], cVars_[i].d1coeffs[1], cVars_[i].d1coeffs[2],
-        cVars_[i].d2coeffs[0], cVars_[i].d2coeffs[1], cVars_[i].d2coeffs[2]
-        );
+      if (verbosity_ > 0)
+        printf("%-80s %-10.3f %-10.3f %-10.3f | %-10.3f %-10.3f %-10.3f | %-10.3f %-10.3f %-10.3f\n",
+               cVars_[i].v->GetName(),
+               cVars_[i].stencil[0],
+               cVars_[i].stencil[1],
+               cVars_[i].stencil[2],
+               cVars_[i].d1coeffs[0],
+               cVars_[i].d1coeffs[1],
+               cVars_[i].d1coeffs[2],
+               cVars_[i].d2coeffs[0],
+               cVars_[i].d2coeffs[1],
+               cVars_[i].d2coeffs[2]);
     }
   }
 
@@ -363,28 +388,36 @@ int RobustHesse::hesse() {
     for (unsigned i = 0; i < cVars_.size(); ++i) {
       for (unsigned j = i; j < cVars_.size(); ++j) {
         if (idx % 100 == 0) {
-          if (verbosity_ > 0) std::cout << " - Done " << idx << "/" << ntotal << " terms (" << nllEvals_ << " evals, of which " << nllEvalsCached_ << " cached)\n";
+          if (verbosity_ > 0)
+            std::cout << " - Done " << idx << "/" << ntotal << " terms (" << nllEvals_ << " evals, of which "
+                      << nllEvalsCached_ << " cached)\n";
         }
         double term = 0.;
         if (i == j) {
           for (unsigned k = 0; k < cVars_[i].stencil.size(); ++k) {
             if (cVars_[i].stencil[k] != 0.) {
-              term += deltaNLL({i}, {cVars_[i].nominal + cVars_[i].rescale * cVars_[i].stencil[k]}) * cVars_[i].d2coeffs[k];
+              term +=
+                  deltaNLL({i}, {cVars_[i].nominal + cVars_[i].rescale * cVars_[i].stencil[k]}) * cVars_[i].d2coeffs[k];
             }
           }
         } else {
           for (unsigned k = 0; k < cVars_[i].stencil.size(); ++k) {
             double c1 = cVars_[i].d1coeffs[k];
             double c2 = 0.;
-            for (unsigned l = 0; l < cVars_[j].stencil.size();++l) {
+            for (unsigned l = 0; l < cVars_[j].stencil.size(); ++l) {
               if (cVars_[i].stencil[k] == 0. && cVars_[j].stencil[l] == 0.) {
                 continue;
               } else if (cVars_[i].stencil[k] == 0.) {
-                c2 += deltaNLL({j}, {cVars_[j].nominal + cVars_[j].stencil[l] * cVars_[j].rescale}) * cVars_[j].d1coeffs[l];
+                c2 += deltaNLL({j}, {cVars_[j].nominal + cVars_[j].stencil[l] * cVars_[j].rescale}) *
+                      cVars_[j].d1coeffs[l];
               } else if (cVars_[j].stencil[l] == 0.) {
-                c2 += deltaNLL({i}, {cVars_[i].nominal + cVars_[i].stencil[k] * cVars_[i].rescale}) * cVars_[j].d1coeffs[l];
+                c2 += deltaNLL({i}, {cVars_[i].nominal + cVars_[i].stencil[k] * cVars_[i].rescale}) *
+                      cVars_[j].d1coeffs[l];
               } else {
-                c2 += deltaNLL({i, j}, {cVars_[i].nominal + cVars_[i].stencil[k] * cVars_[i].rescale, cVars_[j].nominal + cVars_[j].stencil[l] * cVars_[j].rescale}) * cVars_[j].d1coeffs[l];
+                c2 += deltaNLL({i, j},
+                               {cVars_[i].nominal + cVars_[i].stencil[k] * cVars_[i].rescale,
+                                cVars_[j].nominal + cVars_[j].stencil[l] * cVars_[j].rescale}) *
+                      cVars_[j].d1coeffs[l];
               }
             }
             term += (c2 * c1);
@@ -401,8 +434,6 @@ int RobustHesse::hesse() {
     gDirectory->WriteObject(hessian_.get(), "hessian");
   }
 
-
-
   bool print_only_negative = true;
   std::vector<std::string> removed_pars;
   for (unsigned ai = 0; ai < maxRemovalsFromHessian_; ++ai) {
@@ -416,7 +447,8 @@ int RobustHesse::hesse() {
     std::vector<unsigned> to_remove;
 
     for (int ei = 0; ei < eigenvals.GetNrows(); ++ei) {
-      if (eigenvals[ei] < 0.) have_negative_eigenvalues = true;
+      if (eigenvals[ei] < 0.)
+        have_negative_eigenvalues = true;
 
       std::vector<std::pair<unsigned, double>> eigenvec;
       for (int ej = 0; ej < eigenvecs.GetNrows(); ++ej) {
@@ -424,9 +456,11 @@ int RobustHesse::hesse() {
       }
       if ((!print_only_negative) || (print_only_negative && eigenvals[ei] < 0.)) {
         std::cout << "Eigenvalue " << ei << " : " << eigenvals[ei] << "\n";
-        std::sort(eigenvec.begin(), eigenvec.end(), [](std::pair<unsigned, double> const& p1, std::pair<unsigned, double> const& p2) {
-          return std::fabs(p1.second) > std::fabs(p2.second);
-        });
+        std::sort(eigenvec.begin(),
+                  eigenvec.end(),
+                  [](std::pair<unsigned, double> const& p1, std::pair<unsigned, double> const& p2) {
+                    return std::fabs(p1.second) > std::fabs(p2.second);
+                  });
         unsigned n_show = 5;
         for (unsigned es = 0; es < TMath::Min(n_show, unsigned(eigenvec.size())); ++es) {
           std::cout << " - " << eigenvec[es].second << "\t" << cVars_[eigenvec[es].first].v->GetName() << "\n";
@@ -435,7 +469,7 @@ int RobustHesse::hesse() {
         // Assume sorted by largest to smallest eigenvalues,
         // meaning most negative is this one
         if (ei == (eigenvals.GetNrows() - 1)) {
-          for (unsigned ej = 0; ej < eigenvec.size(); ++ ej) {
+          for (unsigned ej = 0; ej < eigenvec.size(); ++ej) {
             // Check if we are allowed to remove this parameter
             std::string parname = cVars_[eigenvec[ej].first].v->GetName();
             // If it is not protected OR if it is the last parameter then we can remove it
@@ -463,7 +497,8 @@ int RobustHesse::hesse() {
   std::cout << ">> Matrix inverted\n";
 
   if (invalidStencilVars_.size() > 0) {
-    std::cout << ">> Note: the following parameters were dropped as their ranges are either too narrow or the parameter has no effect on the NLL:\n";
+    std::cout << ">> Note: the following parameters were dropped as their ranges are either too narrow or the "
+                 "parameter has no effect on the NLL:\n";
     for (auto const& par : invalidStencilVars_) {
       std::cout << "     - " << par.v->GetName() << "\n";
     }
@@ -480,11 +515,10 @@ int RobustHesse::hesse() {
   // TMatrixDSym covariance = decomp.Invert();
   // covariance.Invert();
 
-
   if (verbosity_ > 0) {
     for (unsigned i = 0; i < cVars_.size(); ++i) {
       std::cout << cVars_[i].v->GetName() << "\t" << (std::sqrt((*covariance_)[i][i]) * cVars_[i].rescale) << "\n";
-      for (unsigned j = i+1; j < cVars_.size(); ++j) {
+      for (unsigned j = i + 1; j < cVars_.size(); ++j) {
         double corr = (*covariance_)[i][j] / (std::sqrt((*covariance_)[i][i]) * std::sqrt((*covariance_)[j][j]));
         if (std::abs(corr) > 0.8) {
           std::cout << " - correlation with " << cVars_[j].v->GetName() << " = " << corr << "\n";
@@ -497,28 +531,24 @@ int RobustHesse::hesse() {
 
 void RobustHesse::WriteOutputFile(std::string const& outputFileName) const {
   TFile fout(outputFileName.c_str(), "RECREATE");
-  TH2F h_cov("covariance", "covariance", cVars_.size(), 0, cVars_.size(), cVars_.size(), 0,
-             cVars_.size());
-  TH2F h_cor("correlation", "correlation", cVars_.size(), 0, cVars_.size(), cVars_.size(), 0,
-             cVars_.size());
+  TH2F h_cov("covariance", "covariance", cVars_.size(), 0, cVars_.size(), cVars_.size(), 0, cVars_.size());
+  TH2F h_cor("correlation", "correlation", cVars_.size(), 0, cVars_.size(), cVars_.size(), 0, cVars_.size());
   RooArgList arglist("floatParsFinal");
   for (unsigned i = 0; i < cVars_.size(); ++i) {
     arglist.addClone(*cVars_[i].v);
-    RooRealVar *rrv = dynamic_cast<RooRealVar*>(arglist.at(i));
+    RooRealVar* rrv = dynamic_cast<RooRealVar*>(arglist.at(i));
     rrv->setError(std::sqrt((*covariance_)[i][i]) * cVars_[i].rescale);
     h_cov.GetXaxis()->SetBinLabel(i + 1, cVars_[i].v->GetName());
     h_cov.GetYaxis()->SetBinLabel(i + 1, cVars_[i].v->GetName());
     h_cor.GetXaxis()->SetBinLabel(i + 1, cVars_[i].v->GetName());
     h_cor.GetYaxis()->SetBinLabel(i + 1, cVars_[i].v->GetName());
     for (unsigned j = i; j < cVars_.size(); ++j) {
-      h_cov.SetBinContent(i + 1, j + 1,
-                          (*covariance_)[i][j] * cVars_[i].rescale * cVars_[j].rescale);
-      h_cov.SetBinContent(j + 1, i + 1,
-                          (*covariance_)[i][j] * cVars_[i].rescale * cVars_[j].rescale);
-      h_cor.SetBinContent(i + 1, j + 1,
-                          (*covariance_)[i][j] / (std::sqrt((*covariance_)[i][i]) * std::sqrt((*covariance_)[j][j])));
-      h_cor.SetBinContent(j + 1, i + 1,
-                          (*covariance_)[i][j] / (std::sqrt((*covariance_)[i][i]) * std::sqrt((*covariance_)[j][j])));
+      h_cov.SetBinContent(i + 1, j + 1, (*covariance_)[i][j] * cVars_[i].rescale * cVars_[j].rescale);
+      h_cov.SetBinContent(j + 1, i + 1, (*covariance_)[i][j] * cVars_[i].rescale * cVars_[j].rescale);
+      h_cor.SetBinContent(
+          i + 1, j + 1, (*covariance_)[i][j] / (std::sqrt((*covariance_)[i][i]) * std::sqrt((*covariance_)[j][j])));
+      h_cor.SetBinContent(
+          j + 1, i + 1, (*covariance_)[i][j] / (std::sqrt((*covariance_)[i][i]) * std::sqrt((*covariance_)[j][j])));
     }
   }
   gDirectory->WriteObject(hessian_.get(), "hessian");
@@ -551,34 +581,31 @@ RooFitResult* RobustHesse::GetRooFitResult(RooFitResult const* current) const {
     }
   }
   for (unsigned i = 0; i < removedFromHessianVars_.size(); ++i) {
-    RooRealVar newVar(
-        removedFromHessianVars_[i].v->GetName(), "", removedFromHessianVars_[i].v->getVal(),
-        removedFromHessianVars_[i].v->getMin(), removedFromHessianVars_[i].v->getMax());
+    RooRealVar newVar(removedFromHessianVars_[i].v->GetName(),
+                      "",
+                      removedFromHessianVars_[i].v->getVal(),
+                      removedFromHessianVars_[i].v->getMin(),
+                      removedFromHessianVars_[i].v->getMax());
     arglist.addClone(newVar);
     RooRealVar* rrv = dynamic_cast<RooRealVar*>(arglist.at(cVars_.size() + i));
     rrv->setError(0.);
     // Set some nominally small value
     (*scaled_cov)[cVars_.size() + i][cVars_.size() + i] = (1E-100);
-
   }
   rfr->setFinalParList(arglist);
   rfr->setCovarianceMatrix(*scaled_cov);
   return rfr;
 }
 
-void RobustHesse::SaveHessianToFile(std::string const& filename) {
-  saveFile_ = filename;
-}
-void RobustHesse::LoadHessianFromFile(std::string const& filename) {
-  loadFile_ = filename;
-}
+void RobustHesse::SaveHessianToFile(std::string const& filename) { saveFile_ = filename; }
+void RobustHesse::LoadHessianFromFile(std::string const& filename) { loadFile_ = filename; }
 
 void RobustHesse::ProtectArgSet(RooArgSet const& set) {
   std::vector<std::string> names;
   RooFIter iter = set.fwdIterator();
-  RooAbsArg *item;
+  RooAbsArg* item;
   while ((item = iter.next())) {
-    RooRealVar *rrv = dynamic_cast<RooRealVar*>(item);
+    RooRealVar* rrv = dynamic_cast<RooRealVar*>(item);
     if (rrv && !rrv->isConstant()) {
       names.push_back(rrv->GetName());
     }

@@ -13,62 +13,53 @@
 #include <string>
 #include <mutex>
 
-class Logger
-{
+class Logger {
 public:
-	static const std::string kLogLevelDebug;
-	static const std::string kLogLevelInfo;
-	static const std::string kLogLevelError;
+  static const std::string kLogLevelDebug;
+  static const std::string kLogLevelInfo;
+  static const std::string kLogLevelError;
 
-	static int nLogLevelInfo;
-	static int nLogLevelDebug;
-	static int nLogLevelError;
+  static int nLogLevelInfo;
+  static int nLogLevelDebug;
+  static int nLogLevelError;
 
-	// Returns a reference to the singleton Logger object
-	static Logger& instance();
+  // Returns a reference to the singleton Logger object
+  static Logger& instance();
 
-	// Logs a single message at the given log level
-	void log(const std::string& inMessage, 
-		const std::string& inLogLevel,
-		const std::string& inFunction);
+  // Logs a single message at the given log level
+  void log(const std::string& inMessage, const std::string& inLogLevel, const std::string& inFunction);
 
-	// Logs a vector of messages at the given log level
-	void log(const std::vector<std::string>& inMessages, 
-		const std::string& inLogLevel,
-		const std::string& inFunction);
-	
-	void printLog();
+  // Logs a vector of messages at the given log level
+  void log(const std::vector<std::string>& inMessages, const std::string& inLogLevel, const std::string& inFunction);
+
+  void printLog();
 
 protected:
-	// Static variable for the one-and-only instance  
-	static Logger* pInstance;
+  // Static variable for the one-and-only instance
+  static Logger* pInstance;
 
-	// Constant for the filename
-	static const char* const kLogFileName;
+  // Constant for the filename
+  static const char* const kLogFileName;
 
-	// Data member for the output stream
-	std::ofstream mOutputStream;
+  // Data member for the output stream
+  std::ofstream mOutputStream;
 
-	// Embedded class to make sure the single Logger
-	// instance gets deleted on program shutdown.
-	friend class Cleanup;
-	class Cleanup
-	{
-	public:
-		~Cleanup();
-	};
+  // Embedded class to make sure the single Logger
+  // instance gets deleted on program shutdown.
+  friend class Cleanup;
+  class Cleanup {
+  public:
+    ~Cleanup();
+  };
 
-	// Logs message. The thread should own a lock on sMutex
-	// before calling this function.
-	void logHelper(const std::string& inMessage, 
-		const std::string& inLogLevel,
-		const std::string& inFunction);
-	
+  // Logs message. The thread should own a lock on sMutex
+  // before calling this function.
+  void logHelper(const std::string& inMessage, const std::string& inLogLevel, const std::string& inFunction);
 
 private:
-	Logger();
-	virtual ~Logger();
-	Logger(const Logger&);
-	Logger& operator=(const Logger&);
-	static std::mutex sMutex;
+  Logger();
+  virtual ~Logger();
+  Logger(const Logger&);
+  Logger& operator=(const Logger&);
+  static std::mutex sMutex;
 };

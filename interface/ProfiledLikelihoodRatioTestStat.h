@@ -8,29 +8,33 @@
 #include <RooStats/TestStatistic.h>
 
 class ProfiledLikelihoodRatioTestStat : public RooStats::TestStatistic {
-    public:
-        ProfiledLikelihoodRatioTestStat(RooAbsPdf &pdfNull, RooAbsPdf &pdfAlt, const RooArgSet *nuisances, const RooArgSet & paramsNull = RooArgSet(), const RooArgSet & paramsAlt = RooArgSet()) : 
-            pdfNull_(&pdfNull), pdfAlt_(&pdfAlt),
-            paramsNull_(pdfNull_->getVariables()), 
-            paramsAlt_(pdfAlt_->getVariables()) 
-        {
-            snapNull_.addClone(paramsNull);
-            snapAlt_.addClone(paramsAlt);
-            if (nuisances) nuisances_.addClone(*nuisances);
-        }
+public:
+  ProfiledLikelihoodRatioTestStat(RooAbsPdf &pdfNull,
+                                  RooAbsPdf &pdfAlt,
+                                  const RooArgSet *nuisances,
+                                  const RooArgSet &paramsNull = RooArgSet(),
+                                  const RooArgSet &paramsAlt = RooArgSet())
+      : pdfNull_(&pdfNull),
+        pdfAlt_(&pdfAlt),
+        paramsNull_(pdfNull_->getVariables()),
+        paramsAlt_(pdfAlt_->getVariables()) {
+    snapNull_.addClone(paramsNull);
+    snapAlt_.addClone(paramsAlt);
+    if (nuisances)
+      nuisances_.addClone(*nuisances);
+  }
 
-        virtual Double_t Evaluate(RooAbsData& data, RooArgSet& nullPOI) ;
+  virtual Double_t Evaluate(RooAbsData &data, RooArgSet &nullPOI);
 
-        virtual const TString GetVarName() const {
-            return TString::Format("-log(%s/%s)", pdfNull_->GetName(), pdfAlt_->GetName()); 
-        }
+  virtual const TString GetVarName() const {
+    return TString::Format("-log(%s/%s)", pdfNull_->GetName(), pdfAlt_->GetName());
+  }
 
-    private:
-        RooAbsPdf *pdfNull_, *pdfAlt_;
-        RooArgSet snapNull_, snapAlt_; 
-        RooArgSet nuisances_; 
-        std::unique_ptr<RooArgSet> paramsNull_, paramsAlt_;
-}; // TestSimpleStatistics
-
+private:
+  RooAbsPdf *pdfNull_, *pdfAlt_;
+  RooArgSet snapNull_, snapAlt_;
+  RooArgSet nuisances_;
+  std::unique_ptr<RooArgSet> paramsNull_, paramsAlt_;
+};  // TestSimpleStatistics
 
 #endif

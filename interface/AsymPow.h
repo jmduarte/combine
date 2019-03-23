@@ -4,7 +4,6 @@
 #include <RooAbsReal.h>
 #include <RooRealProxy.h>
 
-
 //_________________________________________________
 /*
 BEGIN_HTML
@@ -20,27 +19,26 @@ END_HTML
 */
 //
 class AsymPow : public RooAbsReal {
+public:
+  AsymPow() {}
+  AsymPow(const char *name, const char *title, RooAbsReal &kappaLow, RooAbsReal &kappaHigh, RooAbsReal &theta);
+  AsymPow(const AsymPow &other, const char *newname = 0);
 
-   public:
-      AsymPow() {}
-      AsymPow(const char *name, const char *title, RooAbsReal &kappaLow, RooAbsReal &kappaHigh, RooAbsReal &theta) ;
-      AsymPow(const AsymPow &other, const char *newname=0) ;
+  ~AsymPow();
 
-      ~AsymPow() ;
+  TObject *clone(const char *newname) const;
 
-      TObject * clone(const char *newname) const ;
+protected:
+  Double_t evaluate() const;
 
-    protected:
-        Double_t evaluate() const;
+private:
+  RooRealProxy kappaLow_, kappaHigh_;
+  RooRealProxy theta_;
 
-    private:
-        RooRealProxy kappaLow_, kappaHigh_;
-        RooRealProxy theta_;
+  // get the kappa for the appropriate x
+  Double_t logKappaForX(Double_t x) const;
 
-        // get the kappa for the appropriate x
-        Double_t logKappaForX(Double_t x) const ;
-
-  ClassDef(AsymPow,1) // Asymmetric power	
+  ClassDef(AsymPow, 1)  // Asymmetric power
 };
 
 #endif

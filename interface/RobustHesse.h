@@ -14,8 +14,8 @@
 #include "TMatrixDSymEigen.h"
 
 class RooFitResultBuilder : public RooFitResult {
- public:
-  RooFitResultBuilder() : RooFitResult(){
+public:
+  RooFitResultBuilder() : RooFitResult() {
     this->RooFitResult::setInitParList(RooArgList());
     this->RooFitResult::setConstParList(RooArgList());
   };
@@ -24,14 +24,14 @@ class RooFitResultBuilder : public RooFitResult {
 
   void setFinalParList(RooArgList const& pars) { this->RooFitResult::setFinalParList(pars); }
 
-  void setCovarianceMatrix(TMatrixDSym & matrix) { this->RooFitResult::setCovarianceMatrix(matrix);}
+  void setCovarianceMatrix(TMatrixDSym& matrix) { this->RooFitResult::setCovarianceMatrix(matrix); }
 
   RooFitResult Get() { return *this; }
 };
 
 class RobustHesse {
- public:
-  RobustHesse(RooAbsReal &nll, unsigned verbose = 0);
+public:
+  RobustHesse(RooAbsReal& nll, unsigned verbose = 0);
 
   void SaveHessianToFile(std::string const& filename);
   void LoadHessianFromFile(std::string const& filename);
@@ -42,9 +42,9 @@ class RobustHesse {
   int hesse();
 
   void WriteOutputFile(std::string const& outputFileName) const;
-  RooFitResult * GetRooFitResult(RooFitResult const* current) const;
+  RooFitResult* GetRooFitResult(RooFitResult const* current) const;
 
- private:
+private:
   int factorial(int n) {
     if (n > 1)
       return n * factorial(n - 1);
@@ -53,7 +53,7 @@ class RobustHesse {
   }
 
   struct Var {
-    RooRealVar * v;
+    RooRealVar* v;
     double nominal;
     std::vector<double> stencil;
     std::vector<double> d1coeffs;
@@ -68,10 +68,17 @@ class RobustHesse {
 
   int setParameterStencil(unsigned i);
 
+  std::pair<int, double> findBound(unsigned i,
+                                   double x,
+                                   double initialDelta,
+                                   double initialMult,
+                                   double scaleMult,
+                                   double threshold,
+                                   double hardBound,
+                                   unsigned maxIters);
 
-  std::pair<int, double> findBound(unsigned i, double x, double initialDelta, double initialMult, double scaleMult, double threshold, double hardBound, unsigned maxIters);
-
-  double improveWithBisect(unsigned i, double x, double max, double target, double targetLo, double targetHi, unsigned maxIters);
+  double improveWithBisect(
+      unsigned i, double x, double max, double target, double targetLo, double targetHi, unsigned maxIters);
 
   std::vector<double> getFdCoeffs(unsigned n, std::vector<double> const& stencil);
 
@@ -84,9 +91,7 @@ class RobustHesse {
     nllEvalsCached_ = 0;
   }
 
-
-
-  RooAbsReal * nll_;
+  RooAbsReal* nll_;
   double nll0_;
 
   std::vector<Var> cVars_;

@@ -23,32 +23,33 @@
 using namespace RooFit;
 class VBFHZZ4L_RooSpinZeroPdf : public RooAbsPdf {
 protected:
-
-  RooRealProxy kd ;
-  RooRealProxy kdint ;
-  RooRealProxy ksmd ;
+  RooRealProxy kd;
+  RooRealProxy kdint;
+  RooRealProxy ksmd;
   RooConstVar sigmaioversigma1_HZZ4L;
   RooRealProxy a1, ai;
-  RooListProxy _coefList ;  //  List of funcficients
-//  TIterator* _coefIter ;    //! Iterator over funcficient lis
-  Double_t evaluate() const ;
-public:
-  VBFHZZ4L_RooSpinZeroPdf() {} ;
-  VBFHZZ4L_RooSpinZeroPdf(const char *name, const char *title,
-                       RooAbsReal& _kd,
-                       RooAbsReal& _kdint,
-                       RooAbsReal& _ksmd,
-                       RooAbsReal& _a1,
-                       RooAbsReal& _ai,
-                       const RooArgList& inCoefList);
+  RooListProxy _coefList;  //  List of funcficients
+                           //  TIterator* _coefIter ;    //! Iterator over funcficient lis
+  Double_t evaluate() const;
 
-  VBFHZZ4L_RooSpinZeroPdf(const VBFHZZ4L_RooSpinZeroPdf& other, const char* name=0) ;
-  virtual TObject* clone(const char* newname) const { return new VBFHZZ4L_RooSpinZeroPdf(*this,newname); }
+public:
+  VBFHZZ4L_RooSpinZeroPdf(){};
+  VBFHZZ4L_RooSpinZeroPdf(const char* name,
+                          const char* title,
+                          RooAbsReal& _kd,
+                          RooAbsReal& _kdint,
+                          RooAbsReal& _ksmd,
+                          RooAbsReal& _a1,
+                          RooAbsReal& _ai,
+                          const RooArgList& inCoefList);
+
+  VBFHZZ4L_RooSpinZeroPdf(const VBFHZZ4L_RooSpinZeroPdf& other, const char* name = 0);
+  virtual TObject* clone(const char* newname) const { return new VBFHZZ4L_RooSpinZeroPdf(*this, newname); }
   inline virtual ~VBFHZZ4L_RooSpinZeroPdf() {}
 
-  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const ;
-  Double_t analyticalIntegral(Int_t code, const char* rangeName=0) const ;
-  const RooArgList& coefList() const { return _coefList ; }
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
+  Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
+  const RooArgList& coefList() const { return _coefList; }
 
   double Integral_T1;
   double Integral_T2;
@@ -57,9 +58,7 @@ public:
   double Integral_T5;
 
 private:
-
-        ClassDef(VBFHZZ4L_RooSpinZeroPdf,1) // Your description goes here...
-
+  ClassDef(VBFHZZ4L_RooSpinZeroPdf, 1)  // Your description goes here...
 };
 
 #endif

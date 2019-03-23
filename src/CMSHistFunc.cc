@@ -27,8 +27,7 @@ CMSHistFunc::CMSHistFunc() {
   vsmooth_par_ = 1.0;
 }
 
-CMSHistFunc::CMSHistFunc(const char* name, const char* title, RooRealVar& x,
-                         TH1 const& hist, bool divide_by_width)
+CMSHistFunc::CMSHistFunc(const char* name, const char* title, RooRealVar& x, TH1 const& hist, bool divide_by_width)
     : RooAbsReal(name, title),
       x_("x", "", this, x),
       vmorphs_("vmorphs", "", this),
@@ -58,8 +57,7 @@ CMSHistFunc::CMSHistFunc(const char* name, const char* title, RooRealVar& x,
     }
   }
 
-  if (x.getBins() < int(cache_.size()) &&
-      std::fabs(x.getMin() - cache_.GetEdge(0)) < 1E-7 &&
+  if (x.getBins() < int(cache_.size()) && std::fabs(x.getMin() - cache_.GetEdge(0)) < 1E-7 &&
       std::fabs(x.getMax() - cache_.GetEdge(cache_.size())) < 1E-7) {
     std::cout << "[" << this->GetName()
               << "]: histogram binning is finer than observable binning, auto "
@@ -69,7 +67,7 @@ CMSHistFunc::CMSHistFunc(const char* name, const char* title, RooRealVar& x,
     tmp.SetDirectory(0);
     rebin_cache_ = FastHisto(tmp);
     for (unsigned i = 0; i < cache_.size(); ++i) {
-      unsigned target_bin = rebin_cache_.FindBin((cache_.GetEdge(i) + cache_.GetEdge(i+1)) / 2.);
+      unsigned target_bin = rebin_cache_.FindBin((cache_.GetEdge(i) + cache_.GetEdge(i + 1)) / 2.);
       // std::cout << "Rebin: " << i << " [" << cache_.GetEdge(i) << ","
       //           << cache_.GetEdge(i + 1) << "] --> " << target_bin << " ["
       //           << rebin_cache_.GetEdge(target_bin) << ","
@@ -97,12 +95,8 @@ CMSHistFunc::CMSHistFunc(CMSHistFunc const& other, const char* name)
       vmorphs_("vmorphs", this, other.vmorphs_),
       hmorphs_("hmorphs", this, other.hmorphs_),
       hpoints_(other.hpoints_),
-      vmorph_sentry_(name ? TString(name) + "_vmorph_sentry"
-                          : TString(other.vmorph_sentry_.GetName()),
-                     ""),
-      hmorph_sentry_(name ? TString(name) + "_hmorph_sentry"
-                          : TString(other.hmorph_sentry_.GetName()),
-                     ""),
+      vmorph_sentry_(name ? TString(name) + "_vmorph_sentry" : TString(other.vmorph_sentry_.GetName()), ""),
+      hmorph_sentry_(name ? TString(name) + "_hmorph_sentry" : TString(other.hmorph_sentry_.GetName()), ""),
       cache_(other.cache_),
       rebin_cache_(other.rebin_cache_),
       binerrors_(other.binerrors_),
@@ -120,7 +114,8 @@ CMSHistFunc::CMSHistFunc(CMSHistFunc const& other, const char* name)
 }
 
 void CMSHistFunc::initialize() const {
-  if (initialized_) return;
+  if (initialized_)
+    return;
   vmorph_sentry_.SetName(TString(this->GetName()) + "_vmorph_sentry");
   hmorph_sentry_.SetName(TString(this->GetName()) + "_hmorph_sentry");
   hmorph_sentry_.addVars(hmorphs_);
@@ -147,7 +142,8 @@ void CMSHistFunc::setGlobalCache() const {
     for (unsigned i = 0; i < hpoints_[0].size(); ++i) {
       dm[i] = hpoints_[0][i] - hpoints_[0][0];
       M(i, 0) = 1.;
-      if (i > 0) M(0, i) = 0.;
+      if (i > 0)
+        M(0, i) = 0.;
     }
     for (unsigned i = 1; i < hpoints_[0].size(); ++i) {
       for (unsigned j = 1; j < hpoints_[0].size(); ++j) {
@@ -175,7 +171,6 @@ void CMSHistFunc::setActiveBins(unsigned bins) {
   setGlobalCache();
 }
 
-
 void CMSHistFunc::resetCaches() {
   mcache_.clear();
   hmorph_sentry_.setValueDirty();
@@ -190,7 +185,7 @@ std::unique_ptr<RooArgSet> CMSHistFunc::getSentryArgs() const {
   return vargs;
 }
 
-void CMSHistFunc::addHorizontalMorph(RooAbsReal & hvar, TVectorD hpoints) {
+void CMSHistFunc::addHorizontalMorph(RooAbsReal& hvar, TVectorD hpoints) {
   hmorphs_.add(hvar);
   std::vector<double> points(hpoints.GetNrows());
   for (int i = 0; i < hpoints.GetNrows(); ++i) {
@@ -224,12 +219,10 @@ void CMSHistFunc::prepareStorage() {
   storage_[getIdx(0, 0, 0, 0)] = cache_;
 }
 
-void CMSHistFunc::setShape(unsigned hindex, unsigned hpoint, unsigned vindex,
-                           unsigned vpoint, TH1 const& hist) {
+void CMSHistFunc::setShape(unsigned hindex, unsigned hpoint, unsigned vindex, unsigned vpoint, TH1 const& hist) {
   unsigned idx = getIdx(hindex, hpoint, vindex, vpoint);
 #if HFVERBOSE > 0
-  std::cout << "hindex: " << hindex << " hpoint: " << hpoint
-            << " vindex: " << vindex << " vpoint: " << vpoint
+  std::cout << "hindex: " << hindex << " hpoint: " << hpoint << " vindex: " << vindex << " vpoint: " << vpoint
             << " mapped to idx: " << idx << "\n";
 #endif
   storage_.at(idx) = FastHisto(hist);
@@ -244,7 +237,8 @@ void CMSHistFunc::updateCache() const {
   initialize();
 
   // Quick escape if cache is up-to-date
-  if (hmorph_sentry_.good() && vmorph_sentry_.good()) return;
+  if (hmorph_sentry_.good() && vmorph_sentry_.good())
+    return;
 
 #if HFVERBOSE > 0
   std::cout << "Morphing strategy 0\n";
@@ -294,11 +288,11 @@ void CMSHistFunc::updateCache() const {
   }
 
   if (step1 || step2) {
-    if (mcache_.size() == 0) mcache_.resize(storage_.size());
+    if (mcache_.size() == 0)
+      mcache_.resize(storage_.size());
   }
 
   if (morph_strategy_ == 0) {
-
     if (step1 && !global_.single_point) {
 #if HFVERBOSE > 0
       std::cout << "Checking step 1\n";
@@ -334,25 +328,23 @@ void CMSHistFunc::updateCache() const {
 
             for (unsigned hi = 0; hi < hpoints_[0].size(); ++hi) {
               // We can skip all this if the weight is zero
-              if (global_.c_sum[hi] == 0.) continue;
+              if (global_.c_sum[hi] == 0.)
+                continue;
 
               global_.slopes[hi] = global_.sigmas[hi] / C;
               global_.offsets[hi] = global_.means[hi] - (M * global_.slopes[hi]);
 
 #if HFVERBOSE > 0
-                std::cout << hi << "\t" << hpoints_[0][hi]
-                          << "\t mean = " << global_.means[hi]
-                          << "\t sigma = " << global_.sigmas[hi]
-                          << "\t slope = " << global_.slopes[hi]
-                          << "\t offset = " << global_.offsets[hi] << "\n";
+              std::cout << hi << "\t" << hpoints_[0][hi] << "\t mean = " << global_.means[hi]
+                        << "\t sigma = " << global_.sigmas[hi] << "\t slope = " << global_.slopes[hi]
+                        << "\t offset = " << global_.offsets[hi] << "\n";
 #endif
 
               unsigned idx = getIdx(0, hi, v, vi);
 
-
               // TODO: Scope for optimisation here if we know binning is regular?
               double xl = cache_.GetEdge(0) * global_.slopes[hi] + global_.offsets[hi];
-              int il =  cache_.FindBin(xl);
+              int il = cache_.FindBin(xl);
               double xh = 0.;
               int ih = 0;
               int n = storage_[idx].size();
@@ -362,23 +354,20 @@ void CMSHistFunc::updateCache() const {
 #endif
 
               for (unsigned ib = 0; ib < storage_[idx].size(); ++ib) {
-
                 double sum = 0.;
 
-                xh = cache_.GetEdge(ib+1) * global_.slopes[hi] + global_.offsets[hi];
-                ih =  cache_.FindBin(xh);
+                xh = cache_.GetEdge(ib + 1) * global_.slopes[hi] + global_.offsets[hi];
+                ih = cache_.FindBin(xh);
 
 #if HFVERBOSE > 1
-                std::cout << "Calculating bin " << ib << "\txl = " << xl
-                          << "\til = " << il << "\txh = " << xh
+                std::cout << "Calculating bin " << ib << "\txl = " << xl << "\til = " << il << "\txh = " << xh
                           << "\tih = " << ih << "\n";
 #endif
 
                 if (il != -1 && il != n && il != ih) {
                   sum += (cache_.GetEdge(il + 1) - xl) * storage_[idx][il];
 #if HFVERBOSE > 1
-                  std::cout << "Adding from lower edge: to boundary = "
-                            << cache_.GetEdge(il + 1)
+                  std::cout << "Adding from lower edge: to boundary = " << cache_.GetEdge(il + 1)
                             << "\tcontent = " << storage_[idx][il] << "\n";
 #endif
                 }
@@ -386,26 +375,22 @@ void CMSHistFunc::updateCache() const {
                 for (int step = il + 1; step < ih; ++step) {
                   sum += cache_.GetWidth(step) * storage_[idx][step];
 #if HFVERBOSE > 1
-                  std::cout << "Adding whole bin: bin = " << step
-                            << "\tcontent = " << storage_[idx][step] << "\n";
+                  std::cout << "Adding whole bin: bin = " << step << "\tcontent = " << storage_[idx][step] << "\n";
 #endif
                 }
                 // Add the fraction of the last bin
                 if (ih != -1 && ih != n && il != ih) {
                   sum += (xh - cache_.GetEdge(ih)) * storage_[idx][ih];
 #if HFVERBOSE > 1
-                  std::cout
-                      << "Adding to upper edge: from boundary = "
-                      << cache_.GetEdge(ih)
-                      << "\tcontent = " << storage_[idx][ih] << "\n";
+                  std::cout << "Adding to upper edge: from boundary = " << cache_.GetEdge(ih)
+                            << "\tcontent = " << storage_[idx][ih] << "\n";
 #endif
                 }
 
                 if (il == ih && il != -1 && il != n) {
                   sum += (xh - xl) * storage_[idx][il];
 #if HFVERBOSE > 1
-                  std::cout << "Adding partial bin: bin = " << il
-                            << "\tcontent = " << storage_[idx][il] << "\n";
+                  std::cout << "Adding partial bin: bin = " << il << "\tcontent = " << storage_[idx][il] << "\n";
 #endif
                 }
 
@@ -529,16 +514,15 @@ void CMSHistFunc::updateCache() const {
 #endif
 
       for (int v = 0; v < vmorphs_.getSize(); ++v) {
-        unsigned vidx = getIdx(0, global_.p1, v+1, 0);
+        unsigned vidx = getIdx(0, global_.p1, v + 1, 0);
 
         double x = ((RooRealVar&)vmorphs_[v]).getVal();
 
-
-        mcache_[idx].step2.Meld(mcache_[vidx].diff, mcache_[vidx].sum, 0.5*x, smoothStepFunc(x));
+        mcache_[idx].step2.Meld(mcache_[vidx].diff, mcache_[vidx].sum, 0.5 * x, smoothStepFunc(x));
 
 #if HFVERBOSE > 1
         std::cout << "Morphing for " << vmorphs_[v].GetName() << " with value: " << x << "\n";
-        std::cout << "Template after vmorph " << v+1 << ": " << mcache_[idx].step2.Integral() << "\n";
+        std::cout << "Template after vmorph " << v + 1 << ": " << mcache_[idx].step2.Integral() << "\n";
         mcache_[idx].step2.Dump();
 #endif
       }
@@ -549,17 +533,17 @@ void CMSHistFunc::updateCache() const {
       cache_.CopyValues(mcache_[idx].step2);
 
 #if HFVERBOSE > 0
-        std::cout << "Final cache: " << cache_.Integral() << "\n";
-        cache_.Dump();
+      std::cout << "Final cache: " << cache_.Integral() << "\n";
+      cache_.Dump();
 #endif
 
       vmorph_sentry_.reset();
     }
   }
 
-  if (rebin_ && (step1 || step2)) applyRebin();
+  if (rebin_ && (step1 || step2))
+    applyRebin();
 }
-
 
 void CMSHistFunc::applyRebin() const {
   rebin_cache_.Clear();
@@ -571,21 +555,19 @@ void CMSHistFunc::applyRebin() const {
   }
 }
 
-
 Double_t CMSHistFunc::evaluate() const {
   updateCache();
   return cache().GetAt(x_);
 }
 
-unsigned CMSHistFunc::getIdx(unsigned hindex, unsigned hpoint, unsigned vindex,
-                             unsigned vpoint) const {
+unsigned CMSHistFunc::getIdx(unsigned hindex, unsigned hpoint, unsigned vindex, unsigned vpoint) const {
   unsigned n_vpoints = vmorphs_.getSize();
-  return hindex + hpoint * (1 + n_vpoints * 2) +
-         (vindex * 2 - (vindex > 0 ? 1 : 0)) + vpoint;
+  return hindex + hpoint * (1 + n_vpoints * 2) + (vindex * 2 - (vindex > 0 ? 1 : 0)) + vpoint;
 }
 
 inline double CMSHistFunc::smoothStepFunc(double x) const {
-  if (fabs(x) >= vsmooth_par_) return x > 0 ? +1 : -1;
+  if (fabs(x) >= vsmooth_par_)
+    return x > 0 ? +1 : -1;
   double xnorm = x / vsmooth_par_;
   double xnorm2 = xnorm * xnorm;
   return 0.125 * xnorm * (xnorm2 * (3. * xnorm2 - 10.) + 15);
@@ -595,7 +577,7 @@ void CMSHistFunc::setCdf(Cache& c, FastTemplate const& h) const {
   c.cdf = FastTemplate(h.size() + 1);
   c.integral = integrateTemplate(h);
   for (unsigned i = 1; i < c.cdf.size(); ++i) {
-    c.cdf[i] = (h[i - 1] * cache_.GetWidth(i-1)) / c.integral + c.cdf[i - 1];
+    c.cdf[i] = (h[i - 1] * cache_.GetWidth(i - 1)) / c.integral + c.cdf[i - 1];
   }
   c.cdf_set = true;
 }
@@ -604,7 +586,7 @@ void CMSHistFunc::setMeanSig(Cache& c, FastTemplate const& h) const {
   double iw = 0.;
   double ixw = 0.;
   double ixxw = 0.;
-  for (unsigned  i = 0; i < h.size(); ++i) {
+  for (unsigned i = 0; i < h.size(); ++i) {
     double x = (cache_.GetEdge(i + 1) + cache_.GetEdge(i)) / 2.;
     iw += cache_.GetWidth(i) * h[i];
     ixw += cache_.GetWidth(i) * h[i] * x;
@@ -632,7 +614,8 @@ void CMSHistFunc::updateMomentFractions(double m) const {
     for (int j = 0; j < nPdf; ++j) {
       ffrac += global_.m(j, i) * (j == 0 ? 1. : std::pow(dm, (double)j));
     }
-    if (ffrac >= 0) sumposfrac += ffrac;
+    if (ffrac >= 0)
+      sumposfrac += ffrac;
     // fractions for pdf
     global_.c_sum[i] = ffrac;
     global_.c_scale[i] = ffrac;
@@ -641,8 +624,7 @@ void CMSHistFunc::updateMomentFractions(double m) const {
   // various mode settings
   int imin = global_.p1;
   int imax = global_.single_point ? global_.p1 : global_.p2;
-  double mfrac =
-      (m - hpoints_[0][imin]) / (hpoints_[0][imax] - hpoints_[0][imin]);
+  double mfrac = (m - hpoints_[0][imin]) / (hpoints_[0][imax] - hpoints_[0][imin]);
   switch (mtype_) {
     case NonLinear:
       // default already set above
@@ -650,7 +632,7 @@ void CMSHistFunc::updateMomentFractions(double m) const {
 
     case SineLinear:
       mfrac = TMath::Sin(TMath::PiOver2() * mfrac);
-    // now fall through to Linear case
+      // now fall through to Linear case
 
     case Linear:
       for (int i = 0; i < nPdf; ++i) {
@@ -694,8 +676,7 @@ void CMSHistFunc::updateMomentFractions(double m) const {
 #endif
 }
 
-void CMSHistFunc::prepareInterpCache(Cache& c1,
-                                     Cache const& c2) const {
+void CMSHistFunc::prepareInterpCache(Cache& c1, Cache const& c2) const {
   // *
   // *......We are going to step through all the edges of both input
   // *      cdf's ordered by increasing value of y. We start at the
@@ -728,14 +709,11 @@ void CMSHistFunc::prepareInterpCache(Cache& c1,
   } while (c2.cdf[ix2 + 1] <= c2.cdf[0]);
 
 #if HFVERBOSE > 2
-  std::cout << "First and last edge of hist1: " << ix1 << " " << ix1l
-            << std::endl;
+  std::cout << "First and last edge of hist1: " << ix1 << " " << ix1l << std::endl;
   std::cout << "   " << c1.cdf[ix1] << " " << c1.cdf[ix1 + 1] << std::endl;
-  std::cout << "First and last edge of hist2: " << ix2 << " " << ix2l
-            << std::endl;
+  std::cout << "First and last edge of hist2: " << ix2 << " " << ix2l << std::endl;
   std::cout << "   " << c2.cdf[ix2] << " " << c2.cdf[ix2 + 1] << std::endl;
 #endif
-
 
   // ....The first interpolated point should be computed now.
 
@@ -764,18 +742,17 @@ void CMSHistFunc::prepareInterpCache(Cache& c1,
   //      precision.
 
 #if HFVERBOSE > 2
-  std::cout << "----BEFORE while with ix1=" << ix1 << ", ix1l=" << ix1l
-       << ", ix2=" << ix2 << ", ix2l=" << ix2l << std::endl;
+  std::cout << "----BEFORE while with ix1=" << ix1 << ", ix1l=" << ix1l << ", ix2=" << ix2 << ", ix2l=" << ix2l
+            << std::endl;
 #endif
 
   Double_t yprev = -1;  // The probability y of the previous point, it will
   // get updated and used in the loop.
   Double_t y = 0;
   while ((ix1 < ix1l) | (ix2 < ix2l)) {
-
 #if HFVERBOSE > 2
-    std::cout << "----Top of while with ix1=" << ix1 << ", ix1l=" << ix1l
-         << ", ix2=" << ix2 << ", ix2l=" << ix2l << std::endl;
+    std::cout << "----Top of while with ix1=" << ix1 << ", ix1l=" << ix1l << ", ix2=" << ix2 << ", ix2l=" << ix2l
+              << std::endl;
 #endif
     // .....Increment to the next lowest point. Step up to the next
     //      kink in case there are several empty (flat in the integral)
@@ -798,8 +775,7 @@ void CMSHistFunc::prepareInterpCache(Cache& c1,
     }
     if (i12type == 1) {
 #if HFVERBOSE > 2
-      std::cout << "Pair for i12type=1: " << c2.cdf[ix2] << " "
-                << c1.cdf[ix1] << " " << c2.cdf[ix2 + 1] << std::endl;
+      std::cout << "Pair for i12type=1: " << c2.cdf[ix2] << " " << c1.cdf[ix1] << " " << c2.cdf[ix2 + 1] << std::endl;
 #endif
       x1 = cache_.GetEdge(ix1);
       y = c1.cdf[ix1];
@@ -822,8 +798,7 @@ void CMSHistFunc::prepareInterpCache(Cache& c1,
       }
     } else {
 #if HFVERBOSE > 2
-      std::cout << "Pair for i12type=2: " << c1.cdf[ix1] << " "
-                << c2.cdf[ix2] << " " << c1.cdf[ix1 + 1] << std::endl;
+      std::cout << "Pair for i12type=2: " << c1.cdf[ix1] << " " << c2.cdf[ix2] << " " << c1.cdf[ix1 + 1] << std::endl;
 #endif
       x2 = cache_.GetEdge(ix2);
       y = c2.cdf[ix2];
@@ -857,9 +832,9 @@ void CMSHistFunc::prepareInterpCache(Cache& c1,
     if (y > yprev) {
       nx3 = nx3 + 1;
 #if HFVERBOSE > 2
-        std::cout << " ---> y > yprev: i12type=" << i12type << ", nx3=" << nx3
-             << ", y=" << y << ", yprev=" << yprev << std::endl;
-             // << ", x= " << x << ", y=" << y << ", yprev=" << yprev << std::endl;
+      std::cout << " ---> y > yprev: i12type=" << i12type << ", nx3=" << nx3 << ", y=" << y << ", yprev=" << yprev
+                << std::endl;
+      // << ", x= " << x << ", y=" << y << ", yprev=" << yprev << std::endl;
 #endif
       yprev = y;
       c1.x1.push_back(x1);
@@ -868,27 +843,25 @@ void CMSHistFunc::prepareInterpCache(Cache& c1,
       // xdisn[nx3] = x;
       // sigdisn[nx3] = y;
 #if HFVERBOSE > 2
-      std::cout << "    ix1=" << ix1 << ", ix2= " << ix2
-           << ", i12type= " << i12type << ", sigdis1[ix1]=" << c1.cdf[ix1]
-           << std::endl;
+      std::cout << "    ix1=" << ix1 << ", ix2= " << ix2 << ", i12type= " << i12type << ", sigdis1[ix1]=" << c1.cdf[ix1]
+                << std::endl;
       std::cout << "        "
-           << ", nx3=" << nx3 << ", y= " << c1.y[nx3]
-           // << ", nx3=" << nx3 << ", x=" << x << ", y= " << c1.y[nx3]
-           << std::endl;
+                << ", nx3=" << nx3 << ", y= "
+                << c1.y[nx3]
+                // << ", nx3=" << nx3 << ", x=" << x << ", y= " << c1.y[nx3]
+                << std::endl;
 #endif
     }
   }
 #if HFVERBOSE > 2
-    for (unsigned i = 0; i < c1.y.size(); i++) {
-      std::cout << " nx " << i << " " << c1.x1[i] << " " << c1.x2[i] << " " << c1.y[i]
-                << std::endl;
-    }
+  for (unsigned i = 0; i < c1.y.size(); i++) {
+    std::cout << " nx " << i << " " << c1.x1[i] << " " << c1.x2[i] << " " << c1.y[i] << std::endl;
+  }
 #endif
   c1.interp_set = true;
 }
 
-FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2,
-                                 double parinterp) const {
+FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2, double parinterp) const {
   double wt1;
   double wt2;
   if (par2 != par1) {
@@ -901,14 +874,12 @@ FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2,
 
   // ......Give a warning if this is an extrapolation.
 
-  if (wt1 < 0 || wt1 > 1. || wt2 < 0. || wt2 > 1. ||
-      fabs(1 - (wt1 + wt2)) > 1.0e-4) {
-    std::cout << "Warning! th1fmorph: This is an extrapolation!! Weights are "
-              << wt1 << " and " << wt2 << " (sum=" << wt1 + wt2 << ")"
-              << std::endl;
+  if (wt1 < 0 || wt1 > 1. || wt2 < 0. || wt2 > 1. || fabs(1 - (wt1 + wt2)) > 1.0e-4) {
+    std::cout << "Warning! th1fmorph: This is an extrapolation!! Weights are " << wt1 << " and " << wt2
+              << " (sum=" << wt1 + wt2 << ")" << std::endl;
   }
 #if HFVERBOSE > 2
-    std::cout << "th1morph - Weights: " << wt1 << " " << wt2 << std::endl;
+  std::cout << "th1morph - Weights: " << wt1 << " " << wt2 << std::endl;
 #endif
 
   // Treatment for empty histograms: Return an empty histogram
@@ -953,7 +924,7 @@ FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2,
   int nbn = cache_.size();
   int nbe = cache_.size() + 1;
 
-  double x  = cache_.GetEdge(nbn);
+  double x = cache_.GetEdge(nbn);
   int ix = nbn;
 
   int nx3 = c1.y.size();
@@ -963,20 +934,17 @@ FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2,
   }
   std::vector<double> sigdisf(nbe, 0.);
 
-
   nx3 = nx3 - 1;
 
 #if HFVERBOSE > 2
-    std::cout << "------> Any final bins to set? " << x << " " << xdisn[nx3]
-              << std::endl;
+  std::cout << "------> Any final bins to set? " << x << " " << xdisn[nx3] << std::endl;
 #endif
 
   while (x >= xdisn[nx3]) {
     sigdisf[ix] = c1.y[nx3];
 
 #if HFVERBOSE > 2
-      std::cout << "   Setting final bins " << ix << " " << x << " "
-                << sigdisf[ix] << std::endl;
+    std::cout << "   Setting final bins " << ix << " " << x << " " << sigdisf[ix] << std::endl;
 #endif
 
     ix = ix - 1;
@@ -1006,8 +974,7 @@ FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2,
   while (x <= xdisn[0]) {
     sigdisf[ix] = c1.y[0];
 #if HFVERBOSE > 2
-    std::cout << "   Setting initial bins " << ix << " " << x << " "
-              << xdisn[1] << " " << sigdisf[ix] << std::endl;
+    std::cout << "   Setting initial bins " << ix << " " << x << " " << xdisn[1] << " " << sigdisf[ix] << std::endl;
 #endif
     ix = ix + 1;
     x = cache_.GetEdge(ix + 1);
@@ -1033,20 +1000,18 @@ FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2,
         ix3 = ix3 + 1;
       }
       int bin = cache_.FindBin(x);
-      if (bin == -1) bin = 0;
+      if (bin == -1)
+        bin = 0;
       // std::cout << "x=" << x << ", bin=" << bin << "\n";
       Double_t dx2 = cache_.GetWidth(bin);
       if (xdisn[ix3 + 1] - x > 1.1 * dx2) {  // Empty bin treatment
         y = c1.y[ix3 + 1];
       } else if (xdisn[ix3 + 1] > xdisn[ix3]) {  // Normal bins
-        y = c1.y[ix3] + (c1.y[ix3 + 1] - c1.y[ix3]) *
-                               (x - xdisn[ix3]) / (xdisn[ix3 + 1] - xdisn[ix3]);
+        y = c1.y[ix3] + (c1.y[ix3 + 1] - c1.y[ix3]) * (x - xdisn[ix3]) / (xdisn[ix3 + 1] - xdisn[ix3]);
       } else {  // Is this ever used?
         y = 0;
-        std::cout << "Warning - th1fmorph: This probably shoudn't happen! "
-                  << std::endl;
-        std::cout << "Warning - th1fmorph: Zero slope solving x(y)"
-                  << std::endl;
+        std::cout << "Warning - th1fmorph: This probably shoudn't happen! " << std::endl;
+        std::cout << "Warning - th1fmorph: Zero slope solving x(y)" << std::endl;
         // for (unsigned z = 0; z < c1.y.size(); ++z) {
         //   printf("x %.6f x1 %.6f x2 %.6f y %.6f\n", xdisn[z], c1.x1[z], c1.x2[z], c1.y[z]);
         // }
@@ -1054,11 +1019,9 @@ FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2,
     }
     sigdisf[ix] = y;
 #if HFVERBOSE > 2
-      std::cout << ix << ", ix3=" << ix3 << ", xdisn=" << xdisn[ix3]
-                << ", x=" << x << ", next xdisn=" << xdisn[ix3 + 1]
-                << std::endl;
-      std::cout << "   cdf n=" << c1.y[ix3] << ", y=" << y
-           << ", next point=" << c1.y[ix3 + 1] << std::endl;
+    std::cout << ix << ", ix3=" << ix3 << ", xdisn=" << xdisn[ix3] << ", x=" << x << ", next xdisn=" << xdisn[ix3 + 1]
+              << std::endl;
+    std::cout << "   cdf n=" << c1.y[ix3] << ", y=" << y << ", next point=" << c1.y[ix3 + 1] << std::endl;
 #endif
   }
 
@@ -1079,13 +1042,12 @@ FastTemplate CMSHistFunc::cdfMorph(unsigned idx, double par1, double par2,
 
 double CMSHistFunc::integrateTemplate(FastTemplate const& t) const {
   DefaultAccumulator<double> total = 0;
-  for (unsigned int i = 0; i < t.size(); ++i) total += t[i] * cache_.GetWidth(i);
+  for (unsigned int i = 0; i < t.size(); ++i)
+    total += t[i] * cache_.GetWidth(i);
   return total.sum();
 }
 
-
-void CMSHistFunc::printMultiline(std::ostream& os, Int_t contents,
-                                 Bool_t verbose, TString indent) const {
+void CMSHistFunc::printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const {
   RooAbsReal::printMultiline(os, contents, verbose, indent);
   std::cout << ">> Current cache:\n";
   cache().Dump();
@@ -1097,15 +1059,13 @@ void CMSHistFunc::printMultiline(std::ostream& os, Int_t contents,
   vmorph_sentry_.Print("v");
 }
 
-Int_t CMSHistFunc::getAnalyticalIntegral(RooArgSet& allVars,
-                                         RooArgSet& analVars,
-                                         const char* /*rangeName*/) const {
-  if (matchArgs(allVars, analVars, x_)) return 1;
+Int_t CMSHistFunc::getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* /*rangeName*/) const {
+  if (matchArgs(allVars, analVars, x_))
+    return 1;
   return 0;
 }
 
-Double_t CMSHistFunc::analyticalIntegral(Int_t code,
-                                         const char* rangeName) const {
+Double_t CMSHistFunc::analyticalIntegral(Int_t code, const char* rangeName) const {
   switch (code) {
     case 1: {
       updateCache();
@@ -1119,16 +1079,15 @@ Double_t CMSHistFunc::analyticalIntegral(Int_t code,
 
 CMSHistFuncWrapper const* CMSHistFunc::wrapper() const {
   RooFIter iter = this->valueClientMIterator();
-  RooAbsArg *arg = nullptr;
-  while((arg = iter.next())) {
+  RooAbsArg* arg = nullptr;
+  while ((arg = iter.next())) {
     CMSHistFuncWrapper const* wrapper = dynamic_cast<CMSHistFuncWrapper const*>(arg);
-    if (wrapper) return wrapper;
+    if (wrapper)
+      return wrapper;
   }
   return nullptr;
 }
 
-RooAbsReal const& CMSHistFunc::getXVar() const {
-  return x_.arg();
-}
+RooAbsReal const& CMSHistFunc::getXVar() const { return x_.arg(); }
 
 #undef HFVERBOSE

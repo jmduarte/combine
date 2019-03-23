@@ -16,26 +16,22 @@
 #include "CMSHistV.h"
 
 class CMSHistFuncWrapper : public RooAbsReal {
- public:
+public:
   CMSHistFuncWrapper();
 
-  CMSHistFuncWrapper(const char* name, const char* title, RooRealVar& x,
-              CMSHistFunc & func, CMSHistErrorPropagator & err, unsigned idx);
+  CMSHistFuncWrapper(
+      const char* name, const char* title, RooRealVar& x, CMSHistFunc& func, CMSHistErrorPropagator& err, unsigned idx);
 
   CMSHistFuncWrapper(CMSHistFuncWrapper const& other, const char* name = 0);
 
-  virtual TObject* clone(const char* newname) const {
-    return new CMSHistFuncWrapper(*this, newname);
-  }
+  virtual TObject* clone(const char* newname) const { return new CMSHistFuncWrapper(*this, newname); }
   virtual ~CMSHistFuncWrapper() {}
 
   Double_t evaluate() const;
 
-  void printMultiline(std::ostream& os, Int_t contents, Bool_t verbose,
-                      TString indent) const;
+  void printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const;
 
-  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars,
-                              const char* rangeName = 0) const;
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
 
   Double_t analyticalIntegral(Int_t code, const char* rangeName = 0) const;
 
@@ -45,20 +41,19 @@ class CMSHistFuncWrapper : public RooAbsReal {
 
   friend class CMSHistV<CMSHistFuncWrapper>;
 
- protected:
+protected:
   RooRealProxy x_;
   RooRealProxy func_;
   RooArgProxy err_;
 
   mutable FastHisto cache_;
   unsigned idx_;
-  mutable SimpleCacheSentry sentry_; //!
+  mutable SimpleCacheSentry sentry_;  //!
 
- private:
-  ClassDef(CMSHistFuncWrapper, 1)
-  mutable CMSHistFunc const* pfunc_;
-  mutable CMSHistErrorPropagator * perr_;
-  mutable bool initialized_; //! not to be serialized
+private:
+  ClassDef(CMSHistFuncWrapper, 1) mutable CMSHistFunc const* pfunc_;
+  mutable CMSHistErrorPropagator* perr_;
+  mutable bool initialized_;  //! not to be serialized
 
   void initialize() const;
 };
