@@ -75,7 +75,7 @@ void make3plot(RooWorkspace *w, TString pdf, TString var, double refval, double 
 
 void morphing_tests(int nS = 10, int nB = 100, int seed = 37) {
   using namespace RooFit;
-  gSystem->Load("libHiggsAnalysisCombinedLimit");
+  gSystem->Load("libCombine");
 
   RooRandom::randomGenerator()->SetSeed(seed);
 

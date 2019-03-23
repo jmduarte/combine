@@ -2,7 +2,8 @@ from __future__ import absolute_import
 from __future__ import print_function
 import ROOT
 from ROOT import TFile, TTree, TCanvas, TGraph, TMultiGraph, TGraphErrors, TLegend
-import CMS_lumi, tdrstyle
+import cms_lumi
+import tdrstyle
 import subprocess  # to execute shell command
 from six.moves import range
 from six.moves import zip
@@ -10,10 +11,10 @@ from six.moves import zip
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
 # CMS style
-CMS_lumi.cmsText = "CMS"
-CMS_lumi.extraText = "Preliminary"
-CMS_lumi.cmsTextSize = 0.65
-CMS_lumi.outOfFrame = True
+cms_lumi.cmsText = "CMS"
+cms_lumi.extraText = "Preliminary"
+cms_lumi.cmsTextSize = 0.65
+cms_lumi.outOfFrame = True
 tdrstyle.setTDRStyle()
 
 
@@ -57,7 +58,7 @@ def executeDataCards(labels):
 
     for label in labels:
         file_name = "datacard_" + label + ".txt"
-        combine_command = "./build/src/combine-exe -M Asymptotic -m 125 -n %s %s" % (label, file_name)
+        combine_command = "combine -M Asymptotic -m 125 -n %s %s" % (label, file_name)
         print("")
         print(">>> " + combine_command)
         p = subprocess.Popen(combine_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -151,7 +152,7 @@ def plotUpperLimits(labels, values):
     median.SetLineStyle(2)
     median.Draw("Lsame")
 
-    CMS_lumi.CMS_lumi(c, 14, 11)
+    cms_lumi.cms_lumi(c, 14, 11)
     ROOT.gPad.SetTicks(1, 1)
     frame.Draw("sameaxis")
 

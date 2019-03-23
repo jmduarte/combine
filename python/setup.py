@@ -16,4 +16,5 @@ setup(
     # setup_requires=["pytest-runner"],
     # tests_require=[],
     install_requires=[],
+    scripts=['scripts/combineCards.py', 'scripts/commentUncerts.py', 'scripts/pruneUncerts.py', 'scripts/text2workspace.py', ],
 )

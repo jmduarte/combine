@@ -15,7 +15,7 @@ argv.append("-b-")
 import ROOT
 
 ROOT.gROOT.SetBatch(True)
-# ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
+# ROOT.gSystem.Load("libCombine")
 argv.remove("-b-")
 if hasHelp:
     argv.append("-h")

@@ -14,7 +14,7 @@ void testRooMomentMorphND(RooMomentMorphND::Setting morphSetting,Bool_t useHoriz
 {
   using namespace RooFit;
 
-  gSystem->Load("libHiggsAnalysisCombinedLimit");
+  gSystem->Load("libCombine");
 
   RooWorkspace w("w", 1);
 

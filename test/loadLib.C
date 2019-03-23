@@ -3,5 +3,5 @@
   gSystem->AddIncludePath("-I$CMSSW_BASE/interface/");
   gSystem->AddIncludePath("-I$CMSSW_BASE/src/");
   gSystem->AddIncludePath("-I$CMSSW_BASE/src/combine/interface/");
-  gSystem->Load("libHiggsAnalysisCombinedLimit.so");
+  gSystem->Load("libCombine.so");
 }

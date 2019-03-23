@@ -69,7 +69,7 @@ void makeXSSplines(int sqrts=13){
 
 void makeAllSMSplines(){
 
-	gROOT->ProcessLine(".L $CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so");
+	gROOT->ProcessLine(".L $CMSSW_BASE/lib/$SCRAM_ARCH/libCombine.so");
 
 	// Make XS 
 	makeXSSplines(14);	

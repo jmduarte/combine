@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 import ROOT as rt
 
-# CMS_lumi
+# cms_lumi
 #   Initiated by: Gautier Hamel de Monchenault (Saclay)
 #   Translated in Python by: Joshua Hardenbrook (Princeton)
 #   Updated by:   Dinko Ferencek (Rutgers)
@@ -35,7 +35,7 @@ lumi_sqrtS = ""
 drawLogo = False
 
 
-def CMS_lumi(pad, iPeriod, iPosX):
+def cms_lumi(pad, iPeriod, iPosX):
     outOfFrame = False
     if iPosX / 10 == 0:
         outOfFrame = True

@@ -359,7 +359,7 @@ void plotLLRdistribution(TTree *tree_, TFile *fdata_){
 void plotParametersFromToys(std::string inputFile, std::string dataFits="", std::string workspace="", std::string selectString="r>0"){
 
 	// Some Global preferences
-	gSystem->Load("libHiggsAnalysisCombinedLimit");
+	gSystem->Load("libCombine");
 	gROOT->SetBatch(true);
 	gStyle->SetOptFit(0);
 	gStyle->SetOptStat(0);

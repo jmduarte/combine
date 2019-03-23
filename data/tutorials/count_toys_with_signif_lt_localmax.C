@@ -14,7 +14,7 @@
 using namespace RooFit;
 double max_significance_in_data = 3.23;
 void count_toys_with_signif_lt_localmax(int hello=-1){
-	gSystem->Load("libHiggsAnalysisCombinedLimit.so");
+	gSystem->Load("libCombine.so");
 	TFile ftoydatasets("higgsCombineTest.GenerateOnly.mH16.5.123456.root");
 	TFile fws("ws.root");
 	RooWorkspace *ws=(RooWorkspace*)fws.Get("w");

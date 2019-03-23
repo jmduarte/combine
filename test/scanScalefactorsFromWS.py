@@ -64,7 +64,7 @@ parser.add_option(
 
 import ROOT
 
-ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
+ROOT.gSystem.Load("libCombine")
 ROOT.gROOT.SetBatch(1)
 
 if not options.out:

@@ -157,18 +157,6 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  if (verbose > 1) {
-    std::ifstream splashFile;
-    splashFile.open("data/splash.txt");
-    while (splashFile.good()) {
-      std::cout << (char)splashFile.get();
-    }
-    std::cout << std::endl;
-    splashFile.close();
-  } else {
-    std::cout << " <<< Combine >>> " << std::endl;
-  }
-
   // Temporary printout for rename of methods ...
   std::map<std::string, std::string> renames;
   renames["MaxLikelihoodFit"] = "FitDiagnostics";

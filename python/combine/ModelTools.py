@@ -45,7 +45,7 @@ class ModelBuilderBase:
             if options.out == None:
                 options.out = re.sub(".txt$", "", options.fileName) + ".root"
             options.baseDir = os.path.dirname(options.fileName)
-            ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit")
+            ROOT.gSystem.Load("libCombine")
             ROOT.TH1.AddDirectory(False)
             self.out = ROOT.RooWorkspace("w", "w")
             # self.out._import = getattr(self.out,"import") # workaround: import is a python keyword

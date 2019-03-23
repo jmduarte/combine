@@ -5,6 +5,8 @@ Combine
 
 [Manual to run combine](https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/wiki)
 
+![Brazilian plot](res/UpperLimit.png "Brazilian plot")
+
 ### Standalone compilation in `lxplus`
 ```
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git combine
