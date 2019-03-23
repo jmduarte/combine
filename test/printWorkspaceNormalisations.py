@@ -1,7 +1,10 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import ROOT 
 from sys import argv, stdout, stderr, exit
 import datetime
 from optparse import OptionParser
+from six.moves import range
 
 hasHelp = False
 for X in ("-h", "-?", "--help"):
@@ -75,24 +78,24 @@ for i in range(all_norms.getSize()):
 
 # Now print out information 
 for chan in chan_procs.keys(): 
- print "---------------------------------------------------------------------------"
- print "---------------------------------------------------------------------------"
- print "Channel - %s "%chan 
+ print("---------------------------------------------------------------------------")
+ print("---------------------------------------------------------------------------")
+ print("Channel - %s "%chan) 
  chanInfo  = chan_procs[chan]
  for proc in chanInfo :
-  print "---------------------------------------------------------------------------"
-  print "  Top-level normalisation for process %s -> %s"%(proc[0],proc[1].GetName())
-  print "  -------------------------------------------------------------------------"
-  if options.printValueOnly: print "  default value = ",proc[1].getVal()
+  print("---------------------------------------------------------------------------")
+  print("  Top-level normalisation for process %s -> %s"%(proc[0],proc[1].GetName()))
+  print("  -------------------------------------------------------------------------")
+  if options.printValueOnly: print("  default value = ",proc[1].getVal())
   else: 
     if proc[2]: 
       proc_norm_var = ws.function("n_exp_bin%s_proc_%s"%(chan,proc[0]))
       proc[1].Print()
       if (proc_norm_var.Class().GetName()==ROOT.ProcessNormalization().Class().GetName()):
-        print " ... is a product, which contains ",proc_norm_var.GetName()
+        print(" ... is a product, which contains ",proc_norm_var.GetName())
         proc_norm_var.dump()
       else: 
-        print " ... is a product, which contains ",proc_norm_var.GetName()
+        print(" ... is a product, which contains ",proc_norm_var.GetName())
         #proc_norm_var = ws.var("n_exp_bin%s_proc_%s"%(chan,proc[0]))
 	proc_norm_var.Print()
     else:
@@ -100,9 +103,9 @@ for chan in chan_procs.keys():
         if (proc[1].Class().GetName()==ROOT.ProcessNormalization().Class().GetName()): proc[1].dump()
 	else: 
 	  proc[1].Print()
-      	  print " ... is a constant (formula)"
+      	  print(" ... is a constant (formula)")
       else: 
         proc[1].Print()
-      	print " ... is a constant (RooRealVar)"
-    print "  -------------------------------------------------------------------------"
-    print "  default value = ",proc[1].getVal()
+      	print(" ... is a constant (RooRealVar)")
+    print("  -------------------------------------------------------------------------")
+    print("  default value = ",proc[1].getVal())

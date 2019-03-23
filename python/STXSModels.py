@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from HiggsAnalysis.CombinedLimit.PhysicsModel import *
 from HiggsAnalysis.CombinedLimit.SMHiggsBuilder import SMHiggsBuilder
 import fnmatch 
@@ -24,23 +26,23 @@ def getSTXSProdDecMode(bin,process,options):
     foundDecay = None
     for D in ALL_HIGGS_DECAYS:
         if D in decaySource:
-            if foundDecay: raise RuntimeError, "Validation Error: decay string %s contains multiple known decay names" % decaySource
+            if foundDecay: raise RuntimeError("Validation Error: decay string %s contains multiple known decay names" % decaySource)
             foundDecay = D
-    if not foundDecay: raise RuntimeError, "Validation Error: decay string %s does not contain any known decay name" % decaySource
+    if not foundDecay: raise RuntimeError("Validation Error: decay string %s does not contain any known decay name" % decaySource)
     #
     foundEnergy = None
     for D in [ '7TeV', '8TeV', '13TeV', '14TeV' ]:
         if D in decaySource:
-            if foundEnergy: raise RuntimeError, "Validation Error: decay string %s contains multiple known energies" % decaySource
+            if foundEnergy: raise RuntimeError("Validation Error: decay string %s contains multiple known energies" % decaySource)
             foundEnergy = D
     if not foundEnergy:
         for D in [ '7TeV', '8TeV', '13TeV', '14TeV' ]:
             if D in options.fileName+":"+bin:
-                if foundEnergy: raise RuntimeError, "Validation Error: decay string %s contains multiple known energies" % decaySource
+                if foundEnergy: raise RuntimeError("Validation Error: decay string %s contains multiple known energies" % decaySource)
                 foundEnergy = D
     if not foundEnergy:
         eoundEnergy = '13TeV' ## if using 81x, chances are its 13 TeV
-        print "Warning: decay string %s does not contain any known energy, assuming %s" % (decaySource, foundEnergy)
+        print("Warning: decay string %s does not contain any known energy, assuming %s" % (decaySource, foundEnergy))
     #
     return (processSource, foundDecay, foundEnergy)
 
@@ -54,15 +56,15 @@ class STXSBaseModel(PhysicsModel):
     	return 
     def setPhysicsOptions(self,physOptions):
         for po in physOptions:
-	    print po
+	    print(po)
             if po.startswith("higgsMassRange="):
                 self.floatMass = True
                 self.mHRange = po.replace("higgsMassRange=","").split(",")
-                print 'The Higgs mass range:', self.mHRange
+                print('The Higgs mass range:', self.mHRange)
                 if len(self.mHRange) != 2:
-                    raise RuntimeError, "Higgs mass range definition requires two extrema"
+                    raise RuntimeError("Higgs mass range definition requires two extrema")
                 elif float(self.mHRange[0]) >= float(self.mHRange[1]):
-                    raise RuntimeError, "Extrama for Higgs mass range defined with inverterd order. Second must be larger the first"
+                    raise RuntimeError("Extrama for Higgs mass range defined with inverterd order. Second must be larger the first")
     def doMH(self):
         if self.floatMass:
             if self.modelBuilder.out.var("MH"):
@@ -94,7 +96,7 @@ class StageZero(STXSBaseModel):
         self.modelBuilder.doVar(x)
         vname = re.sub(r"\[.*","",x)
         #self.modelBuilder.out.var(vname).setConstant(constant)
-        print "SignalStrengths:: declaring %s as %s" % (vname,x)
+        print("SignalStrengths:: declaring %s as %s" % (vname,x))
     def doParametersOfInterest(self):
         """Create POI out of signal strengths (and MH)"""
 	pois = []
@@ -103,7 +105,7 @@ class StageZero(STXSBaseModel):
 	    pois.append("r_%s"%X)
 	self.POIs=",".join(pois)
         self.doMH()
-        print "Default parameters of interest: ", self.POIs
+        print("Default parameters of interest: ", self.POIs)
         self.modelBuilder.doSet("POI",self.POIs)
         #self.SMH = SMHiggsBuilder(self.modelBuilder)
         #self.setup()
@@ -115,8 +117,8 @@ class StageZero(STXSBaseModel):
 	for regproc in ALL_STXS_PROCS["Stage0"].keys():
 	    if	fnmatch.fnmatch(production, regproc): 
 	    	retpoi = "%s"%(ALL_STXS_PROCS["Stage0"][regproc])
-	    	print "Will scale %s with POI %s"%(name,retpoi)
+	    	print("Will scale %s with POI %s"%(name,retpoi))
 	    	return retpoi 
-        raise RuntimeError, "No production process matching %s for Stage0 found !"%production
+        raise RuntimeError("No production process matching %s for Stage0 found !"%production)
 
 stage0 = StageZero()

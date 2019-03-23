@@ -3,10 +3,13 @@
 #   Note that most LHCHCG models use the c7 base. This is just the name prefix of the scaling function 
 #   you may need to use eg CvCf, c6 etc for older modelts in the CMS HCG repo - if in doublt look for the XSBR functions in the WS
 # for A1/B1 (mu based) models, the output of t2w will show how the model scales
+from __future__ import absolute_import
+from __future__ import print_function
 import os,sys,numpy,array
 import itertools
 
 from optparse import OptionParser
+from six.moves import range
 parser = OptionParser(usage="usage: %prog [options] file \nrun with --help to get list of options")
 parser.add_option("-M","--Model",dest="model",default="DEFAULT",type='str',help="Name of model used in model builder (note its the name of the scaling functions, eg the L1/K models use 'c7'")
 parser.add_option("-m","--mh",dest="mh",default=125.09,type='float',help="Lightest Higgs Mass")
@@ -37,10 +40,10 @@ decay_channels 		= ['hww','hzz','hgg','hbb','hcc','htt','hmm','hzg','hgluglu','h
 decay_modes 		= ["hgg","hvv","hff"]
 if options.prod: 
 	production_channels = options.prod.split(",")
-	print "Will look for productions ", production_channels
+	print("Will look for productions ", production_channels)
 if options.decay: 
 	decay_channels      = options.decay.split(",")
-	print "Will look for decays ", decay_channels
+	print("Will look for decays ", decay_channels)
 
 # Stepping of parameters in the model 
 step = options.stepsize
@@ -131,7 +134,7 @@ def makePlot(name,tgraph):
 
 	if not options.sliceval: return 
 	it = params.createIterator()
-	if "xparameter_name" not in config.keys(): 
+	if "xparameter_name" not in list(config.keys()): 
 	  for pcounter in range(nparams):
 		p = it.Next()
 		#if options.sliceval:
@@ -190,13 +193,13 @@ def produceScan(modelname,extname,proddecaystring,work,energy=""):
 	proddecay = proddecaystring+"_%s"%energy
 	name = "*%s_%s*"%(extname,proddecay)
 	func = work.allFunctions().selectByName(name).first()
-	print "Looking for ", name 
+	print("Looking for ", name) 
 	if not func: 
 		# mostly modesl will NOT be energy dependant
 	        #proddecay+="_%s"%energy	
 		proddecay = proddecaystring
 		name = "*%s_%s*"%(extname,proddecay)
-	        print "Nope!, Looking for ", name 
+	        print("Nope!, Looking for ", name) 
 	 	work.allFunctions().selectByName(name).Print()
 		func = work.allFunctions().selectByName(name).first()
 	if not func: #Give up!
@@ -225,7 +228,7 @@ def produceScan(modelname,extname,proddecaystring,work,energy=""):
 
 	# make a 2D plot 
 	if nparams == 2 or (options.sliceval and nparams <4): makePlot("%s_%s"%(modelname,proddecay),tgraph)
-	else: print "Skipping 2D plots (nparams != 2, and nparams!=3 with a slice value given)"
+	else: print("Skipping 2D plots (nparams != 2, and nparams!=3 with a slice value given)")
 
 	# make 1D scans 
 	it = params.createIterator()
@@ -270,7 +273,7 @@ mH.setVal(mHval)
 mc_s   = work.genobj("ModelConfig")
 params  = mc_s.GetParametersOfInterest()
 nparams = params.getSize()
-print "Number of parameters in Model: ", nparams
+print("Number of parameters in Model: ", nparams)
 params.Print()
 
 parameter_vals	= {"mu":array.array('d',[0])}
@@ -307,7 +310,7 @@ while 1:
   if p == None: break
   name = p.GetName()
   if doslice and name == myFixed:
-	print "putting z index as ", pcounter 
+	print("putting z index as ", pcounter) 
 	index_z = pcounter
 	index_x = (pcounter+1)%3
 	index_y = (pcounter+2)%3
@@ -321,7 +324,7 @@ config["yparameter"]=index_y
 config["fixparameter"]=index_z
 
 
-print config
+print(config)
 
 #for p in params: print p.GetName()
 # Output file for ROOT TTrees

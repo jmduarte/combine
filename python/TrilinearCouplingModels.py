@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from HiggsAnalysis.CombinedLimit.PhysicsModel import *
 from HiggsAnalysis.CombinedLimit.SMHiggsBuilder import SMHiggsBuilder
 import ROOT, os
@@ -13,9 +15,9 @@ class TrilinearHiggs(SMLikeHiggsModel):
             if po.startswith("higgsMassRange="):
                 self.mHRange = po.replace("higgsMassRange=","").split(",")
                 if len(self.mHRange) != 2:
-                    raise RuntimeError, "Higgs mass range definition requires two extrema"
+                    raise RuntimeError("Higgs mass range definition requires two extrema")
                 elif float(self.mHRange[0]) >= float(self.mHRange[1]):
-                    raise RuntimeError, "Extrema for Higgs mass range defined with inverterd order. Second must be larger the first"
+                    raise RuntimeError("Extrema for Higgs mass range defined with inverterd order. Second must be larger the first")
     def doParametersOfInterest(self):
         """Create POI and other parameters, and define the POI set."""
 	
@@ -26,21 +28,21 @@ class TrilinearHiggs(SMLikeHiggsModel):
         # --- Higgs Mass as other parameter ----
         if self.modelBuilder.out.var("MH"):
             if len(self.mHRange):
-                print 'MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1]
+                print('MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1])
                 self.modelBuilder.out.var("MH").setRange(float(self.mHRange[0]),float(self.mHRange[1]))
                 self.modelBuilder.out.var("MH").setConstant(False)
                 self.poiNames += ",MH"
             else:
-                print 'MH will be assumed to be', self.options.mass
+                print('MH will be assumed to be', self.options.mass)
                 self.modelBuilder.out.var("MH").removeRange()
                 self.modelBuilder.out.var("MH").setVal(self.options.mass)
         else:
             if len(self.mHRange):
-                print 'MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1]
+                print('MH will be left floating within', self.mHRange[0], 'and', self.mHRange[1])
                 self.modelBuilder.doVar("MH[%s,%s]" % (self.mHRange[0],self.mHRange[1]))
                 self.poiNames += ",MH" 
             else:
-                print 'MH (not there before) will be assumed to be', self.options.mass
+                print('MH (not there before) will be assumed to be', self.options.mass)
                 self.modelBuilder.doVar("MH[%g]" % self.options.mass)
 
 	# now do the scaling - taken from Tab. 1 of https://arxiv.org/pdf/1607.04251v1.pdf
@@ -69,7 +71,7 @@ class TrilinearHiggs(SMLikeHiggsModel):
         self.modelBuilder.doVar("ONE[1,1,1]")
 	self.modelBuilder.out.var("ONE").setConstant(True)
 
-        print self.poiNames
+        print(self.poiNames)
         self.modelBuilder.doSet("POI",self.poiNames)
 
     def getHiggsSignalYieldScale(self,production,decay, energy):
@@ -83,7 +85,7 @@ class TrilinearHiggs(SMLikeHiggsModel):
 	if not self.modelBuilder.out.function("XSscal_%s_%s"%(production,energy)): prodname = "ONE"
 	if not self.modelBuilder.out.function("BRscal_%s"%(decay)): decayname = "ONE"
 
-	print " Building ---  XSBRscal_%s_%s_%s" %(production,decay,energy), " Using ", prodname,decayname
+	print(" Building ---  XSBRscal_%s_%s_%s" %(production,decay,energy), " Using ", prodname,decayname)
         self.modelBuilder.factory_("expr::XSBRscal_%s_%s_%s(\"@0*@1\",%s,%s)" % (production,decay,energy,prodname,decayname))
 	   
 	return name
