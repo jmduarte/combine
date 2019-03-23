@@ -12,9 +12,9 @@
 #include "Rtypes.h"
 #include "TH1F.h"
 #include "TMatrix.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CMSHistV.h"
-#include "HiggsAnalysis/CombinedLimit/interface/FastTemplate_Old.h"
-#include "HiggsAnalysis/CombinedLimit/interface/SimpleCacheSentry.h"
+#include "combine/interface/CMSHistV.h"
+#include "combine/interface/FastTemplate_Old.h"
+#include "combine/interface/SimpleCacheSentry.h"
 
 class CMSHistFuncWrapper;
 

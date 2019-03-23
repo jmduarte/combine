@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/RooNCSpline_2D_fast.h" 
+#include "combine/interface/RooNCSpline_2D_fast.h" 
 #include <cmath>
 #include "TMath.h"
 #include "Riostream.h" 

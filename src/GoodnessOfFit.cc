@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/GoodnessOfFit.h"
+#include "combine/interface/GoodnessOfFit.h"
 #include <RooRealVar.h>
 #include <RooArgSet.h>
 #include <RooRandom.h>
@@ -17,13 +17,13 @@
 #include <TFile.h>
 #include <RooCategory.h>
 #include <RooStats/ModelConfig.h>
-#include "HiggsAnalysis/CombinedLimit/interface/Combine.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Significance.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CascadeMinimizer.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RooSimultaneousOpt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CachingNLL.h"
+#include "combine/interface/Combine.h"
+#include "combine/interface/Significance.h"
+#include "combine/interface/CascadeMinimizer.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/RooSimultaneousOpt.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/CachingNLL.h"
 
 #include <numeric>
 #include <memory>

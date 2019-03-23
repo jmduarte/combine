@@ -4,7 +4,7 @@
 #include "RooHistPdf.h"
 #include "RooWorkspace.h"
 #include "RooPlot.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RooMomentMorphND.h"
+#include "combine/interface/RooMomentMorphND.h"
 
 #include "TCanvas.h"
 #include "TSystem.h"

@@ -2,7 +2,7 @@ class Datacard():
     """
     Description:
 
-    This is a container class that is filled by the function parseCards in HiggsAnalysis/CombinedLimit/python/DatacardParser.py.
+    This is a container class that is filled by the function parseCards in combine/python/DatacardParser.py.
     This function parses a given datacards file and fills Datacard as a data structure that is easily accessible within python
     scripts. To simplify access a set of getter c++ like function have been added to the class. Some more access function for
     systematics will be added later.

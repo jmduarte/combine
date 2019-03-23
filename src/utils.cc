@@ -1,5 +1,5 @@
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RooSimultaneousOpt.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/RooSimultaneousOpt.h"
 
 #include <cstdio>
 #include <iostream>
@@ -34,9 +34,9 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <regex>
 
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Logger.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/ProfilingTools.h"
+#include "combine/interface/Logger.h"
 
 using namespace std;
 

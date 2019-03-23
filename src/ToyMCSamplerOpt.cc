@@ -1,6 +1,6 @@
-#include "HiggsAnalysis/CombinedLimit/interface/ToyMCSamplerOpt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Logger.h"
+#include "combine/interface/ToyMCSamplerOpt.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/Logger.h"
 #include <memory>
 #include <stdexcept>
 #include <TH1.h>
@@ -13,7 +13,7 @@
 #include <RooDataHist.h>
 #include <RooDataSet.h>
 #include <RooRandom.h>
-#include <HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h>
+#include <combine/interface/ProfilingTools.h>
 #include "RooStats/DetailedOutputAggregator.h"
 
 using namespace std;

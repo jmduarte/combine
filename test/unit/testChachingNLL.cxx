@@ -13,10 +13,10 @@
 #include <RooStats/RooStatsUtils.h>
 #include <RooStats/ModelConfig.h>
 #include <RooStats/RatioOfProfiledLikelihoodsTestStat.h>
-#include "HiggsAnalysis/CombinedLimit/interface/CachingNLL.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RooSimultaneousOpt.h"
+#include "combine/interface/CachingNLL.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
+#include "combine/interface/RooSimultaneousOpt.h"
 
 RooWorkspace *w;
 

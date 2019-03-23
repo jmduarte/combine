@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/SimpleCacheSentry.h"
+#include "combine/interface/SimpleCacheSentry.h"
 
 SimpleCacheSentry::SimpleCacheSentry() :  _deps("deps","deps",this)   {}
 

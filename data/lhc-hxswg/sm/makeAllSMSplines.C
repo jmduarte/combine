@@ -1,5 +1,5 @@
 
-const std::string location = "./";  //"$CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg/sm/";
+const std::string location = "./";  //"$CMSSW_BASE/src/combine/data/lhc-hxswg/sm/";
 const int nxs = 9;
 const int nbr = 11;
 const int nbr4f = 14;

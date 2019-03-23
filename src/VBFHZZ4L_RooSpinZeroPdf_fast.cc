@@ -1,5 +1,5 @@
-#include <HiggsAnalysis/CombinedLimit/interface/VBFHZZ4L_RooSpinZeroPdf_fast.h>
-#include <HiggsAnalysis/CombinedLimit/interface/FastTemplateFunc.h>
+#include <combine/interface/VBFHZZ4L_RooSpinZeroPdf_fast.h>
+#include <combine/interface/FastTemplateFunc.h>
 #include <cmath>
 #include <cassert>
 #include "TMath.h"

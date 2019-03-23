@@ -13,7 +13,7 @@
 #include <RooFitResult.h>
 #include <RooHistPdf.h>
 #include <TH1.h>
-#include "HiggsAnalysis/CombinedLimit/interface/VerticalInterpHistPdf.h"
+#include "combine/interface/VerticalInterpHistPdf.h"
 
 RooWorkspace *w;
 

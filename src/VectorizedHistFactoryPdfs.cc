@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/VectorizedHistFactoryPdfs.h"
+#include "combine/interface/VectorizedHistFactoryPdfs.h"
 #include <memory>
 #include <RooRealVar.h>
 

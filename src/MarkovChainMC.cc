@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/MarkovChainMC.h"
+#include "combine/interface/MarkovChainMC.h"
 #include <stdexcept> 
 #include <cmath> 
 #include "TKey.h"
@@ -18,15 +18,15 @@ class THnSparse;
 #include "RooStats/ProposalHelper.h"
 #include "RooStats/ProposalFunction.h"
 #include "RooStats/RooStatsUtils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Combine.h"
-#include "HiggsAnalysis/CombinedLimit/interface/TestProposal.h"
-#include "HiggsAnalysis/CombinedLimit/interface/DebugProposal.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RooFitGlobalKillSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/JacknifeQuantile.h"
+#include "combine/interface/Combine.h"
+#include "combine/interface/TestProposal.h"
+#include "combine/interface/DebugProposal.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/RooFitGlobalKillSentry.h"
+#include "combine/interface/JacknifeQuantile.h"
 
-#include "HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
+#include "combine/interface/ProfilingTools.h"
+#include "combine/interface/utils.h"
 
 using namespace RooStats;
 using namespace std;

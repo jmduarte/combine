@@ -1,5 +1,5 @@
-#include "HiggsAnalysis/CombinedLimit/interface/CombDataSetFactory.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
+#include "combine/interface/CombDataSetFactory.h"
+#include "combine/interface/utils.h"
 
 #include <cmath>
 

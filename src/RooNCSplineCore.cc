@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/RooNCSplineCore.h" 
+#include "combine/interface/RooNCSplineCore.h" 
 #include <cmath>
 #include "TMath.h"
 #include "TIterator.h"

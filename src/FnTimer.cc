@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/FnTimer.h"
+#include "combine/interface/FnTimer.h"
 #include <string>
 #include <iostream>
 #include "boost/lexical_cast.hpp"

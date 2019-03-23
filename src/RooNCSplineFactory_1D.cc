@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/RooNCSplineFactory_1D.h"
+#include "combine/interface/RooNCSplineFactory_1D.h"
 #include <cassert>
 
 using namespace std;

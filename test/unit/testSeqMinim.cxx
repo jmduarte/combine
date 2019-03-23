@@ -1,6 +1,6 @@
 #include <cmath>
 #include <cstdio>
-//#include "HiggsAnalysis/CombinedLimit/interface/RooMinimizerOpt.h"
+//#include "combine/interface/RooMinimizerOpt.h"
 #include <RooMinimizer.h>
 #include <TMath.h>
 #include <TFile.h>
@@ -19,11 +19,11 @@
 #include "Math/Minimizer.h"
 #include "Math/Factory.h"
 
-#include "HiggsAnalysis/CombinedLimit/interface/ProfileLikelihood.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RooSimultaneousOpt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/SequentialMinimizer.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h"
+#include "combine/interface/ProfileLikelihood.h"
+#include "combine/interface/RooSimultaneousOpt.h"
+#include "combine/interface/SequentialMinimizer.h"
+#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
+#include "combine/interface/ProfilingTools.h"
 
 
 

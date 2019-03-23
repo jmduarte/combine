@@ -8,7 +8,7 @@ class SMHiggsBuilder:
     def __init__(self,modelBuilder,datadir=None):
         self.modelBuilder = modelBuilder
         if datadir == None:
-            datadir = os.environ['CMSSW_BASE']+"/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg"
+            datadir = os.environ['CMSSW_BASE']+"/src/combine/data/lhc-hxswg"
         self.datadir = datadir
         self.brpath = os.path.join(self.datadir,'sm/br')
         self.coupPath = os.path.join(self.datadir,'couplings')

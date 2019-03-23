@@ -5,8 +5,8 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-#include "HiggsAnalysis/CombinedLimit/interface/HybridNew.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CascadeMinimizer.h" // must be early
+#include "combine/interface/HybridNew.h"
+#include "combine/interface/CascadeMinimizer.h" // must be early
 #include <TFile.h>
 #include <TF1.h>
 #include <TKey.h>
@@ -31,19 +31,19 @@
 #include <RooStats/ProfileLikelihoodTestStat.h>
 #include <RooStats/ToyMCSampler.h>
 #include <RooStats/HypoTestPlot.h>
-#include "HiggsAnalysis/CombinedLimit/interface/Combine.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RooFitGlobalKillSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/SimplerLikelihoodRatioTestStat.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfiledLikelihoodRatioTestStat.h"
-#include "HiggsAnalysis/CombinedLimit/interface/SimplerLikelihoodRatioTestStatExt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/BestFitSigmaTestStat.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ToyMCSamplerOpt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Significance.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Logger.h"
+#include "combine/interface/Combine.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/RooFitGlobalKillSentry.h"
+#include "combine/interface/SimplerLikelihoodRatioTestStat.h"
+#include "combine/interface/ProfiledLikelihoodRatioTestStat.h"
+#include "combine/interface/SimplerLikelihoodRatioTestStatExt.h"
+#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
+#include "combine/interface/BestFitSigmaTestStat.h"
+#include "combine/interface/ToyMCSamplerOpt.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/Significance.h"
+#include "combine/interface/ProfilingTools.h"
+#include "combine/interface/Logger.h"
 
 
 #include <boost/algorithm/string/split.hpp>

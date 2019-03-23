@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/FitDiagnostics.h"
+#include "combine/interface/FitDiagnostics.h"
 #include "RooMinimizer.h"
 #include "RooRealVar.h"
 #include "RooArgSet.h"
@@ -21,15 +21,15 @@
 #include "TH2.h"
 #include "TFile.h"
 #include <RooStats/ModelConfig.h>
-#include "HiggsAnalysis/CombinedLimit/interface/CMSHistErrorPropagator.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Combine.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Significance.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CascadeMinimizer.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Logger.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RobustHesse.h"
+#include "combine/interface/CMSHistErrorPropagator.h"
+#include "combine/interface/Combine.h"
+#include "combine/interface/Significance.h"
+#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/CascadeMinimizer.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/Logger.h"
+#include "combine/interface/RobustHesse.h"
 
 
 #include <Math/MinimizerOptions.h>

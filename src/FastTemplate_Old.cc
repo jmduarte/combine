@@ -1,5 +1,5 @@
-#include "HiggsAnalysis/CombinedLimit/interface/FastTemplate_Old.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Accumulators.h"
+#include "combine/interface/FastTemplate_Old.h"
+#include "combine/interface/Accumulators.h"
 
 #include <cmath>
 #include <cstdlib>

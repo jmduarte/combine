@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/MultiDimFit.h"
+#include "combine/interface/MultiDimFit.h"
 #include <stdexcept>
 #include <cmath>
 
@@ -10,14 +10,14 @@
 #include "RooAbsData.h"
 #include "RooCategory.h"
 #include "RooFitResult.h"
-//#include "HiggsAnalysis/CombinedLimit/interface/RooMinimizerOpt.h"
+//#include "combine/interface/RooMinimizerOpt.h"
 #include "RooMinimizer.h"
 #include <RooStats/ModelConfig.h>
-#include "HiggsAnalysis/CombinedLimit/interface/Combine.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CascadeMinimizer.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RobustHesse.h"
+#include "combine/interface/Combine.h"
+#include "combine/interface/CascadeMinimizer.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/RobustHesse.h"
 
 #include <Math/Minimizer.h>
 #include <Math/MinimizerOptions.h>

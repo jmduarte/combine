@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/AsimovUtils.h"
+#include "combine/interface/AsimovUtils.h"
 
 #include <memory>
 #include <stdexcept>
@@ -7,11 +7,11 @@
 #include <RooArgSet.h>
 #include <RooProdPdf.h>
 #include <RooUniform.h>
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ToyMCSamplerOpt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CascadeMinimizer.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Logger.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/ToyMCSamplerOpt.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/CascadeMinimizer.h"
+#include "combine/interface/Logger.h"
 
 RooAbsData *asimovutils::asimovDatasetNominal(RooStats::ModelConfig *mc, double poiValue, int verbose) {
         RooArgSet  poi(*mc->GetParametersOfInterest());

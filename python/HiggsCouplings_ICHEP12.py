@@ -407,7 +407,7 @@ class CzwHiggs(SMLikeHiggsModel):
         self.modelBuilder.factory_('expr::Czw_BRscal_hww("@0/@1", Cw, Czw_Gscal_tot)')
         self.modelBuilder.factory_('expr::Czw_BRscal_hzz("@0/@1", Cz, Czw_Gscal_tot)')
         
-        datadir = os.environ['CMSSW_BASE']+'/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg'
+        datadir = os.environ['CMSSW_BASE']+'/src/combine/data/lhc-hxswg'
         for e in ['7TeV', '8TeV']:
             print 'build for %s'%e
             self.SMH.textToSpline(   'RqqH_%s'%e, os.path.join(datadir, 'couplings/R_VBF_%s.txt'%e), ycol=1 );
@@ -479,7 +479,7 @@ class CwzHiggs(SMLikeHiggsModel):
         self.modelBuilder.factory_('expr::Cwz_BRscal_hww("@0/@1", Cw, Cwz_Gscal_tot)')
         self.modelBuilder.factory_('expr::Cwz_BRscal_hzz("@0/@1", Cz, Cwz_Gscal_tot)')
         
-        datadir = os.environ['CMSSW_BASE']+'/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg'
+        datadir = os.environ['CMSSW_BASE']+'/src/combine/data/lhc-hxswg'
         for e in ['7TeV', '8TeV']:
             print 'build for %s'%e
             self.SMH.textToSpline(   'RqqH_%s'%e, os.path.join(datadir, 'couplings/R_VBF_%s.txt'%e), ycol=1 );
@@ -512,7 +512,7 @@ c5ud = C5udHiggs()
         
 #        ## Add some common ingredients
 #        self.modelBuilder.doVar("mt[172.5]")
-#        datadir = os.environ['CMSSW_BASE']+'/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg'
+#        datadir = os.environ['CMSSW_BASE']+'/src/combine/data/lhc-hxswg'
 #        self.SMH.textToSpline('alpha_s', os.path.join(datadir, 'running_constants.txt'), ycol=1 );
 #        self.SMH.textToSpline(     'mb', os.path.join(datadir, 'running_constants.txt'), ycol=2 );
 #                

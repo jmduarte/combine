@@ -1,7 +1,7 @@
-#include "HiggsAnalysis/CombinedLimit/interface/VectorizedCB.h"
+#include "combine/interface/VectorizedCB.h"
 #include "RooMath.h"
 #include "vectorized.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h"
+#include "combine/interface/ProfilingTools.h"
 #include <RooRealVar.h>
 #include <stdexcept>
 

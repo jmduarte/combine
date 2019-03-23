@@ -1,5 +1,5 @@
-#include "HiggsAnalysis/CombinedLimit/interface/ProfiledLikelihoodRatioTestStat.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
+#include "combine/interface/ProfiledLikelihoodRatioTestStat.h"
+#include "combine/interface/CloseCoutSentry.h"
 #include <stdexcept>
 #include <RooRealVar.h>
 

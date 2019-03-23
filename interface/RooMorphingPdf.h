@@ -9,8 +9,8 @@
 #include "RooAbsReal.h"
 #include "TH1F.h"
 #include "Rtypes.h"
-#include "HiggsAnalysis/CombinedLimit/interface/VerticalInterpHistPdf.h"
-#include "HiggsAnalysis/CombinedLimit/interface/SimpleCacheSentry.h"
+#include "combine/interface/VerticalInterpHistPdf.h"
+#include "combine/interface/SimpleCacheSentry.h"
 
 class RooMorphingPdf : public RooAbsPdf {
  protected:

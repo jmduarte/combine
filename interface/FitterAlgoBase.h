@@ -8,8 +8,8 @@
  *
  *
  */
-#include "HiggsAnalysis/CombinedLimit/interface/LimitAlgo.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Significance.h"
+#include "combine/interface/LimitAlgo.h"
+#include "combine/interface/Significance.h"
 class RooFitResult;
 class RooMinimizer;
 class RooCmdArg;

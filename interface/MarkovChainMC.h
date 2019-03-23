@@ -8,7 +8,7 @@
  *
  *
  */
-#include "HiggsAnalysis/CombinedLimit/interface/LimitAlgo.h"
+#include "combine/interface/LimitAlgo.h"
 #include <TList.h>
 class RooArgSet;
 namespace RooStats { class MarkovChain; }

@@ -1,5 +1,5 @@
-#include "HiggsAnalysis/CombinedLimit/interface/GenerateOnly.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Combine.h"
+#include "combine/interface/GenerateOnly.h"
+#include "combine/interface/Combine.h"
 #include <iostream>
 
 using namespace RooStats;

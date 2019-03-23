@@ -51,7 +51,7 @@ def file2map(x):
             fields = [ float(i) for i in cols ]
             ret[fields[0]] = dict(zip(headers,fields[1:]))
     return ret
-path = os.environ['CMSSW_BASE']+"/src/HiggsAnalysis/CombinedLimit/data/";   
+path = os.environ['CMSSW_BASE']+"/src/combine/data/";   
 ggXS = file2map(path+"YR-XS-ggH.txt")
 qqXS = file2map(path+"YR-XS-vbfH.txt")
 br   = file2map(path+"YR-BR3.txt")

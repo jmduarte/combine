@@ -31,7 +31,7 @@ class FermiophobicHiggs(SMLikeHiggsModel):
                 
     def setup(self):
         ## Add FP BRs
-        datadir = os.environ['CMSSW_BASE']+'/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg'
+        datadir = os.environ['CMSSW_BASE']+'/src/combine/data/lhc-hxswg'
         self.SMH.textToSpline( 'FP_BR_hww', os.path.join(datadir, 'fp/BR.txt'), ycol=4 );
         self.SMH.textToSpline( 'FP_BR_hzz', os.path.join(datadir, 'fp/BR.txt'), ycol=5 );
         self.SMH.textToSpline( 'FP_BR_hgg', os.path.join(datadir, 'fp/BR.txt'), ycol=2 );

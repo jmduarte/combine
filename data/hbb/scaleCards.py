@@ -48,7 +48,7 @@ if options.xsbr:
                 fields = [ float(i) for i in cols ]
                 ret[fields[0]] = dict(zip(headers,fields[1:]))
         return ret
-    path = os.environ['CMSSW_BASE']+"/src/HiggsAnalysis/CombinedLimit/data/";   
+    path = os.environ['CMSSW_BASE']+"/src/combine/data/";   
     whXS = file2map(path+"YR-XS-WH.txt")
     zhXS = file2map(path+"YR-XS-ZH.txt")
     br   = file2map(path+"YR-BR1.txt")

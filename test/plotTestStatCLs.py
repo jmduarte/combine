@@ -25,8 +25,8 @@ parser.add_option("","--signif",action='store_true',default=False,help="If signi
 
 import ROOT
 ROOT.gROOT.SetBatch(1)
-ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx")
-ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/plotting/qmuPlot.cxx")
+ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/combine/test/plotting/hypoTestResultTree.cxx")
+ROOT.gROOT.ProcessLine(".L $CMSSW_BASE/src/combine/test/plotting/qmuPlot.cxx")
 from ROOT import hypoTestResultTree
 from ROOT import qmuPlot, q0Plot
 

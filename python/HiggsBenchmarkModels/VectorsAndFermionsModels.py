@@ -148,7 +148,7 @@ class CvCfXgHiggs(SMLikeHiggsModel):
         self.setup()
     def setup(self):
         ## Add some common ingredients
-        datadir = os.environ['CMSSW_BASE']+'/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg'
+        datadir = os.environ['CMSSW_BASE']+'/src/combine/data/lhc-hxswg'
         self.SMH.textToSpline( 'mb', os.path.join(datadir, 'running_constants.txt'), ycol=2 );
         mb = self.modelBuilder.out.function('mb')
         mH = self.modelBuilder.out.var('MH')
@@ -223,7 +223,7 @@ class CfXgHiggs(SMLikeHiggsModel):
         self.setup()
     def setup(self):
         ## Add some common ingredients
-        datadir = os.environ['CMSSW_BASE']+'/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg'
+        datadir = os.environ['CMSSW_BASE']+'/src/combine/data/lhc-hxswg'
         self.SMH.textToSpline( 'mb', os.path.join(datadir, 'running_constants.txt'), ycol=2 );
         mb = self.modelBuilder.out.function('mb')
         mH = self.modelBuilder.out.var('MH')

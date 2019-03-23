@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/VectorizedSimplePdfs.h"
+#include "combine/interface/VectorizedSimplePdfs.h"
 #include "RooMath.h"
 #include "vectorized.h"
 #include <RooRealVar.h>

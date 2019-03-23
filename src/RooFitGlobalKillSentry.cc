@@ -1,1 +1,1 @@
-#include "HiggsAnalysis/CombinedLimit/interface/RooFitGlobalKillSentry.h"
+#include "combine/interface/RooFitGlobalKillSentry.h"

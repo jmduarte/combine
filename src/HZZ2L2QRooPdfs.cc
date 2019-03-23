@@ -2,10 +2,10 @@
 #include <math.h>
 #include "TMath.h"
 
-//#include "HiggsAnalysis/CombinedLimit/interface/RooDoubleCB.h"
-//#include "HiggsAnalysis/CombinedLimit/interface/RooFermi.h"
-//#include "HiggsAnalysis/CombinedLimit/interface/RooRelBW.h"
-#include "HiggsAnalysis/CombinedLimit/interface/HZZ2L2QRooPdfs.h"
+//#include "combine/interface/RooDoubleCB.h"
+//#include "combine/interface/RooFermi.h"
+//#include "combine/interface/RooRelBW.h"
+#include "combine/interface/HZZ2L2QRooPdfs.h"
 #include "RooArgSet.h"
 #include "RooRealVar.h"
 #include "RooRealConstant.h"

@@ -1,7 +1,7 @@
 /**************************************
   Simple multiChannel significance & limit calculator
 ***************************************/
-#include "HiggsAnalysis/CombinedLimit/interface/Combine.h"
+#include "combine/interface/Combine.h"
 #include <cstring>
 #include <cerrno>
 #include <iostream>
@@ -51,16 +51,16 @@
 #include <boost/algorithm/string.hpp> 
 #include <regex>
 
-#include "HiggsAnalysis/CombinedLimit/interface/LimitAlgo.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/RooSimultaneousOpt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ToyMCSamplerOpt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/AsimovUtils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CascadeMinimizer.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h"
+#include "combine/interface/LimitAlgo.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/RooSimultaneousOpt.h"
+#include "combine/interface/ToyMCSamplerOpt.h"
+#include "combine/interface/AsimovUtils.h"
+#include "combine/interface/CascadeMinimizer.h"
+#include "combine/interface/ProfilingTools.h"
 
-#include "HiggsAnalysis/CombinedLimit/interface/Logger.h"
+#include "combine/interface/Logger.h"
 
 using namespace RooStats;
 using namespace RooFit;

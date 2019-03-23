@@ -6,7 +6,7 @@
 ## 
 ## Usage:
 ##  - if necessary, fix the paths to BOOST, GCC, ROOT
-##  - go under HiggsAnalysis/CombinedLimit, and
+##  - go under combine, and
 ##     - if necessary, clean up a previous build with
 ##         ./test/compile-standalone.sh clean
 ##     - if necessary, compile the program
@@ -21,14 +21,14 @@ BASEDIR="$( cd "$( dirname "$0" )"/../../.. && pwd )"
 BOOST=/afs/cern.ch/cms/slc5_amd64_gcc434/external/boost/1.42.0-cms
 MYGCC=/afs/cern.ch/sw/lcg/external/gcc/4.3.2/x86_64-slc5/setup.sh
 MYROOT=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh
-cd $BASEDIR/HiggsAnalysis/CombinedLimit;
+cd $BASEDIR/combine;
 
 if [[ "$1" == "env" ]]; then
     echo "source $MYGCC '' ;";
     echo "source $MYROOT;";
     echo "export LD_LIBRARY_PATH=\"\${LD_LIBRARY_PATH}:${BOOST}/lib\";";
-    echo "export PATH=\"${BASEDIR}/HiggsAnalysis/CombinedLimit/tmp/bin:${PATH}\";";
-    echo "export PYTHONPATH=\"${BASEDIR}/HiggsAnalysis/CombinedLimit/tmp/python:${PYTHONPATH}\";";
+    echo "export PATH=\"${BASEDIR}/combine/tmp/bin:${PATH}\";";
+    echo "export PYTHONPATH=\"${BASEDIR}/combine/tmp/python:${PYTHONPATH}\";";
 elif [[ "$1" == "clean" ]]; then
     test -f src/tmp_LinkDef.cc && rm src/tmp_LinkDef.cc
     test -f src/tmp_LinkDef.h  && rm src/tmp_LinkDef.h
@@ -68,13 +68,13 @@ elif [[ "$1" == "make" ]]; then
     echo ">>> Python"
     test -d tmp/bin || mkdir -p tmp/bin;
     test -d tmp/python/HiggsAnalysis || mkdir -p tmp/python/HiggsAnalysis;
-    ln -sd $BASEDIR/HiggsAnalysis/CombinedLimit/python tmp/python/HiggsAnalysis/CombinedLimit
+    ln -sd $BASEDIR/combine/python tmp/python/combine
     touch tmp/python/HiggsAnalysis/__init__.py
-    touch tmp/python/HiggsAnalysis/CombinedLimit/__init__.py
+    touch tmp/python/combine/__init__.py
 
     # hack to get python 2.6
     if python -V 2>&1 | grep -q "Python 2.4"; then
-        cp -s /usr/bin/python2.6 ${BASEDIR}/HiggsAnalysis/CombinedLimit/tmp/bin/python
+        cp -s /usr/bin/python2.6 ${BASEDIR}/combine/tmp/bin/python
     fi;
 else
     echo "$0 (clean | make |env)"; 

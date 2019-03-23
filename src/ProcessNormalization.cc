@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/ProcessNormalization.h"
+#include "combine/interface/ProcessNormalization.h"
 
 #include <cmath>
 #include <cassert>

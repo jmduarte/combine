@@ -8,7 +8,7 @@
  *
  *
  */
-#include "HiggsAnalysis/CombinedLimit/interface/FitterAlgoBase.h"
+#include "combine/interface/FitterAlgoBase.h"
 #include <TTree.h>
 #include <RooArgList.h>
 #include <RooFitResult.h>

@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/CombinedLimit/interface/VerticalInterpHistPdf.h"
+#include "combine/interface/VerticalInterpHistPdf.h"
 
 #include <cassert>
 #include <memory>
@@ -13,7 +13,7 @@
 
 //#define TRACE_CALLS
 #ifdef TRACE_CALLS
-#include "HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h"
+#include "combine/interface/ProfilingTools.h"
 #define TRACEME()   PerfCounter::add( __PRETTY_FUNCTION__ );
 #else
 #define TRACEME() 
@@ -24,7 +24,7 @@
 #ifdef PATCH_FOR_HZZ_TEMPLATES
 #include "RooHistPdf.h"
 #include "RooDataHist.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
+#include "combine/interface/utils.h"
 namespace {
     std::auto_ptr<TH1> safeCreateHist2D(RooAbsPdf *pdf, const RooRealVar &x, const RooRealVar &y, bool conditional) {
         if (!pdf->getAttribute("safeCreateHist2D:ok") && typeid(*pdf) == typeid(RooHistPdf)) {

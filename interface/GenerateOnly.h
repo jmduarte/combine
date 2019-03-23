@@ -8,7 +8,7 @@
  *
  *
  */
-#include "HiggsAnalysis/CombinedLimit/interface/LimitAlgo.h"
+#include "combine/interface/LimitAlgo.h"
 
 class RooAbsPdf; class RooRealVar; class RooAbsData; class RooArgSet;
 

@@ -1,10 +1,10 @@
-#include "HiggsAnalysis/CombinedLimit/interface/CascadeMinimizer.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfiledLikelihoodRatioTestStatExt.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Significance.h"
-#include "HiggsAnalysis/CombinedLimit/interface/CloseCoutSentry.h"
-#include "HiggsAnalysis/CombinedLimit/interface/utils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/ProfilingTools.h"
-#include "HiggsAnalysis/CombinedLimit/interface/Logger.h"
+#include "combine/interface/CascadeMinimizer.h"
+#include "combine/interface/ProfiledLikelihoodRatioTestStatExt.h"
+#include "combine/interface/Significance.h"
+#include "combine/interface/CloseCoutSentry.h"
+#include "combine/interface/utils.h"
+#include "combine/interface/ProfilingTools.h"
+#include "combine/interface/Logger.h"
 
 #include <Math/MinimizerOptions.h>
 #include <Math/IOptions.h>

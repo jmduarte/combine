@@ -10,7 +10,7 @@
 #include "Riostream.h"
 #include <math.h>
 
-#include "HiggsAnalysis/CombinedLimit/interface/RooMultiPdf.h"
+#include "combine/interface/RooMultiPdf.h"
 #include "RooRealVar.h"
 #include "RooAddPdf.h"
 #include <stdexcept>
