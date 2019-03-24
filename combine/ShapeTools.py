@@ -1061,8 +1061,8 @@ class ShapeBuilder(ModelBuilder):
             if shape.ClassName().startswith("TH1"):
                 if self.options.useHistPdf == "never":
                     shape = self.rebinH1(shape)
-                    list = ROOT.TList()
-                    list.Add(shape)
+                    root_list = ROOT.TList()
+                    root_list.Add(shape)
                     if channelBinParFlag:
                         rhp = ROOT.CMSHistFunc(
                             "%sPdf" % shape.GetName(), "", self.out.var(self.TH1Observables[channel]), shape
@@ -1076,7 +1076,7 @@ class ShapeBuilder(ModelBuilder):
                             "%sPdf" % shape.GetName(),
                             "",
                             self.out.var(self.TH1Observables[channel]),
-                            list,
+                            root_list,
                             ROOT.RooArgList(),
                         )
                     _cache[shape.GetName() + "Pdf"] = rhp
