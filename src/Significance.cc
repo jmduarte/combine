@@ -148,7 +148,7 @@ bool Significance::run(RooWorkspace *w,
     if (i > 0) {  // randomize starting point
       r->setMax(rMax * (0.5 + RooRandom::uniform()));
       r->setVal((0.1 + 0.5 * RooRandom::uniform()) * r->getMax());
-      if (withSystematics) {
+      if (g_withSystematics) {
         if (nuisancePdf.get() == 0)
           nuisancePdf.reset(utils::makeNuisancePdf(*mc_s));
         RooArgSet set(*mc_s->GetNuisanceParameters());
@@ -177,7 +177,7 @@ bool Significance::run(RooWorkspace *w,
       }
       delete res;
     }
-    //bool thisTry = (doSignificance_ ?  runSignificance(w,mc_s,data,limit,limitErr) : runLimit(w,mc_s,data,limit,limitErr)); <- only run signficance here now
+    //bool thisTry = (g_doSignificance ?  runSignificance(w,mc_s,data,limit,limitErr) : runLimit(w,mc_s,data,limit,limitErr)); <- only run signficance here now
     bool thisTry = runSignificance(w, mc_s, data, limit, limitErr);
     if (!thisTry)
       continue;

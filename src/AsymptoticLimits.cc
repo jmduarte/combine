@@ -216,7 +216,7 @@ bool AsymptoticLimits::runLimit(RooWorkspace *w,
   }
 
   RooArgSet constraints;
-  if (withSystematics)
+  if (g_withSystematics)
     constraints.add(*mc_s->GetNuisanceParameters());
   nllD_.reset(mc_s->GetPdf()->createNLL(data, RooFit::Constrain(constraints)));
   nllA_.reset(mc_s->GetPdf()->createNLL(asimov, RooFit::Constrain(constraints)));
@@ -1033,7 +1033,7 @@ RooAbsData *AsymptoticLimits::asimovDataset(RooWorkspace *w,
   }
   // snapshot data global observables
   RooArgSet gobs;
-  if (withSystematics && mc_s->GetGlobalObservables()) {
+  if (g_withSystematics && mc_s->GetGlobalObservables()) {
     gobs.add(*mc_s->GetGlobalObservables());
     snapGlobalObsData.removeAll();
     utils::setAllConstant(gobs, true);

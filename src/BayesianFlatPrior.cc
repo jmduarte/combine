@@ -34,7 +34,7 @@ bool BayesianFlatPrior::run(RooWorkspace *w,
   RooArgSet poi(*mc_s->GetParametersOfInterest());
 
   int dim = poi.getSize();
-  if (withSystematics)
+  if (g_withSystematics)
     dim += mc_s->GetNuisanceParameters()->getSize();
   if (dim >= maxDim_) {
     std::cerr << "ERROR: Your model has more parameters than the maximum allowed in the BayesianSimple method. \n"
@@ -52,7 +52,7 @@ bool BayesianFlatPrior::run(RooWorkspace *w,
   RooRealVar *r = dynamic_cast<RooRealVar *>(poi.first());
   double rMax = r->getMax();
   std::unique_ptr<RooStats::ModelConfig> mc_noNuis = nullptr;
-  if (!withSystematics && mc_s->GetNuisanceParameters() != 0) {
+  if (!g_withSystematics && mc_s->GetNuisanceParameters() != 0) {
     mc_noNuis.reset(new RooStats::ModelConfig(w));
     mc_noNuis->SetPdf(*mc_s->GetPdf());
     mc_noNuis->SetObservables(*mc_s->GetObservables());

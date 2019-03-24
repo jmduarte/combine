@@ -229,12 +229,12 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
 
   if (vm.count("frequentist")) {
     genNuisances_ = 0;
-    genGlobalObs_ = withSystematics;
-    fitNuisances_ = withSystematics;
+    genGlobalObs_ = g_withSystematics;
+    fitNuisances_ = g_withSystematics;
     if (vm["testStat"].defaulted())
       testStat_ = "LHC";
     if (vm["toys"].as<int>() > 0 and vm.count("toysFrequentist")) {
-      if (vm["fitNuisances"].defaulted() && withSystematics) {
+      if (vm["fitNuisances"].defaulted() && g_withSystematics) {
         std::cout << "When tossing frequenst toys outside the HybridNew, the nuisances will not be refitted for each "
                      "toy by default. This can be changed by specifying explicitly the fitNuisances option"
                   << std::endl;
@@ -249,19 +249,19 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
   if (!vm["LHCmode"].defaulted()) {
     if (mode_ == "LHC-limits") {
       genNuisances_ = 0;
-      genGlobalObs_ = withSystematics;
-      fitNuisances_ = withSystematics;
+      genGlobalObs_ = g_withSystematics;
+      fitNuisances_ = g_withSystematics;
       testStat_ = "LHC";
     } else if (mode_ == "LHC-significance") {
       genNuisances_ = 0;
-      genGlobalObs_ = withSystematics;
-      fitNuisances_ = withSystematics;
+      genGlobalObs_ = g_withSystematics;
+      fitNuisances_ = g_withSystematics;
       testStat_ = "LHC";
-      doSignificance_ = true;
+      g_doSignificance = true;
     } else if (mode_ == "LHC-feldman-cousins") {
       genNuisances_ = 0;
-      genGlobalObs_ = withSystematics;
-      fitNuisances_ = withSystematics;
+      genGlobalObs_ = g_withSystematics;
+      fitNuisances_ = g_withSystematics;
       testStat_ = "PL";
       rule_ = "CLsplusb";
       doFC_ = true;
@@ -284,15 +284,15 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
                              __func__);
   }
   if (!vm["singlePoint"].defaulted()) {
-    if (doSignificance_)
+    if (g_doSignificance)
       throw std::invalid_argument("HybridNew: Can't use --significance and --singlePoint at the same time");
     workingMode_ = (vm.count("onlyTestStat") ? MakeTestStatistics : MakePValues);
   } else if (vm.count("onlyTestStat")) {
-    if (doSignificance_)
+    if (g_doSignificance)
       workingMode_ = MakeSignificanceTestStatistics;
     else
       throw std::invalid_argument("HybridNew: --onlyTestStat works only with --singlePoint or --significance");
-  } else if (doSignificance_) {
+  } else if (g_doSignificance) {
     workingMode_ = MakeSignificance;
     rValue_ = vm["signalForSignificance"].as<std::string>();
   } else {
@@ -1047,7 +1047,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
   //this is only supported currently for the optimized version of the LHC-type test statistic
   RooArgList gobsParams;
   RooArgList gobs;
-  if (withSystematics && testStat_ == "LHC" && optimizeTestStatistics_) {
+  if (g_withSystematics && testStat_ == "LHC" && optimizeTestStatistics_) {
     RooArgList allnuis(*mc_s->GetNuisanceParameters());
     RooArgList allgobs(*mc_s->GetGlobalObservables());
     for (int i = 0; i < allnuis.getSize(); ++i) {
@@ -1165,7 +1165,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
   setup.modelConfig.SetPdf(*mc_s->GetPdf());
   setup.modelConfig.SetObservables(*mc_s->GetObservables());
   setup.modelConfig.SetParametersOfInterest(*mc_s->GetParametersOfInterest());
-  if (withSystematics) {
+  if (g_withSystematics) {
     if (genNuisances_ && mc_s->GetNuisanceParameters())
       setup.modelConfig.SetNuisanceParameters(*mc_s->GetNuisanceParameters());
     if (genGlobalObs_ && mc_s->GetGlobalObservables())
@@ -1178,14 +1178,14 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
   setup.modelConfig_bonly.SetObservables(*mc_b->GetObservables());
   setup.modelConfig_bonly.SetParametersOfInterest(mc_b->GetParametersOfInterest() ? *mc_b->GetParametersOfInterest()
                                                                                   : RooArgSet());
-  if (withSystematics) {
+  if (g_withSystematics) {
     if (genNuisances_ && mc_b->GetNuisanceParameters())
       setup.modelConfig_bonly.SetNuisanceParameters(*mc_b->GetNuisanceParameters());
     if (genGlobalObs_ && mc_b->GetGlobalObservables())
       setup.modelConfig_bonly.SetGlobalObservables(*mc_b->GetGlobalObservables());
   }
 
-  if (withSystematics && !genNuisances_) {
+  if (g_withSystematics && !genNuisances_) {
     // The pdf will contain non-const parameters which are not observables
     // and the HybridCalculator will assume they're nuisances and try to generate them
     // to avoid this, we force him to generate a fake nuisance instead
@@ -1234,7 +1234,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
   // Create pdfs without nusiances terms, can be used for LEP tests statistics and
   // for generating toys when not generating global observables
   RooAbsPdf *factorizedPdf_s = setup.modelConfig.GetPdf(), *factorizedPdf_b = setup.modelConfig_bonly.GetPdf();
-  if (withSystematics && optimizeProductPdf_ && !genGlobalObs_) {
+  if (g_withSystematics && optimizeProductPdf_ && !genGlobalObs_) {
     RooArgList constraints;
     RooAbsPdf *factorizedPdf_s = utils::factorizePdf(*mc_s->GetObservables(), *mc_s->GetPdf(), constraints);
     RooAbsPdf *factorizedPdf_b = utils::factorizePdf(*mc_b->GetObservables(), *mc_b->GetPdf(), constraints);
@@ -1248,7 +1248,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
 
   if (testStat_ == "LEP") {
     //SLR is evaluated using the central value of the nuisance parameters, so we have to put them in the parameter sets
-    if (withSystematics) {
+    if (g_withSystematics) {
       if (!fitNuisances_) {
         params.add(*mc_s->GetNuisanceParameters(), true);
         paramsZero.addClone(*mc_b->GetNuisanceParameters(), true);
@@ -1273,7 +1273,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
         setup.qvar.reset(new SimplerLikelihoodRatioTestStat(*pdfB, *factorizedPdf_s, paramsZero, params));
       } else {
         setup.qvar.reset(new SimplerLikelihoodRatioTestStatOpt(
-            *mc_s->GetObservables(), *pdfB, *factorizedPdf_s, paramsZero, params, withSystematics));
+            *mc_s->GetObservables(), *pdfB, *factorizedPdf_s, paramsZero, params, g_withSystematics));
       }
     } else {
       std::cerr << "ALERT: LEP test statistics without optimization not validated." << std::endl;
@@ -1344,7 +1344,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
   }
 
   RooAbsPdf *nuisancePdf = 0;
-  if (withSystematics && (genNuisances_ || (newToyMCSampler_ && genGlobalObs_))) {
+  if (g_withSystematics && (genNuisances_ || (newToyMCSampler_ && genGlobalObs_))) {
     nuisancePdf = utils::makeNuisancePdf(*mc_s);
     if (nuisancePdf)
       setup.cleanupList.addOwned(*nuisancePdf);
@@ -1370,7 +1370,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
   std::unique_ptr<HybridCalculator> hc(
       new HybridCalculator(data, setup.modelConfig, setup.modelConfig_bonly, setup.toymcsampler.get()));
   if (genNuisances_ || !genGlobalObs_) {
-    if (withSystematics) {
+    if (g_withSystematics) {
       setup.toymcsampler->SetGlobalObservables(*setup.modelConfig.GetNuisanceParameters());
       (static_cast<HybridCalculator &>(*hc)).ForcePriorNuisanceNull(*nuisancePdf);
       (static_cast<HybridCalculator &>(*hc)).ForcePriorNuisanceAlt(*nuisancePdf);

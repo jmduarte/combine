@@ -221,7 +221,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
               << std::endl;
 
   // start with a best fit
-  const RooCmdArg &constrainCmdArg = withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
+  const RooCmdArg &constrainCmdArg = g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
   std::unique_ptr<RooFitResult> res;
   if (verbose <= 3)
     RooAbsReal::setEvalErrorLoggingMode(RooAbsReal::CountErrors);
@@ -445,7 +445,7 @@ void MultiDimFit::initOnce(RooWorkspace *w, RooStats::ModelConfig *mc_s) {
     }
   }
 
-  if (saveSpecifiedNuis_ != "" && withSystematics) {
+  if (saveSpecifiedNuis_ != "" && g_withSystematics) {
     RooArgSet mcNuis(*mc_s->GetNuisanceParameters());
     if (saveSpecifiedNuis_ == "all") {
       specifiedNuis_.clear();

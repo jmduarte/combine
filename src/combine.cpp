@@ -34,13 +34,19 @@
 #include "combine/GenerateOnly.h"
 #include "combine/Logger.h"
 
-int combine(std::string const &datacard,
+template<class T>
+struct ValueWithError {
+    T value;
+    T error;
+};
+
+double combine(std::string const &datacard,
             int argc,
             char **argv,
             std::string const &whichMethod,
             int verbosity,
-            bool significance,
-            float mass) {
+            int runToys,
+            float expectSignal) {
   verbose = verbosity;
 
   using namespace std;
@@ -50,18 +56,15 @@ int combine(std::string const &datacard,
   string name = "Test";
   string dataset;
   std::string whichHintMethod;
-  int runToys;
   int seed;
   string toysFile;
-
-  g_mass = mass;
 
   vector<string> runtimeDefines;
   vector<string> modelPoints;
   vector<string> modelParamNameVector_;
   vector<string> modelParamValVector_;
 
-  Combine combiner;
+  Combine combiner(expectSignal);
 
   map<string, LimitAlgo *> methods;
   algo = new Significance();
@@ -99,7 +102,7 @@ int combine(std::string const &datacard,
   }
 
   po::options_description desc("Main options");
-  desc.add_options()("toys,t", po::value<int>(&runToys)->default_value(0), "Number of Toy MC extractions")(
+  desc.add_options()(
       "seed,s", po::value<int>(&seed)->default_value(123456), "Toy MC random seed")(
       "hintMethod,H",
       po::value<string>(&whichHintMethod)->default_value(""),
@@ -128,58 +131,26 @@ int combine(std::string const &datacard,
   po::variables_map vm, vm0;
 
   // parse the first time, using only common options and allow unregistered options
-  try {
-    po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm0);
-    po::notify(vm0);
-  } catch (std::exception &ex) {
-    cerr << "Invalid options: " << ex.what() << endl;
-    cout << "Invalid options: " << ex.what() << endl;
-    return 999;
-  } catch (...) {
-    cerr << "Unidentified error parsing options." << endl;
-    return 1000;
-  }
+  po::store(po::command_line_parser(argc, argv).options(desc).allow_unregistered().run(), vm0);
+  po::notify(vm0);
 
   // now search for algo, and add option
   map<string, LimitAlgo *>::const_iterator it_algo = methods.find(whichMethod);
-  if (it_algo == methods.end()) {
-    cerr << "Unsupported method: " << whichMethod << endl;
-    return 1003;
-  }
   desc.add(it_algo->second->options());
 
   // parse the first time, now include options of the algo but not unregistered ones
-  try {
-    po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    po::notify(vm);
-  } catch (std::exception &ex) {
-    cerr << "Invalid options: " << ex.what() << endl;
-    cout << "Invalid options: " << ex.what() << endl;
-    return 999;
-  } catch (...) {
-    cerr << "Unidentified error parsing options." << endl;
-    return 1000;
-  }
+  po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+  po::notify(vm);
 
-  combiner.applyOptions(whichMethod, vm, significance);
+  combiner.applyOptions(whichMethod, vm);
   CascadeMinimizer::applyOptions(vm);
 
   algo = it_algo->second;
-  try {
-    algo->applyOptions(vm);
-  } catch (std::exception &ex) {
-    cerr << "Error when configuring the algorithm " << whichMethod << ":\n\t" << ex.what() << std::endl;
-    return 2002;
-  }
+  algo->applyOptions(vm);
   cout << ">>> method used is " << whichMethod << endl;
 
   if (!whichHintMethod.empty()) {
     map<string, LimitAlgo *>::const_iterator it_hint = methods.find(whichHintMethod);
-    if (it_hint == methods.end()) {
-      cerr << "Unsupported hint method: " << whichHintMethod << endl;
-      cout << "Usage: combine [options]\n";
-      return 1003;
-    }
     hintAlgo = it_hint->second;
     hintAlgo->applyDefaultOptions();
     cout << ">>> method used to hint where the upper limit is " << whichHintMethod << endl;
@@ -189,14 +160,6 @@ int combine(std::string const &datacard,
     if (verbose > 0)
       std::cout << ">>> Using OpenSSL to get a really random seed " << std::endl;
     FILE *rpipe = popen("openssl rand 8", "r");
-    if (rpipe == 0) {
-      std::cout << "Error when running 'openssl rand 8'" << std::endl;
-      return 2101;
-    }
-    if (fread(&seed, sizeof(int), 1, rpipe) != 1) {
-      std::cout << "Error when reading from 'openssl rand 8'" << std::endl;
-      return 2102;
-    }
     std::cout << ">>> Used OpenSSL to get a really random seed " << seed << std::endl;
   } else {
     std::cout << ">>> random number generator seed is " << seed << std::endl;
@@ -234,11 +197,9 @@ int combine(std::string const &datacard,
   outputFile = test;
   TTree *t = new TTree("limit", "limit");
   int syst, iToy, iSeed, iChannel;
-  double limit;
-  double limitErr;
-  t->Branch("limit", &limit, "limit/D");
-  t->Branch("limitErr", &limitErr, "limitErr/D");
-  t->Branch("mh", &g_mass, "mh/F");
+  ValueWithError<double> limit;
+  t->Branch("limit", &limit.value, "limit/D");
+  t->Branch("limitErr", &limit.error, "limitErr/D");
   t->Branch("syst", &syst, "syst/I");
   t->Branch("iToy", &iToy, "iToy/I");
   t->Branch("iSeed", &iSeed, "iSeed/I");
@@ -255,7 +216,7 @@ int combine(std::string const &datacard,
   if (toysFile != "")
     readToysFromHere = TFile::Open(toysFile.c_str());
 
-  syst = withSystematics;
+  syst = g_withSystematics;
   iSeed = seed;
   iChannel = 0;
 
@@ -303,13 +264,12 @@ int combine(std::string const &datacard,
   }
 
   try {
-    combiner.run(datacard, dataset, limit, limitErr, iToy, t, runToys);
+    combiner.run(datacard, dataset, limit.value, limit.error, iToy, t, runToys);
     if (verbose > 0)
       Logger::instance().printLog();
   } catch (std::exception &ex) {
     cerr << "Error when running the combination:\n\t" << ex.what() << std::endl;
     test->Close();
-    return 3001;
   }
 
   test->WriteTObject(t);
@@ -321,15 +281,18 @@ int combine(std::string const &datacard,
   if (vm.count("perfCounters"))
     PerfCounter::printAll();
 
-  return 0;
+  return limit.value;
 }
 
-int _combine(std::string const &datacard,
+double _combine(std::string const &datacard,
              std::vector<std::string> const &argsVector,
              std::string const &method,
              int verbose,
              bool significance,
-             float mass) {
+             float mass,
+             bool withSystematics,
+             int toys,
+             float expectSignal) {
   std::vector<char *> args;
   args.reserve(argsVector.size() + 1);
 
@@ -338,7 +301,11 @@ int _combine(std::string const &datacard,
   for (size_t i = 0; i < argsVector.size(); ++i)
     args.push_back(const_cast<char *>(argsVector[i].c_str()));
 
-  return combine(datacard, args.size(), &args[0], method, verbose, significance, mass);
+  g_mass = mass;
+  g_withSystematics = withSystematics;
+  g_doSignificance = significance;
+
+  return combine(datacard, args.size(), &args[0], method, verbose, toys, expectSignal);
 }
 
 PYBIND11_MODULE(_combine, m) {

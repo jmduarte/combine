@@ -45,7 +45,7 @@ BayesianToyMC::BayesianToyMC() : LimitAlgo("BayesianToyMC specific options") {
 }
 
 void BayesianToyMC::applyOptions(const boost::program_options::variables_map &vm) {
-  if (!withSystematics) {
+  if (!g_withSystematics) {
     std::cout
         << "combine/BayesianToyMC: when running with no systematics, BayesianToyMC is identical to BayesianSimple."
         << std::endl;
@@ -55,7 +55,7 @@ void BayesianToyMC::applyOptions(const boost::program_options::variables_map &vm
   }
   if (!twoPoints_.empty() && twoPoints_.size() != 2)
     throw std::logic_error("twoPoints option requires exactly two points\n");
-  if (!twoPoints_.empty() && !doSignificance_)
+  if (!twoPoints_.empty() && !g_doSignificance)
     throw std::logic_error("twoPoints option works with --significance\n");
 }
 bool BayesianToyMC::run(RooWorkspace *w,
@@ -65,7 +65,7 @@ bool BayesianToyMC::run(RooWorkspace *w,
                         double &limit,
                         double &limitErr,
                         const double *hint) {
-  if (doSignificance_)
+  if (g_doSignificance)
     return runBayesFactor(w, mc_s, mc_b, data, limit, limitErr, hint);
 
   RooArgSet poi(*mc_s->GetParametersOfInterest());
@@ -77,7 +77,7 @@ bool BayesianToyMC::run(RooWorkspace *w,
   double rMax = r->getMax();
 
   std::unique_ptr<RooStats::ModelConfig> mc_noNuis = nullptr;
-  if (!withSystematics && mc_s->GetNuisanceParameters() != 0) {
+  if (!g_withSystematics && mc_s->GetNuisanceParameters() != 0) {
     mc_noNuis.reset(new RooStats::ModelConfig(w));
     mc_noNuis->SetPdf(*mc_s->GetPdf());
     mc_noNuis->SetObservables(*mc_s->GetObservables());
@@ -190,7 +190,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
   // factorize away nuisance pdf
   RooAbsPdf *pdf = mc->GetPdf();
   std::unique_ptr<RooAbsPdf> nuisancePdf, nonNuisancePdf;
-  if (withSystematics) {
+  if (g_withSystematics) {
     RooArgList constraints;
     nonNuisancePdf.reset(utils::factorizePdf(*data.get(), *pdf, constraints));
     if (constraints.getSize() > 0) {
@@ -201,7 +201,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
   }
   std::cout << "Factorized PDF, now creating NLL" << std::endl;
   // create NLL
-  const RooCmdArg &constrain = withSystematics ? RooFit::Constrain(*mc->GetNuisanceParameters()) : RooCmdArg::none();
+  const RooCmdArg &constrain = g_withSystematics ? RooFit::Constrain(*mc->GetNuisanceParameters()) : RooCmdArg::none();
   std::unique_ptr<RooAbsReal> nll(pdf->createNLL(data, constrain, RooFit::Extended(pdf->canBeExtended())));
   std::unique_ptr<RooArgSet> params(nll->getParameters(data));
 
@@ -221,7 +221,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
   RooStats::RemoveConstantParameters(&otherParams);
   if (mc->GetParametersOfInterest())
     otherParams.remove(*mc->GetParametersOfInterest());
-  if (withSystematics && mc->GetNuisanceParameters())
+  if (g_withSystematics && mc->GetNuisanceParameters())
     otherParams.remove(*mc->GetNuisanceParameters());
   if (verbose && otherParams.getSize()) {
     std::cout << "Other unnamed parameters to generate:";
@@ -237,7 +237,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
   double sum = 0;
   for (unsigned int t = 0; t < tries_; ++t) {
     std::unique_ptr<RooDataSet> nuisanceValues, poiValues;
-    if (withSystematics)
+    if (g_withSystematics)
       nuisanceValues.reset(nuisancePdf->generate(*mc->GetNuisanceParameters(), numIters_));
     if (poiToGen.getSize() > 0) {
       if (mc->GetPriorPdf() == 0)

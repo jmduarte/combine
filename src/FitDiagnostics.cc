@@ -184,7 +184,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
   if (!justFit_ && out_ != "none") {
     if (currentToy_ < 1) {
       fitOut.reset(TFile::Open((out_ + "/fitDiagnostics" + name_ + ".root").c_str(), "RECREATE"));
-      createFitResultTrees(*mc_s, withSystematics);
+      createFitResultTrees(*mc_s, g_withSystematics);
     }
   }
 
@@ -225,7 +225,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
           mc_s->GetPdf(), *mc_s->GetObservables(), *norms, sampler, currentToy_ < 1 ? fitOut.get() : 0, "_prefit", data);
       delete norms;
     }
-    if (withSystematics) {
+    if (g_withSystematics) {
       setFitResultTrees(mc_s->GetNuisanceParameters(), nuisanceParameters_);
       setFitResultTrees(mc_s->GetGlobalObservables(), globalObservables_);
     }
@@ -283,12 +283,12 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
   // }
   if (t_prefit_) {
     t_prefit_->Fill();
-    resetFitResultTrees(withSystematics);
+    resetFitResultTrees(g_withSystematics);
   }
 
   RooFitResult *res_b = 0, *res_s = 0;
   const RooCmdArg &constCmdArg_s =
-      withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooFit::NumCPU(1);  // use something dummy
+      g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooFit::NumCPU(1);  // use something dummy
   //const RooCmdArg &minosCmdArg = minos_ == "poi" ?  RooFit::Minos(*mc_s->GetParametersOfInterest())   : RooFit::Minos(minos_ != "none");  //--> dont use fitTo!
   w->loadSnapshot("clean");
 
@@ -337,7 +337,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
     if (fitOut.get()) {
       if (currentToy_ < 1)
         fitOut->WriteTObject(res_b, "fit_b");
-      if (withSystematics) {
+      if (g_withSystematics) {
         setFitResultTrees(mc_s->GetNuisanceParameters(), nuisanceParameters_);
         setFitResultTrees(mc_s->GetGlobalObservables(), globalObservables_);
       }
@@ -451,7 +451,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
   mu_ = r->getVal();
   if (t_fit_b_) {
     t_fit_b_->Fill();
-    resetFitResultTrees(withSystematics);
+    resetFitResultTrees(g_withSystematics);
   }
   // no longer need res_b
   delete res_b;
@@ -496,7 +496,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
       if (currentToy_ < 1)
         fitOut->WriteTObject(res_s, "fit_s");
 
-      if (withSystematics) {
+      if (g_withSystematics) {
         setFitResultTrees(mc_s->GetNuisanceParameters(), nuisanceParameters_);
         setFitResultTrees(mc_s->GetGlobalObservables(), globalObservables_);
       }
@@ -675,7 +675,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
   }
   if (t_fit_sb_) {
     t_fit_sb_->Fill();
-    resetFitResultTrees(withSystematics);
+    resetFitResultTrees(g_withSystematics);
   }
 
   if (currentToy_ == nToys - 1 || nToys == 0) {

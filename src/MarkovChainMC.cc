@@ -157,7 +157,7 @@ bool MarkovChainMC::run(RooWorkspace *w,
                         double &limit,
                         double &limitErr,
                         const double *hint) {
-  if (proposalType_ == MultiGaussianP && !withSystematics) {
+  if (proposalType_ == MultiGaussianP && !g_withSystematics) {
     std::cerr << "Sorry, the multi-gaussian proposal does not work without systematics.\n"
               << "Uniform proposal will be used instead.\n"
               << std::endl;
@@ -171,7 +171,7 @@ bool MarkovChainMC::run(RooWorkspace *w,
 
   // Get degrees of freedom
   modelNDF_ = mc_s->GetParametersOfInterest()->getSize();
-  if (withSystematics)
+  if (g_withSystematics)
     modelNDF_ += mc_s->GetNuisanceParameters()->getSize();
 
   double suma = 0;
@@ -242,7 +242,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
     r->setMax(hintSafetyFactor_ * (*hint));
   }
 
-  if (withSystematics && (mc_s->GetNuisanceParameters() == 0)) {
+  if (g_withSystematics && (mc_s->GetNuisanceParameters() == 0)) {
     throw std::logic_error("MarkovChainMC: running with systematics enabled, but nuisances not defined.");
   }
 

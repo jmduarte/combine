@@ -94,7 +94,7 @@ bool ChannelCompatibilityCheck::runSpecific(RooWorkspace *w,
 
   CloseCoutSentry sentry(verbose < 2);
   const RooCmdArg &constCmdArg =
-      withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooFit::NumCPU(1);  // use something dummy
+      g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooFit::NumCPU(1);  // use something dummy
   std::unique_ptr<RooFitResult> result_nominal(
       doFit(*sim, data, minosOneVar, constCmdArg, runMinos_));  // let's run Hesse if we want to run Minos
   if (dynamic_cast<cacheutils::CachingSimNLL *>(nll.get())) {
