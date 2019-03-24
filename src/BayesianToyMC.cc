@@ -46,8 +46,9 @@ BayesianToyMC::BayesianToyMC() : LimitAlgo("BayesianToyMC specific options") {
 
 void BayesianToyMC::applyOptions(const boost::program_options::variables_map &vm) {
   if (!withSystematics) {
-    std::cout << "combine/BayesianToyMC: when running with no systematics, BayesianToyMC is identical to BayesianSimple."
-              << std::endl;
+    std::cout
+        << "combine/BayesianToyMC: when running with no systematics, BayesianToyMC is identical to BayesianSimple."
+        << std::endl;
     tries_ = 1;
     numIters_ = 0;
     integrationType_ = "";

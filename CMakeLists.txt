@@ -13,6 +13,6 @@ include_directories(${COMBINE_HEADERS_DIR})
 include_directories($ENV{ROOTSYS}/include/root)
 
 add_subdirectory(src)
-add_subdirectory(bin)
+#add_subdirectory(bin)
 
 unset(COMBINE_HEADERS_DIR CACHE)

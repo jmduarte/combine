@@ -180,8 +180,8 @@ Double_t RooNCSpline_1D_fast::evaluate() const {
   Double_t value = interpolateFcn(0);
   if (useFloor && value < floorEval) {
     if (verbosity >= RooNCSplineCore::kError)
-      coutE(Eval) << "combine/RooNCSpline_1D_fast ERROR::RooNCSpline_1D_fast(" << GetName() << ") evaluation returned " << value
-                  << " at x = " << theXVar << endl;
+      coutE(Eval) << "combine/RooNCSpline_1D_fast ERROR::RooNCSpline_1D_fast(" << GetName() << ") evaluation returned "
+                  << value << " at x = " << theXVar << endl;
     value = floorEval;
   }
   if (verbosity == RooNCSplineCore::kVerbose) {
@@ -214,8 +214,8 @@ Double_t RooNCSpline_1D_fast::analyticalIntegral(Int_t code, const char* rangeNa
   Double_t value = interpolateFcn(code, rangeName);
   if (useFloor && value < floorInt) {
     if (verbosity >= RooNCSplineCore::kError)
-      coutE(Integration) << "combine/RooNCSpline_1D_fast ERROR::RooNCSpline_1D_fast(" << GetName() << ") integration returned "
-                         << value << " for code = " << code << endl;
+      coutE(Integration) << "combine/RooNCSpline_1D_fast ERROR::RooNCSpline_1D_fast(" << GetName()
+                         << ") integration returned " << value << " for code = " << code << endl;
     value = floorInt;
   }
   if (verbosity == RooNCSplineCore::kVerbose) {

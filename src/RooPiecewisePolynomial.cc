@@ -53,8 +53,8 @@ RooPiecewisePolynomial::RooPiecewisePolynomial(const char* name,
   RooAbsArg* func;
   while ((func = (RooAbsArg*)coefIter->Next())) {
     if (!dynamic_cast<RooAbsReal*>(func)) {
-      cerr << "combine/RooPiecewisePolynomial::RooPiecewisePolynomial(" << GetName() << ") funcficient " << func->GetName()
-           << " is not of type RooAbsReal" << endl;
+      cerr << "combine/RooPiecewisePolynomial::RooPiecewisePolynomial(" << GetName() << ") funcficient "
+           << func->GetName() << " is not of type RooAbsReal" << endl;
       assert(0);
     }
     parList.add(*func);

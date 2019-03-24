@@ -31,8 +31,8 @@ VBFHZZ4L_RooSpinZeroPdf_fast::VBFHZZ4L_RooSpinZeroPdf_fast(const char* name,
   RooAbsArg* coef;
   while ((coef = (RooAbsArg*)coefIter->Next())) {
     if (!dynamic_cast<RooAbsReal*>(coef)) {
-      coutE(InputArguments) << "combine/VBFHZZ4L_RooSpinZeroPdf_fast(" << GetName() << ") observable " << coef->GetName()
-                            << " is not of type RooAbsReal" << endl;
+      coutE(InputArguments) << "combine/VBFHZZ4L_RooSpinZeroPdf_fast(" << GetName() << ") observable "
+                            << coef->GetName() << " is not of type RooAbsReal" << endl;
       assert(0);
     }
     obsList.add(*coef);

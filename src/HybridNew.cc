@@ -715,7 +715,8 @@ bool HybridNew::runLimit(RooWorkspace *w,
               Logger::kLogLevelError,
               __func__);
       } else if (points.size() == 2) {
-        std::cout << "combine/HybridNew -- One-sided boundary found for  " << 100 * cl << "%% confidence regions " << std::endl;
+        std::cout << "combine/HybridNew -- One-sided boundary found for  " << 100 * cl << "%% confidence regions "
+                  << std::endl;
         if (verbose)
           Logger::instance().log(
               std::string(

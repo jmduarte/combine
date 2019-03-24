@@ -178,8 +178,9 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
           if (rar->getVal() == 0)
             continue;  // this could be mu
           if (match2 != 0)
-            throw std::runtime_error(Form(
-                "combine/AsimovUtils: extra constant non-zero parameter %s of RooGamma %s.", rar->GetName(), cterm->GetName()));
+            throw std::runtime_error(Form("combine/AsimovUtils: extra constant non-zero parameter %s of RooGamma %s.",
+                                          rar->GetName(),
+                                          cterm->GetName()));
           match2 = rar;
         }
         if (match2 == 0)

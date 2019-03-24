@@ -83,7 +83,8 @@ void AsymptoticLimits::applyOptions(const boost::program_options::variables_map 
   } else {
     if (what_ != "observed" && what_ != "expected" && what_ != "both" && what_ != "blind")
       throw std::invalid_argument(
-          "combine/AsymptoticLimits: option 'run' can only be 'observed', 'expected' or 'both' (the default) or 'blind' "
+          "combine/AsymptoticLimits: option 'run' can only be 'observed', 'expected' or 'both' (the default) or "
+          "'blind' "
           "(a-priori expected)");
   }
   picky_ = vm.count("picky");

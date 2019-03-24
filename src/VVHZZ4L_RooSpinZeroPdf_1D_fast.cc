@@ -25,8 +25,8 @@ VVHZZ4L_RooSpinZeroPdf_1D_fast::VVHZZ4L_RooSpinZeroPdf_1D_fast(
   RooAbsArg* coef;
   while ((coef = (RooAbsArg*)coefIter->Next())) {
     if (!dynamic_cast<RooAbsReal*>(coef)) {
-      coutE(InputArguments) << "combine/VVHZZ4L_RooSpinZeroPdf_1D_fast(" << GetName() << ") observable " << coef->GetName()
-                            << " is not of type RooAbsReal" << endl;
+      coutE(InputArguments) << "combine/VVHZZ4L_RooSpinZeroPdf_1D_fast(" << GetName() << ") observable "
+                            << coef->GetName() << " is not of type RooAbsReal" << endl;
       assert(0);
     }
     obsList.add(*coef);
@@ -37,8 +37,8 @@ VVHZZ4L_RooSpinZeroPdf_1D_fast::VVHZZ4L_RooSpinZeroPdf_1D_fast(
   coef = 0;
   while ((coef = (RooAbsArg*)coefIter->Next())) {
     if (dynamic_cast<FastTemplateFunc_f*>(coef) == 0 && dynamic_cast<FastTemplateFunc_d*>(coef) == 0) {
-      coutE(InputArguments) << "combine/VVHZZ4L_RooSpinZeroPdf_1D_fast(" << GetName() << ") component " << coef->GetName()
-                            << " is not of type FastTemplateFunc_f" << endl;
+      coutE(InputArguments) << "combine/VVHZZ4L_RooSpinZeroPdf_1D_fast(" << GetName() << ") component "
+                            << coef->GetName() << " is not of type FastTemplateFunc_f" << endl;
       assert(0);
     }
     coefList.add(*coef);

@@ -34,21 +34,28 @@
 #include "combine/GenerateOnly.h"
 #include "combine/Logger.h"
 
+int combine(std::string const &datacard,
+            int argc,
+            char **argv,
+            std::string const &whichMethod,
+            int verbosity,
+            bool significance,
+            float mass) {
+  verbose = verbosity;
 
-int combine(int argc, char **argv) {
   using namespace std;
   using namespace boost;
   namespace po = boost::program_options;
 
-  string name;
-  string datacard, dataset;
-  float iMass;
-  string whichMethod, whichHintMethod;
+  string name = "Test";
+  string dataset;
+  std::string whichHintMethod;
   int runToys;
   int seed;
   string toysFile;
 
-  vector<string> librariesToLoad;
+  g_mass = mass;
+
   vector<string> runtimeDefines;
   vector<string> modelPoints;
   vector<string> modelParamNameVector_;
@@ -92,32 +99,18 @@ int combine(int argc, char **argv) {
   }
 
   po::options_description desc("Main options");
-  desc.add_options()("datacard,d",
-                     po::value<string>(&datacard),
-                     "Datacard file (can also be specified directly without the -d or --datacard)")(
-      "method,M", po::value<string>(&whichMethod)->default_value("AsymptoticLimits"), methodsDesc.c_str())(
-      "verbose,v",
-      po::value<int>(&verbose)->default_value(0),
-      "Verbosity level (-1 = very quiet; 0 = quiet, 1 = verbose, 2+ = debug)")("help,h", "Produce help message");
-  combiner.statOptions().add_options()(
-      "toys,t", po::value<int>(&runToys)->default_value(0), "Number of Toy MC extractions")(
+  desc.add_options()("toys,t", po::value<int>(&runToys)->default_value(0), "Number of Toy MC extractions")(
       "seed,s", po::value<int>(&seed)->default_value(123456), "Toy MC random seed")(
       "hintMethod,H",
       po::value<string>(&whichHintMethod)->default_value(""),
       "Run first this method to provide a hint on the result");
-  combiner.ioOptions().add_options()("name,n",
-                                     po::value<string>(&name)->default_value("Test"),
-                                     "Name of the job, affects the name of the output tree")(
-      "mass,m", po::value<float>(&iMass)->default_value(120.), "Higgs mass to store in the output tree")(
+  combiner.ioOptions().add_options()(
       "dataset,D", po::value<string>(&dataset)->default_value("data_obs"), "Name of the dataset for observed limit")(
       "toysFile",
       po::value<string>(&toysFile)->default_value(""),
       "Read toy mc or other intermediate results from this file");
   combiner.miscOptions().add_options()("igpMem", "Setup support for memory profiling using IgProf")(
       "perfCounters", "Dump performance counters at end of job")(
-      "LoadLibrary,L",
-      po::value<vector<string> >(&librariesToLoad),
-      "Load library through gSystem->Load(...). Can specify multiple libraries using this option multiple times")(
       "keyword-value",
       po::value<vector<string> >(&modelPoints),
       "Set keyword values with 'WORD=VALUE', will replace $WORD with VALUE in datacards. Filename will also be "
@@ -132,7 +125,6 @@ int combine(int argc, char **argv) {
   desc.add(CascadeMinimizer::options());
   desc.add(combiner.miscOptions());
   po::positional_options_description p;
-  p.add("datacard", -1);
   po::variables_map vm, vm0;
 
   // parse the first time, using only common options and allow unregistered options
@@ -142,43 +134,16 @@ int combine(int argc, char **argv) {
   } catch (std::exception &ex) {
     cerr << "Invalid options: " << ex.what() << endl;
     cout << "Invalid options: " << ex.what() << endl;
-    cout << "Use combine --help to get a list of all the allowed options" << endl;
     return 999;
   } catch (...) {
     cerr << "Unidentified error parsing options." << endl;
     return 1000;
   }
 
-  // if help, print help
-  if (vm0.count("help")) {
-    cout << "Usage: combine datacard [options]\n";
-    cout << desc;
-    map<string, LimitAlgo *>::const_iterator i;
-    for (i = methods.begin(); i != methods.end(); ++i) {
-      if ((!vm0["method"].defaulted()) && whichMethod.compare(i->second->name()) != 0)
-        continue;
-      cout << i->second->options() << "\n";
-    }
-    return 0;
-  }
-
-  // Temporary printout for rename of methods ...
-  std::map<std::string, std::string> renames;
-  renames["MaxLikelihoodFit"] = "FitDiagnostics";
-  renames["Asymptotic"] = "AsymptoticLimits";
-  renames["ProfileLikelihood"] = "Significance";
-  map<string, string>::const_iterator it_rename = renames.find(whichMethod);
-  if (it_rename != renames.end()) {
-    cout << " WARNING --  From combine v7, method " << whichMethod << " has been renamed to " << it_rename->second
-         << endl;
-    whichMethod = it_rename->second;
-  }
-
   // now search for algo, and add option
   map<string, LimitAlgo *>::const_iterator it_algo = methods.find(whichMethod);
   if (it_algo == methods.end()) {
     cerr << "Unsupported method: " << whichMethod << endl;
-    cout << "Use combine --help to get a list of all the allowed methods and options" << endl;
     return 1003;
   }
   desc.add(it_algo->second->options());
@@ -190,27 +155,14 @@ int combine(int argc, char **argv) {
   } catch (std::exception &ex) {
     cerr << "Invalid options: " << ex.what() << endl;
     cout << "Invalid options: " << ex.what() << endl;
-    cout << "Use combine --help to get a list of all the allowed options" << endl;
     return 999;
   } catch (...) {
     cerr << "Unidentified error parsing options." << endl;
     return 1000;
   }
 
-  if (datacard == "") {
-    cerr << "Missing datacard file" << endl;
-    cout << "Usage: combine [options]\n";
-    cout << "Use combine --help to get a list of all the allowed methods and options" << endl;
-    return 1002;
-  }
-
-  try {
-    combiner.applyOptions(vm);
-    CascadeMinimizer::applyOptions(vm);
-  } catch (std::exception &ex) {
-    cerr << "Error when configuring the combiner:\n\t" << ex.what() << std::endl;
-    return 2001;
-  }
+  combiner.applyOptions(whichMethod, vm, significance);
+  CascadeMinimizer::applyOptions(vm);
 
   algo = it_algo->second;
   try {
@@ -226,7 +178,6 @@ int combine(int argc, char **argv) {
     if (it_hint == methods.end()) {
       cerr << "Unsupported hint method: " << whichHintMethod << endl;
       cout << "Usage: combine [options]\n";
-      cout << "Use combine --help to get a list of all the allowed methods and options" << endl;
       return 1003;
     }
     hintAlgo = it_hint->second;
@@ -252,7 +203,7 @@ int combine(int argc, char **argv) {
   }
   RooRandom::randomGenerator()->SetSeed(seed);
 
-  TString massName = TString::Format("mH%g.", iMass);
+  TString massName = TString::Format("mH%g.", g_mass);
   TString toyName = "";
   if (runToys > 0 || seed != 123456 || vm.count("saveToys"))
     toyName = TString::Format("%d.", seed);
@@ -283,10 +234,11 @@ int combine(int argc, char **argv) {
   outputFile = test;
   TTree *t = new TTree("limit", "limit");
   int syst, iToy, iSeed, iChannel;
-  double mass, limit, limitErr;
+  double limit;
+  double limitErr;
   t->Branch("limit", &limit, "limit/D");
   t->Branch("limitErr", &limitErr, "limitErr/D");
-  t->Branch("mh", &mass, "mh/D");
+  t->Branch("mh", &g_mass, "mh/F");
   t->Branch("syst", &syst, "syst/I");
   t->Branch("iToy", &iToy, "iToy/I");
   t->Branch("iSeed", &iSeed, "iSeed/I");
@@ -304,15 +256,8 @@ int combine(int argc, char **argv) {
     readToysFromHere = TFile::Open(toysFile.c_str());
 
   syst = withSystematics;
-  mass = iMass;
   iSeed = seed;
   iChannel = 0;
-
-  // if you have libraries, it's time to load them now
-  for (vector<string>::const_iterator lib = librariesToLoad.begin(), endlib = librariesToLoad.end(); lib != endlib;
-       ++lib) {
-    gSystem->Load(lib->c_str());
-  }
 
   if (vm.count("igpMem"))
     setupIgProfDumpHook();
@@ -379,22 +324,25 @@ int combine(int argc, char **argv) {
   return 0;
 }
 
-int _combine(std::vector<std::string> const& argsVector) {
+int _combine(std::string const &datacard,
+             std::vector<std::string> const &argsVector,
+             std::string const &method,
+             int verbose,
+             bool significance,
+             float mass) {
+  std::vector<char *> args;
+  args.reserve(argsVector.size() + 1);
 
-    std::vector<char*> args;
-    args.reserve(argsVector.size() + 1);
+  args.push_back(const_cast<char *>("combine"));
 
-    args.push_back(const_cast<char*>("combine"));
+  for (size_t i = 0; i < argsVector.size(); ++i)
+    args.push_back(const_cast<char *>(argsVector[i].c_str()));
 
-    for(size_t i = 0; i < argsVector.size(); ++i)
-        args.push_back(const_cast<char*>(argsVector[i].c_str()));
-
-    return combine(args.size(), &args[0]);
+  return combine(datacard, args.size(), &args[0], method, verbose, significance, mass);
 }
 
 PYBIND11_MODULE(_combine, m) {
-    m.doc() = "CMS Higgs Combination toolkit.";
+  m.doc() = "CMS Higgs Combination toolkit.";
 
-    m.def("_combine", &_combine, "CMS Higgs Combination toolkit.");
+  m.def("_combine", &_combine, "CMS Higgs Combination toolkit.");
 }
-

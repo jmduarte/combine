@@ -215,8 +215,8 @@ Bool_t RooRealFlooredSumPdf::checkObservables(const RooArgSet* nset) const {
   while ((coef = (RooAbsReal*)_coefIter->Next())) {
     func = (RooAbsReal*)_funcIter->Next();
     if (func->observableOverlaps(nset, *coef)) {
-      coutE(InputArguments) << "combine/RooRealFlooredSumPdf::checkObservables(" << GetName() << "): ERROR: coefficient "
-                            << coef->GetName() << " and FUNC " << func->GetName()
+      coutE(InputArguments) << "combine/RooRealFlooredSumPdf::checkObservables(" << GetName()
+                            << "): ERROR: coefficient " << coef->GetName() << " and FUNC " << func->GetName()
                             << " have one or more observables in common" << endl;
       ret = kTRUE;
     }

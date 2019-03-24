@@ -29,6 +29,7 @@ extern int verbose;
 extern bool withSystematics;
 extern bool doSignificance_, lowerLimit_;
 extern float cl;
+extern float g_mass;
 extern bool bypassFrequentistFit_;
 extern std::string setPhysicsModelParameterExpression_;
 extern std::string setPhysicsModelParameterRangeExpression_;
@@ -63,7 +64,7 @@ public:
   boost::program_options::options_description &statOptions() { return statOptions_; }
   boost::program_options::options_description &ioOptions() { return ioOptions_; }
   boost::program_options::options_description &miscOptions() { return miscOptions_; }
-  void applyOptions(const boost::program_options::variables_map &vm);
+  void applyOptions(std::string const &method, const boost::program_options::variables_map &vm, bool significance);
 
   void run(
       TString hlfFile, const std::string &dataset, double &limit, double &limitErr, int &iToy, TTree *tree, int nToys);
@@ -116,7 +117,6 @@ private:
   bool overrideSnapshotMass_;
   bool validateModel_;
   bool saveToys_;
-  double mass_;
 
   // implementation-related variables
   bool compiledExpr_;

@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
   }
 
   try {
-    combiner.applyOptions(vm);
+    combiner.applyOptions(vm["method"].as<std::string>(), vm);
     CascadeMinimizer::applyOptions(vm);
   } catch (std::exception &ex) {
     cerr << "Error when configuring the combiner:\n\t" << ex.what() << std::endl;

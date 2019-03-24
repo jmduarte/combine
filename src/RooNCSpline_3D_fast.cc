@@ -92,9 +92,10 @@ RooNCSpline_3D_fast::RooNCSpline_3D_fast(const char* name,
     det = 0;
     TMatrix_t xAinv = xAtrans.Invert(&det);
     if (det == 0.) {
-      coutE(InputArguments) << "combine/RooNCSpline_3D_fast::interpolateFcn: Matrix xA could not be inverted. Something is "
-                               "wrong with the x coordinates of points!"
-                            << endl;
+      coutE(InputArguments)
+          << "combine/RooNCSpline_3D_fast::interpolateFcn: Matrix xA could not be inverted. Something is "
+             "wrong with the x coordinates of points!"
+          << endl;
       assert(0);
     }
 
@@ -111,9 +112,10 @@ RooNCSpline_3D_fast::RooNCSpline_3D_fast(const char* name,
     det = 0;
     TMatrix_t yAinv = yAtrans.Invert(&det);
     if (det == 0.) {
-      coutE(InputArguments) << "combine/RooNCSpline_3D_fast::interpolateFcn: Matrix yA could not be inverted. Something is "
-                               "wrong with the y coordinates of points!"
-                            << endl;
+      coutE(InputArguments)
+          << "combine/RooNCSpline_3D_fast::interpolateFcn: Matrix yA could not be inverted. Something is "
+             "wrong with the y coordinates of points!"
+          << endl;
       assert(0);
     }
 
@@ -130,9 +132,10 @@ RooNCSpline_3D_fast::RooNCSpline_3D_fast(const char* name,
     det = 0;
     TMatrix_t zAinv = zAtrans.Invert(&det);
     if (det == 0.) {
-      coutE(InputArguments) << "combine/RooNCSpline_3D_fast::interpolateFcn: Matrix zA could not be inverted. Something is "
-                               "wrong with the z coordinates of points!"
-                            << endl;
+      coutE(InputArguments)
+          << "combine/RooNCSpline_3D_fast::interpolateFcn: Matrix zA could not be inverted. Something is "
+             "wrong with the z coordinates of points!"
+          << endl;
       assert(0);
     }
 
@@ -503,13 +506,13 @@ Double_t RooNCSpline_3D_fast::evaluate() const {
   Double_t value = interpolateFcn(0);
   if (useFloor && value < floorEval) {
     if (verbosity >= RooNCSplineCore::kError)
-      coutE(Eval) << "combine/RooNCSpline_3D_fast ERROR::RooNCSpline_3D_fast(" << GetName() << ") evaluation returned " << value
-                  << " at (x, y, z) = (" << theXVar << ", " << theYVar << ", " << theZVar << ")" << endl;
+      coutE(Eval) << "combine/RooNCSpline_3D_fast ERROR::RooNCSpline_3D_fast(" << GetName() << ") evaluation returned "
+                  << value << " at (x, y, z) = (" << theXVar << ", " << theYVar << ", " << theZVar << ")" << endl;
     value = floorEval;
   }
   if (verbosity == RooNCSplineCore::kVerbose) {
-    cout << "combine/RooNCSpline_3D_fast(" << GetName() << ")::evaluate = " << value << " at (x, y, z) = (" << theXVar << ", "
-         << theYVar << ", " << theZVar << ")" << endl;
+    cout << "combine/RooNCSpline_3D_fast(" << GetName() << ")::evaluate = " << value << " at (x, y, z) = (" << theXVar
+         << ", " << theYVar << ", " << theZVar << ")" << endl;
   }
   return value;
 }
@@ -559,8 +562,8 @@ Double_t RooNCSpline_3D_fast::analyticalIntegral(Int_t code, const char* rangeNa
   Double_t value = interpolateFcn(code, rangeName);
   if (useFloor && value < floorInt) {
     if (verbosity >= RooNCSplineCore::kError)
-      coutE(Integration) << "combine/RooNCSpline_3D_fast ERROR::RooNCSpline_3D_fast(" << GetName() << ") integration returned "
-                         << value << " for code = " << code << endl;
+      coutE(Integration) << "combine/RooNCSpline_3D_fast ERROR::RooNCSpline_3D_fast(" << GetName()
+                         << ") integration returned " << value << " for code = " << code << endl;
     value = floorInt;
   }
   if (verbosity == RooNCSplineCore::kVerbose) {

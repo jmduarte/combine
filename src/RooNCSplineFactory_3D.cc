@@ -42,8 +42,8 @@ const std::vector<splineQuadruplet_t> RooNCSplineFactory_3D::getPoints(const std
   const unsigned int nZ = ZList.size();
   const unsigned int n = FcnList.size();
   if (nX * nY * nZ != n) {
-    cerr << "combine/RooNCSplineFactory_3D::getPoints: nX=" << nX << " x nY=" << nY << " x nZ=" << nZ << " != nFcn=" << n
-         << endl;
+    cerr << "combine/RooNCSplineFactory_3D::getPoints: nX=" << nX << " x nY=" << nY << " x nZ=" << nZ
+         << " != nFcn=" << n << endl;
     assert(0);
   }
 

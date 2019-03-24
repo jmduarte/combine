@@ -204,8 +204,8 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
       continue;
     RooRealVar *rrv = dynamic_cast<RooRealVar *>(a);
     if (rrv == 0) {
-      std::cerr << "combine/MultiDimFit: Parameter of interest " << a->GetName() << " which is not a RooRealVar will be ignored"
-                << std::endl;
+      std::cerr << "combine/MultiDimFit: Parameter of interest " << a->GetName()
+                << " which is not a RooRealVar will be ignored" << std::endl;
       continue;
     }
     rrv->setConstant(!floatOtherPOIs_);

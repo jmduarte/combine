@@ -124,15 +124,14 @@ bool CascadeMinimizer::improve(int verbose, bool cascade) {
           if (verbose > 0) {
             std::cerr << "Will fallback to minimization using " << it->algo << ", strategy " << myStrategy
                       << " and tolerance " << it->tolerance << std::endl;
-            Logger::instance().log(
-                std::string(Form(
-                    "combine/CascadeMinimizer.cc: %d -- Will fallback to minimization using %s, strategy %d and tolerance %g",
-                    __LINE__,
-                    (it->algo).c_str(),
-                    myStrategy,
-                    it->tolerance)),
-                Logger::kLogLevelDebug,
-                __func__);
+            Logger::instance().log(std::string(Form("combine/CascadeMinimizer.cc: %d -- Will fallback to minimization "
+                                                    "using %s, strategy %d and tolerance %g",
+                                                    __LINE__,
+                                                    (it->algo).c_str(),
+                                                    myStrategy,
+                                                    it->tolerance)),
+                                   Logger::kLogLevelDebug,
+                                   __func__);
           }
           minimizer_->setEps(ROOT::Math::MinimizerOptions::DefaultTolerance());
           minimizer_->setStrategy(myStrategy);
@@ -172,16 +171,15 @@ bool CascadeMinimizer::improveOnce(int verbose, bool noHesse) {
     outcome = nllutils::robustMinimize(nll_, *minimizer_, verbose, setZeroPoint_);
   } else {
     if (verbose + 2 > 0)
-      Logger::instance().log(
-          std::string(Form(
-              "combine/CascadeMinimizer.cc: %d -- Minimisation configured with Type=%s, Algo=%s, strategy=%d, tolerance=%g",
-              __LINE__,
-              myType.c_str(),
-              myAlgo.c_str(),
-              myStrategy,
-              tol)),
-          Logger::kLogLevelInfo,
-          __func__);
+      Logger::instance().log(std::string(Form("combine/CascadeMinimizer.cc: %d -- Minimisation configured with "
+                                              "Type=%s, Algo=%s, strategy=%d, tolerance=%g",
+                                              __LINE__,
+                                              myType.c_str(),
+                                              myAlgo.c_str(),
+                                              myStrategy,
+                                              tol)),
+                             Logger::kLogLevelInfo,
+                             __func__);
     cacheutils::CachingSimNLL *simnll = setZeroPoint_ ? dynamic_cast<cacheutils::CachingSimNLL *>(&nll_) : 0;
     if (simnll)
       simnll->setZeroPoint();

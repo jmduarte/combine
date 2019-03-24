@@ -556,15 +556,14 @@ double FitterAlgoBase::findCrossing(
       if (nfail >= maxFailedSteps_) {
         std::cout << "Error: minimization failed at " << r.GetName() << " = " << rStart << std::endl;
         if (verbose)
-          Logger::instance().log(
-              std::string(Form(
-                  "combine/FitterAlgoBase.cc: %d -- Maximum failed steps (max=%d) reached and Minimization failed at %s = %g ",
-                  __LINE__,
-                  maxFailedSteps_,
-                  r.GetName(),
-                  rStart)),
-              Logger::kLogLevelError,
-              __func__);
+          Logger::instance().log(std::string(Form("combine/FitterAlgoBase.cc: %d -- Maximum failed steps (max=%d) "
+                                                  "reached and Minimization failed at %s = %g ",
+                                                  __LINE__,
+                                                  maxFailedSteps_,
+                                                  r.GetName(),
+                                                  rStart)),
+                                 Logger::kLogLevelError,
+                                 __func__);
         return NAN;
       }
       RooArgSet oldparams(checkpoint->floatParsFinal());
@@ -581,11 +580,14 @@ double FitterAlgoBase::findCrossing(
     if (verbose > 0) {
       printf("%f    %+.5f  %+.5f    %f\n", rStart, level - here, level - there, rInc);
       fflush(stdout);
-      Logger::instance().log(
-          std::string(Form(
-              "combine/FitterAlgoBase.cc: %d -- %f    %+.5f  %+.5f    %f", __LINE__, rStart, level - here, level - there, rInc)),
-          Logger::kLogLevelInfo,
-          __func__);
+      Logger::instance().log(std::string(Form("combine/FitterAlgoBase.cc: %d -- %f    %+.5f  %+.5f    %f",
+                                              __LINE__,
+                                              rStart,
+                                              level - here,
+                                              level - there,
+                                              rInc)),
+                             Logger::kLogLevelInfo,
+                             __func__);
     }
     if (fabs(here - level) < 4 * crossingTolerance_) {
       // set to the right point with interpolation
@@ -703,14 +705,13 @@ double FitterAlgoBase::findCrossingNew(
       fprintf(sentry.trueStdOut(), "Error: logEvalErrors on stat of loop for iteration %d, x %+10.6f\n", iter, rVal);
       return NAN;
       if (verbose > 0)
-        Logger::instance().log(
-            std::string(Form(
-                "combine/FitterAlgoBase.cc: %d -- logEvalErrors reported from NLL on start of loop for iteration %d, x %+10.6f",
-                __LINE__,
-                iter,
-                rVal)),
-            Logger::kLogLevelDebug,
-            __func__);
+        Logger::instance().log(std::string(Form("combine/FitterAlgoBase.cc: %d -- logEvalErrors reported from NLL on "
+                                                "start of loop for iteration %d, x %+10.6f",
+                                                __LINE__,
+                                                iter,
+                                                rVal)),
+                               Logger::kLogLevelDebug,
+                               __func__);
     }
     double rInc = stepSize * (rBound - rStart);
     if (rInc == 0)

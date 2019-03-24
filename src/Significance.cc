@@ -43,7 +43,6 @@ std::string Significance::bfAlgo_ = "scale";
 bool Significance::reportPVal_ = false;
 bool Significance::uncapped_ = false;
 float Significance::signalForSignificance_ = 0;
-float Significance::mass_;
 std::string Significance::plot_ = "";
 
 Significance::Significance() : LimitAlgo("Significance specific options") {
@@ -101,7 +100,6 @@ void Significance::applyOptions(const boost::program_options::variables_map &vm)
     useMinos_ = true;
   bruteForce_ = vm.count("bruteForce");
   reportPVal_ = vm.count("pvalue");
-  mass_ = vm["mass"].as<float>();
 }
 
 Significance::MinimizerSentry::MinimizerSentry(const std::string &minimizerAlgo, double tolerance)
@@ -355,7 +353,7 @@ bool Significance::runSignificance(
 
   std::cout << "\n -- Significance -- "
             << "\n";
-  std::cout << (reportPVal_ ? "p-value of background: " : "combine/Significance: ") << limit << std::endl;
+  std::cout << (reportPVal_ ? "p-value of background: " : "Significance: ") << limit << std::endl;
   if (verbose > 0) {
     if (reportPVal_)
       std::cout << "       (Significance = " << RooStats::PValueToSignificance(limit) << ")" << std::endl;
@@ -511,7 +509,7 @@ double Significance::significanceBruteForce(
     printf("%8.5f  %8.5f\n", rval, 0.);
     fflush(stdout);
     points = new TGraph(1);
-    points->SetName(Form("nll_scan_%g", mass_));
+    points->SetName(Form("nll_scan_%g", g_mass));
     points->SetPoint(0, rval, 0);
   }
   while (std::abs(rval) >= tolerance * std::abs(rval > 0 ? poi.getMax() : poi.getMin())) {
@@ -595,7 +593,7 @@ double Significance::significanceFromScan(
   double minnll = nll->getVal(), thisnll = minnll, refnll = thisnll, maxnll = thisnll;
   double rbest = poi.getVal(), rval = rbest;
   TGraph *points = new TGraph(steps + 1);
-  points->SetName(Form("nll_scan_%g", mass_));
+  points->SetName(Form("nll_scan_%g", g_mass));
   TF1 *fit = new TF1("fit", "[0]*pow(abs(x-[1]), [2])+[3]", 0, poi.getMax());
   fit->SetParNames("norm", "bestfit", "power", "offset");
   points->SetPoint(0, rval, 0);
