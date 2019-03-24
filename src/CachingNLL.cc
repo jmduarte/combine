@@ -715,7 +715,7 @@ Double_t cacheutils::CachingAddNLL::evaluate() const {
   if (expectedEvents <= 0) {
     std::cout << "WARNING: underflow in total event yield for " << pdf_->GetName()
               << ", expected yield = " << expectedEvents << " (observed: " << sumWeights_ << ")" << std::endl;
-    Logger::instance().log(std::string(Form("combine/CachingNLL.cc: %d -- underflow (expected events <=0) in total event yield "
+    Logger::instance().log(std::string(Form("CachingNLL.cc: %d -- underflow (expected events <=0) in total event yield "
                                             "for %s, expected yield = %g (observed: %g)",
                                             __LINE__,
                                             pdf_->GetName(),
@@ -1054,7 +1054,7 @@ Double_t cacheutils::CachingSimNLL::evaluate() const {
       if (!isnormal(pdfval) || pdfval <= 0) {
         std::cout << "WARNING: underflow constraint pdf " << (*it)->GetName() << ", value = " << pdfval << std::endl;
         Logger::instance().log(
-            std::string(Form("combine/CachingNLL.cc: %d -- underflow (pdf evaluates to <=0) of constraint pdf %s, value = %g ",
+            std::string(Form("CachingNLL.cc: %d -- underflow (pdf evaluates to <=0) of constraint pdf %s, value = %g ",
                              __LINE__,
                              (*it)->GetName(),
                              pdfval)),

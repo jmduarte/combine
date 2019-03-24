@@ -46,7 +46,7 @@ float Significance::signalForSignificance_ = 0;
 float Significance::mass_;
 std::string Significance::plot_ = "";
 
-Significance::Significance() : LimitAlgo("combine/Significance specific options") {
+Significance::Significance() : LimitAlgo("Significance specific options") {
   options_.add_options()
       //("minimizerAlgo",      boost::program_options::value<std::string>(&minimizerAlgo_)->default_value(minimizerAlgo_), "Choice of minimizer (Minuit vs Minuit2)")
       //("minimizerTolerance", boost::program_options::value<float>(&minimizerTolerance_)->default_value(minimizerTolerance_),  "Tolerance for minimizer")

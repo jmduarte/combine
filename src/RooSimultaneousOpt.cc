@@ -3,7 +3,7 @@
 #include <RooCmdConfig.h>
 
 RooAbsReal *RooSimultaneousOpt::createNLL(RooAbsData &data, const RooLinkedList &cmdList) {
-  RooCmdConfig pc(Form("combine/RooSimultaneousOpt::createNLL(%s)", GetName()));
+  RooCmdConfig pc(Form("RooSimultaneousOpt::createNLL(%s)", GetName()));
   pc.defineSet("cPars", "Constrain", 0, 0);
   RooArgSet *cPars = pc.getSet("cPars");
   cacheutils::CachingSimNLL *nll = new cacheutils::CachingSimNLL(this, &data, cPars);

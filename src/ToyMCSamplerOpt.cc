@@ -141,7 +141,7 @@ RooDataSet *toymcoptutils::SinglePdfGenInfo::generateAsimov(RooRealVar *&weightV
     if (verbose > 0)
       Logger::instance().log(
           std::string(
-              Form("combine/ToyMCSamplerOpt.cc: %d -- Using internal logic for binned/unbinned Asimov dataset generation",
+              Form("ToyMCSamplerOpt.cc: %d -- Using internal logic for binned/unbinned Asimov dataset generation",
                    __LINE__)),
           Logger::kLogLevelInfo,
           __func__);
@@ -181,7 +181,7 @@ RooDataSet *toymcoptutils::SinglePdfGenInfo::generatePseudoAsimov(RooRealVar *&w
     if (verbose > 0)
       Logger::instance().log(
           std::string(
-              Form("combine/ToyMCSamplerOpt.cc: %d -- Generating PseudoAsimov dataset for pdf %s: with %d weighted events",
+              Form("ToyMCSamplerOpt.cc: %d -- Generating PseudoAsimov dataset for pdf %s: with %d weighted events",
                    __LINE__,
                    pdf_->GetName(),
                    nPoints)),
@@ -243,7 +243,7 @@ RooDataSet *toymcoptutils::SinglePdfGenInfo::generateWithHisto(RooRealVar *&weig
 
   if (verbose > 0) {
     Logger::instance().log(
-        std::string(Form("combine/ToyMCSamplerOpt.cc: %d -- Generating asimov with histogram for pdf %s: in %d x-bins",
+        std::string(Form("ToyMCSamplerOpt.cc: %d -- Generating asimov with histogram for pdf %s: in %d x-bins",
                          __LINE__,
                          pdf_->GetName(),
                          histoSpec_->GetNbinsX())),
@@ -251,12 +251,12 @@ RooDataSet *toymcoptutils::SinglePdfGenInfo::generateWithHisto(RooRealVar *&weig
         __func__);
     if (y)
       Logger::instance().log(
-          std::string(Form("combine/ToyMCSamplerOpt.cc: %d -- , in %d y-bins", __LINE__, histoSpec_->GetNbinsY())),
+          std::string(Form("ToyMCSamplerOpt.cc: %d -- , in %d y-bins", __LINE__, histoSpec_->GetNbinsY())),
           Logger::kLogLevelInfo,
           __func__);
     if (z)
       Logger::instance().log(
-          std::string(Form("combine/ToyMCSamplerOpt.cc: %d -- , in %d z-bins", __LINE__, histoSpec_->GetNbinsZ())),
+          std::string(Form("ToyMCSamplerOpt.cc: %d -- , in %d z-bins", __LINE__, histoSpec_->GetNbinsZ())),
           Logger::kLogLevelInfo,
           __func__);
   }

@@ -138,7 +138,7 @@ RooMomentMorphND::RooMomentMorphND(const char* name,
     if (!mref) {
       coutE(InputArguments) << "combine/RooMomentMorphND::ctor(" << GetName() << ") ERROR: mref " << mref->GetName()
                             << " is not of type RooAbsReal" << endl;
-      throw string("combine/RooMomentMorphND::ctor() ERROR mref is not of type RooAbsReal");
+      throw string("RooMomentMorphND::ctor() ERROR mref is not of type RooAbsReal");
     }
     if (!dynamic_cast<RooConstVar*>(mref)) {
       coutW(InputArguments) << "combine/RooMomentMorphND::ctor(" << GetName() << ") WARNING mref point " << i
@@ -220,7 +220,7 @@ void RooMomentMorphND::initializeParameters(const RooArgList& parList) {
     if (!dynamic_cast<RooAbsReal*>(par)) {
       coutE(InputArguments) << "combine/RooMomentMorphND::ctor(" << GetName() << ") ERROR: parameter " << par->GetName()
                             << " is not of type RooAbsReal" << endl;
-      throw string("combine/RooMomentMorphND::initializeParameters() ERROR parameter is not of type RooAbsReal");
+      throw string("RooMomentMorphND::initializeParameters() ERROR parameter is not of type RooAbsReal");
     }
     _parList.add(*par);
   }
@@ -237,7 +237,7 @@ void RooMomentMorphND::initializeObservables(const RooArgList& obsList) {
     if (!dynamic_cast<RooAbsReal*>(var)) {
       coutE(InputArguments) << "combine/RooMomentMorphND::ctor(" << GetName() << ") ERROR: variable " << var->GetName()
                             << " is not of type RooAbsReal" << endl;
-      throw string("combine/RooMomentMorphND::initializeObservables() ERROR variable is not of type RooAbsReal");
+      throw string("RooMomentMorphND::initializeObservables() ERROR variable is not of type RooAbsReal");
     }
     _obsList.add(*var);
   }

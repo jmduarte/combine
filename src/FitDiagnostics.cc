@@ -61,7 +61,7 @@ bool FitDiagnostics::saveWithUncertsRequested_ = false;
 bool FitDiagnostics::ignoreCovWarning_ = false;
 
 FitDiagnostics::FitDiagnostics()
-    : FitterAlgoBase("combine/FitDiagnostics specific options"),
+    : FitterAlgoBase("FitDiagnostics specific options"),
       globalObservables_(0),
       nuisanceParameters_(0),
       processNormalizations_(0),
@@ -201,7 +201,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
               << std::endl;
     if (verbose > 0)
       Logger::instance().log(
-          std::string(Form("combine/FitDiagnostics.cc: %d -- cannot use saveShapes with > 1 toy dataset, \n you should run "
+          std::string(Form("FitDiagnostics.cc: %d -- cannot use saveShapes with > 1 toy dataset, \n you should run "
                            "multiple times with -t 1 using random seeds (-s -1) or remove those options",
                            __LINE__)),
           Logger::kLogLevelError,
@@ -391,7 +391,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
     }
     if (verbose > 0)
       Logger::instance().log(
-          std::string(Form("combine/FitDiagnostics.cc: %d -- Fit B-only, status = %d, numBadNLL = %d, covariance quality = %d",
+          std::string(Form("FitDiagnostics.cc: %d -- Fit B-only, status = %d, numBadNLL = %d, covariance quality = %d",
                            __LINE__,
                            fitStatus_,
                            numbadnll_,
@@ -552,7 +552,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
       }
       if (verbose > 0)
         Logger::instance().log(
-            std::string(Form("combine/FitDiagnostics.cc: %d -- Fit S+B, status = %d, numBadNLL = %d, covariance quality = %d",
+            std::string(Form("FitDiagnostics.cc: %d -- Fit S+B, status = %d, numBadNLL = %d, covariance quality = %d",
                              __LINE__,
                              fitStatus_,
                              numbadnll_,
@@ -692,11 +692,11 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
 
   /*
   if(saveWorkspace_){
-	  RooWorkspace *ws = new RooWorkspace("combine/FitDiagnosticsResult");
+	  RooWorkspace *ws = new RooWorkspace("FitDiagnosticsResult");
 	  ws->import(*mc_s->GetPdf());
 	  ws->import(data);
 	  std::cout << "Saving pdfs and data to FitDiagnosticsResult.root" << std::endl;
-	  ws->writeToFile("combine/FitDiagnosticsResult.root");
+	  ws->writeToFile("FitDiagnosticsResult.root");
   }
   */
 
@@ -977,7 +977,7 @@ void FitDiagnostics::getNormalizations(RooAbsPdf *pdf,
 
     if (verbose > 0)
       Logger::instance().log(
-          std::string(Form("combine/FitDiagnostics.cc: %d -- Generating toy data for evaluating per-bin uncertainties and "
+          std::string(Form("FitDiagnostics.cc: %d -- Generating toy data for evaluating per-bin uncertainties and "
                            "covariances with post-fit nuisance parameters with %d toys",
                            __LINE__,
                            ntoys)),

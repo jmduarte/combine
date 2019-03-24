@@ -152,7 +152,7 @@ Double_t RooMorphingPdf::evaluate() const {
     std::cout << "init?:  " << init_ << "\n";
     std::cout << "masses: " << masses_.size() << "\n";
     std::cout << "pdfs:   " << pdfs_.getSize() << "\n";
-    throw std::runtime_error("combine/RooMorphingPdf: Cache is empty!");
+    throw std::runtime_error("RooMorphingPdf: Cache is empty!");
   }
 
   if (!sentry_.good()) {

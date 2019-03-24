@@ -144,7 +144,7 @@ void FitterAlgoBase::applyOptionsBase(const boost::program_options::variables_ma
     if (verbose) {
       Logger::instance().log(
           std::string(
-              Form("combine/FitterAlgoBase.cc: %d -- Setting robust fit options to Tolerance=%g / Strategy=%d / Type,Algo=%s "
+              Form("FitterAlgoBase.cc: %d -- Setting robust fit options to Tolerance=%g / Strategy=%d / Type,Algo=%s "
                    "(note that defaults of CascadeMinimizer were taken where option not specified)",
                    __LINE__,
                    minimizerToleranceForMinos_,
@@ -408,7 +408,7 @@ RooFitResult *FitterAlgoBase::doFit(RooAbsPdf &pdf,
       if (verbose) {
         std::cout << "Running Minos for POI " << std::endl;
         Logger::instance().log(
-            std::string(Form("combine/FitterAlgoBase.cc: %d -- Running Minos for POI %s", __LINE__, r.GetName())),
+            std::string(Form("FitterAlgoBase.cc: %d -- Running Minos for POI %s", __LINE__, r.GetName())),
             Logger::kLogLevelInfo,
             __func__);
       }
@@ -433,7 +433,7 @@ RooFitResult *FitterAlgoBase::doFit(RooAbsPdf &pdf,
       if (verbose) {
         std::cout << "Robus Fit for POI " << std::endl;
         Logger::instance().log(
-            std::string(Form("combine/FitterAlgoBase.cc: %d -- Running RobustFit for POI %s. Configured with strategy %d  ",
+            std::string(Form("FitterAlgoBase.cc: %d -- Running RobustFit for POI %s. Configured with strategy %d  ",
                              __LINE__,
                              r.GetName(),
                              minimizerStrategyForMinos_)),
@@ -498,7 +498,7 @@ double FitterAlgoBase::findCrossing(
     std::cout << "Searching for crossing at nll = " << level << " in the interval " << rStart << ", " << rBound
               << std::endl;
     Logger::instance().log(
-        std::string(Form("combine/FitterAlgoBase.cc: %d -- Searching for crossing at nll = %g, in the interval %g < %s < %g",
+        std::string(Form("FitterAlgoBase.cc: %d -- Searching for crossing at nll = %g, in the interval %g < %s < %g",
                          __LINE__,
                          level,
                          rStart,
@@ -521,7 +521,7 @@ double FitterAlgoBase::findCrossing(
     std::cout << "Error: minimization failed at " << r.GetName() << " = " << rStart << std::endl;
     if (verbose)
       Logger::instance().log(
-          std::string(Form("combine/FitterAlgoBase.cc: %d -- Minimization failed at %s = %g", __LINE__, r.GetName(), rStart)),
+          std::string(Form("FitterAlgoBase.cc: %d -- Minimization failed at %s = %g", __LINE__, r.GetName(), rStart)),
           Logger::kLogLevelError,
           __func__);
     return NAN;
@@ -532,7 +532,7 @@ double FitterAlgoBase::findCrossing(
     printf("      %s      lvl-here  lvl-there   stepping\n", r.GetName());
     fflush(stdout);
     Logger::instance().log(
-        std::string(Form("combine/FitterAlgoBase.cc: %d -- %s lvl-here lvl-there 	stepping ", __LINE__, r.GetName())),
+        std::string(Form("FitterAlgoBase.cc: %d -- %s lvl-here lvl-there 	stepping ", __LINE__, r.GetName())),
         Logger::kLogLevelInfo,
         __func__);
   }
@@ -648,7 +648,7 @@ double FitterAlgoBase::findCrossing(
     std::cout << "Error: closed range without finding crossing." << std::endl;
     if (verbose)
       Logger::instance().log(
-          std::string(Form("combine/FitterAlgoBase.cc: %d -- Closed range without finding crossing! ", __LINE__)),
+          std::string(Form("FitterAlgoBase.cc: %d -- Closed range without finding crossing! ", __LINE__)),
           Logger::kLogLevelError,
           __func__);
     return NAN;
@@ -666,7 +666,7 @@ double FitterAlgoBase::findCrossingNew(
     fprintf(
         sentry.trueStdOut(), "Searching for crossing at nll = %g in the interval [ %g , %g ]\n", level, rStart, rBound);
     Logger::instance().log(
-        std::string(Form("combine/FitterAlgoBase.cc: %d -- Searching for crossing at nll = %g in the interval [ %g , %g ] ",
+        std::string(Form("FitterAlgoBase.cc: %d -- Searching for crossing at nll = %g in the interval [ %g , %g ] ",
                          __LINE__,
                          level,
                          rStart,
@@ -682,7 +682,7 @@ double FitterAlgoBase::findCrossingNew(
     fprintf(sentry.trueStdOut(), "Error: minimization failed at %s = %g\n", r.GetName(), rStart);
     if (verbose)
       Logger::instance().log(
-          std::string(Form("combine/FitterAlgoBase.cc: %d -- Minimization failed at %s = %g", __LINE__, r.GetName(), rStart)),
+          std::string(Form("FitterAlgoBase.cc: %d -- Minimization failed at %s = %g", __LINE__, r.GetName(), rStart)),
           Logger::kLogLevelError,
           __func__);
     return NAN;
@@ -725,7 +725,7 @@ double FitterAlgoBase::findCrossingNew(
               rBound);
       Logger::instance().log(
           std::string(
-              Form("combine/FitterAlgoBase.cc: %d -- x %+10.6f   y %+10.6f    step %+10.6f [ START OF ITER %d, bound %+10.6f ]",
+              Form("FitterAlgoBase.cc: %d -- x %+10.6f   y %+10.6f    step %+10.6f [ START OF ITER %d, bound %+10.6f ]",
                    __LINE__,
                    rVal,
                    yStart - level,
@@ -754,7 +754,7 @@ double FitterAlgoBase::findCrossingNew(
                   rStart,
                   rVal);
         if (verbose > 0)
-          Logger::instance().log(std::string(Form("combine/FitterAlgoBase.cc: %d -- logEvalErrors reported from NLL on "
+          Logger::instance().log(std::string(Form("FitterAlgoBase.cc: %d -- logEvalErrors reported from NLL on "
                                                   "stepping for iteration %d, set range to  [ %+10.6f, %+10.6f ]",
                                                   __LINE__,
                                                   iter,
@@ -773,7 +773,7 @@ double FitterAlgoBase::findCrossingNew(
       double yCorr = y - quadCorr * std::pow(rVal - rStart, 2);
       if (verbose > 1) {
         fprintf(sentry.trueStdOut(), "x %+10.6f   y %+10.6f   yCorr %+10.6f\n", rVal, y - level, yCorr - level);
-        Logger::instance().log(std::string(Form("combine/FitterAlgoBase.cc: %d -- x %+10.6f   y %+10.6f   yCorr %+10.6f",
+        Logger::instance().log(std::string(Form("FitterAlgoBase.cc: %d -- x %+10.6f   y %+10.6f   yCorr %+10.6f",
                                                 __LINE__,
                                                 rVal,
                                                 y - level,
@@ -786,7 +786,7 @@ double FitterAlgoBase::findCrossingNew(
         if (verbose > 1) {
           fprintf(sentry.trueStdOut(), "     --------> accumulated big change in NLL, will go do minimize\n");
           Logger::instance().log(
-              std::string(Form("combine/FitterAlgoBase.cc: %d -- --------> accumulated big change in NLL, will go do minimize",
+              std::string(Form("FitterAlgoBase.cc: %d -- --------> accumulated big change in NLL, will go do minimize",
                                __LINE__)),
               Logger::kLogLevelInfo,
               __func__);
@@ -796,7 +796,7 @@ double FitterAlgoBase::findCrossingNew(
       if ((level - yCorr) * (level - yStart) < 0) {
         if (verbose > 1) {
           fprintf(sentry.trueStdOut(), "     --------> found crossing\n");
-          Logger::instance().log(std::string(Form("combine/FitterAlgoBase.cc: %d -- --------> found crossing", __LINE__)),
+          Logger::instance().log(std::string(Form("FitterAlgoBase.cc: %d -- --------> found crossing", __LINE__)),
                                  Logger::kLogLevelInfo,
                                  __func__);
         }
@@ -815,7 +815,7 @@ double FitterAlgoBase::findCrossingNew(
                     iter2,
                     r2,
                     rVal);
-            Logger::instance().log(std::string(Form("combine/FitterAlgoBase.cc: %d -- x %+10.6f   y %+10.6f   yCorr %+10.6f   "
+            Logger::instance().log(std::string(Form("FitterAlgoBase.cc: %d -- x %+10.6f   y %+10.6f   yCorr %+10.6f   "
                                                     "[ bisection iter %d in  %+10.6f in %+10.6f ]",
                                                     __LINE__,
                                                     rMid,
@@ -837,7 +837,7 @@ double FitterAlgoBase::findCrossingNew(
         if (verbose > 1) {
           fprintf(sentry.trueStdOut(), "     --------> ending with x %+10.6f\n", rVal);
           Logger::instance().log(
-              std::string(Form("combine/FitterAlgoBase.cc: %d -- --------> ending with x %+10.6f", __LINE__, rVal)),
+              std::string(Form("FitterAlgoBase.cc: %d -- --------> ending with x %+10.6f", __LINE__, rVal)),
               Logger::kLogLevelInfo,
               __func__);
         }
@@ -854,7 +854,7 @@ double FitterAlgoBase::findCrossingNew(
       fprintf(sentry.trueStdOut(), "Error: minimization failed at %s = %g\n", r.GetName(), rVal);
       if (verbose)
         Logger::instance().log(
-            std::string(Form("combine/FitterAlgoBase.cc: %d -- Minimization failed at %s = %g", __LINE__, r.GetName(), rVal)),
+            std::string(Form("FitterAlgoBase.cc: %d -- Minimization failed at %s = %g", __LINE__, r.GetName(), rVal)),
             Logger::kLogLevelError,
             __func__);
       if (!neverGiveUp)
@@ -874,7 +874,7 @@ double FitterAlgoBase::findCrossingNew(
               quadCorr,
               (yUnprof - yProf) / std::pow(rVal - rStart, 2));
       Logger::instance().log(
-          std::string(Form("combine/FitterAlgoBase.cc: %d x %+10.6f   y %+10.6f   yCorr %+10.6f   yProf  %+10.6f   (P-U) "
+          std::string(Form("FitterAlgoBase.cc: %d x %+10.6f   y %+10.6f   yCorr %+10.6f   yProf  %+10.6f   (P-U) "
                            "%+10.6f    (P-C) %+10.6f    oldSlope %+10.6f    newSlope %+10.6f",
                            __LINE__,
                            rVal,
@@ -908,7 +908,7 @@ double FitterAlgoBase::findCrossingNew(
             sentry.trueStdOut(), "Error: closed range at %s = %g without finding any crossing \n", r.GetName(), rVal);
         if (verbose)
           Logger::instance().log(
-              std::string(Form("combine/FitterAlgoBase.cc: %d -- Closed range without finding crossing! ", __LINE__)),
+              std::string(Form("FitterAlgoBase.cc: %d -- Closed range without finding crossing! ", __LINE__)),
               Logger::kLogLevelError,
               __func__);
         return rVal;
@@ -917,7 +917,7 @@ double FitterAlgoBase::findCrossingNew(
           fprintf(sentry.trueStdOut(), " ---> change search window to [ %g , %g ]\n", rStart, rBound);
           Logger::instance().log(
               std::string(
-                  Form("combine/FitterAlgoBase.cc: %d -- ---> change search window to [ %g , %g ]", __LINE__, rStart, rBound)),
+                  Form("FitterAlgoBase.cc: %d -- ---> change search window to [ %g , %g ]", __LINE__, rStart, rBound)),
               Logger::kLogLevelInfo,
               __func__);
         }
@@ -931,7 +931,7 @@ double FitterAlgoBase::findCrossingNew(
         fprintf(sentry.trueStdOut(), " ---> change search window to [ %g , %g ]\n", rStart, rBound);
         Logger::instance().log(
             std::string(
-                Form("combine/FitterAlgoBase.cc: %d -- ---> change search window to [ %g , %g ]", __LINE__, rStart, rBound)),
+                Form("FitterAlgoBase.cc: %d -- ---> change search window to [ %g , %g ]", __LINE__, rStart, rBound)),
             Logger::kLogLevelInfo,
             __func__);
       }
@@ -941,7 +941,7 @@ double FitterAlgoBase::findCrossingNew(
   if (verbose)
     Logger::instance().log(
         std::string(
-            Form("combine/FitterAlgoBase.cc: %d -- Search for crossing did not converge, will return approximate answer %g",
+            Form("FitterAlgoBase.cc: %d -- Search for crossing did not converge, will return approximate answer %g",
                  __LINE__,
                  rVal)),
         Logger::kLogLevelDebug,

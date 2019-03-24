@@ -25,7 +25,7 @@ bool ChannelCompatibilityCheck::saveFitResult_ = true;
 bool ChannelCompatibilityCheck::runMinos_ = true;
 std::vector<std::string> ChannelCompatibilityCheck::groups_;
 
-ChannelCompatibilityCheck::ChannelCompatibilityCheck() : FitterAlgoBase("combine/ChannelCompatibilityCheck specific options") {
+ChannelCompatibilityCheck::ChannelCompatibilityCheck() : FitterAlgoBase("ChannelCompatibilityCheck specific options") {
   options_.add_options()("fixedSignalStrength",
                          boost::program_options::value<float>(&mu_)->default_value(mu_),
                          "Compute the compatibility for a fixed signal strength. If not specified, it's left floating")(

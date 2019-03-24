@@ -7,10 +7,10 @@
 void SimpleGaussianConstraint::init() {
   if (!sigma.arg().InheritsFrom("RooRealVar") && !sigma.arg().InheritsFrom("RooConstVar")) {
     throw std::invalid_argument(
-        std::string("combine/SimpleGaussianConstraint created with non-RooRealVar non-RooConstVar sigma: ") + GetName());
+        std::string("SimpleGaussianConstraint created with non-RooRealVar non-RooConstVar sigma: ") + GetName());
   }
   if (!sigma.arg().isConstant()) {
-    throw std::invalid_argument(std::string("combine/SimpleGaussianConstraint created with non-constant sigma: ") + GetName());
+    throw std::invalid_argument(std::string("SimpleGaussianConstraint created with non-constant sigma: ") + GetName());
   }
   Double_t sig = sigma;
   scale_ = -0.5 / (sig * sig);

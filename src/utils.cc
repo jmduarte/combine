@@ -1145,7 +1145,7 @@ bool utils::anyParameterAtBoundaries(const RooArgSet &params, int verbosity) {
 
       if (verbosity > 0) {
         Logger::instance().log(
-            std::string(Form("combine/utils.cc: %d -- Found parameter %s at boundary (within ~1sigma): %g+/-%g",
+            std::string(Form("utils.cc: %d -- Found parameter %s at boundary (within ~1sigma): %g+/-%g",
                              __LINE__,
                              (*a).GetName(),
                              (*a).getVal(),

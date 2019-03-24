@@ -25,7 +25,7 @@ unsigned int BayesianToyMC::tries_ = 1;
 float BayesianToyMC::hintSafetyFactor_ = 5.;
 std::vector<std::string> BayesianToyMC::twoPoints_;
 
-BayesianToyMC::BayesianToyMC() : LimitAlgo("combine/BayesianToyMC specific options") {
+BayesianToyMC::BayesianToyMC() : LimitAlgo("BayesianToyMC specific options") {
   options_.add_options()("integrationType",
                          boost::program_options::value<std::string>(&integrationType_)->default_value(integrationType_),
                          "Integration algorithm to use")(

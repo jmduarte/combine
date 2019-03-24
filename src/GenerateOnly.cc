@@ -4,7 +4,7 @@
 
 using namespace RooStats;
 
-GenerateOnly::GenerateOnly() : LimitAlgo("combine/GenerateOnly specific options: none") {}
+GenerateOnly::GenerateOnly() : LimitAlgo("GenerateOnly specific options: none") {}
 
 void GenerateOnly::applyOptions(const boost::program_options::variables_map &vm) {}
 

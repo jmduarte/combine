@@ -45,7 +45,7 @@ std::vector<float> GoodnessOfFit::qVals_;
 std::string GoodnessOfFit::setParametersForFit_ = "";
 std::string GoodnessOfFit::setParametersForEval_ = "";
 
-GoodnessOfFit::GoodnessOfFit() : LimitAlgo("combine/GoodnessOfFit specific options") {
+GoodnessOfFit::GoodnessOfFit() : LimitAlgo("GoodnessOfFit specific options") {
   options_.add_options()("algorithm",
                          boost::program_options::value<std::string>(&algo_),
                          "Goodness of fit algorithm. Supported algorithms are 'saturated', 'KS' and 'AD'.")(
@@ -75,7 +75,7 @@ void GoodnessOfFit::applyOptions(const boost::program_options::variables_map &vm
   } else if (algo_ == "KS") {
     std::cout << "Will use the Kolmogorov-Smirnov test to compute goodness of fit for a binned likelihood" << std::endl;
   } else {
-    throw std::invalid_argument("combine/GoodnessOfFit: algorithm " + algo_ + " not supported");
+    throw std::invalid_argument("GoodnessOfFit: algorithm " + algo_ + " not supported");
   }
   makePlots_ = vm.count("plots");
 }
@@ -103,7 +103,7 @@ bool GoodnessOfFit::run(RooWorkspace *w,
     if (!is_init) {
       initKSandAD(mc_s);
       if (makePlots_) {
-        plotDir_ = outputFile ? outputFile->mkdir("combine/GoodnessOfFit") : 0;
+        plotDir_ = outputFile ? outputFile->mkdir("GoodnessOfFit") : 0;
       }
       is_init = true;
     }

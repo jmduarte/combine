@@ -97,7 +97,7 @@ float HybridNew::maxProbability_ = 0.999;
 double HybridNew::EPS = 1e-4;
 std::string HybridNew::mode_ = "";
 
-HybridNew::HybridNew() : LimitAlgo("combine/HybridNew specific options") {
+HybridNew::HybridNew() : LimitAlgo("HybridNew specific options") {
   options_.add_options()(
       "rule", boost::program_options::value<std::string>(&rule_)->default_value(rule_), "Rule to use: CLs, CLsplusb")(
       "testStat",
@@ -220,9 +220,9 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
   rMinSet_ = vm.count("rMin") > 0;
   rMaxSet_ = vm.count("rMax") > 0;
   if (vm.count("expectedFromGrid") && !vm["expectedFromGrid"].defaulted()) {
-    //if (!vm.count("grid")) throw std::invalid_argument("combine/HybridNew: Can't use --expectedFromGrid without --grid!");
+    //if (!vm.count("grid")) throw std::invalid_argument("HybridNew: Can't use --expectedFromGrid without --grid!");
     if (quantileForExpectedFromGrid_ <= 0 || quantileForExpectedFromGrid_ >= 1.0)
-      throw std::invalid_argument("combine/HybridNew: the quantile for the expected limit must be between 0 and 1");
+      throw std::invalid_argument("HybridNew: the quantile for the expected limit must be between 0 and 1");
     expectedFromGrid_ = true;
     g_quantileExpected_ = quantileForExpectedFromGrid_;
   }
@@ -267,7 +267,7 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
       doFC_ = true;
     } else {
       throw std::invalid_argument(
-          Form("combine/HybridNew: invalid LHCmode %s, only --LHCmode 'LHC-significance', 'LHC-limits', and "
+          Form("HybridNew: invalid LHCmode %s, only --LHCmode 'LHC-significance', 'LHC-limits', and "
                "'LHC-feldman-cousins' supported\n",
                mode_.c_str()));
     }
@@ -277,7 +277,7 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
     std::cerr << "ALERT: generating both global observables and nuisance parameters at the same time is not validated."
               << std::endl;
     if (verbose)
-      Logger::instance().log(std::string(Form("combine/HybridNew.cc: %d -- generating both global observables and nuisance "
+      Logger::instance().log(std::string(Form("HybridNew.cc: %d -- generating both global observables and nuisance "
                                               "parameters at the same time is not validated!",
                                               __LINE__)),
                              Logger::kLogLevelInfo,
@@ -285,13 +285,13 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
   }
   if (!vm["singlePoint"].defaulted()) {
     if (doSignificance_)
-      throw std::invalid_argument("combine/HybridNew: Can't use --significance and --singlePoint at the same time");
+      throw std::invalid_argument("HybridNew: Can't use --significance and --singlePoint at the same time");
     workingMode_ = (vm.count("onlyTestStat") ? MakeTestStatistics : MakePValues);
   } else if (vm.count("onlyTestStat")) {
     if (doSignificance_)
       workingMode_ = MakeSignificanceTestStatistics;
     else
-      throw std::invalid_argument("combine/HybridNew: --onlyTestStat works only with --singlePoint or --significance");
+      throw std::invalid_argument("HybridNew: --onlyTestStat works only with --singlePoint or --significance");
   } else if (doSignificance_) {
     workingMode_ = MakeSignificance;
     rValue_ = vm["signalForSignificance"].as<std::string>();
@@ -301,7 +301,7 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
   saveHybridResult_ = vm.count("saveHybridResult");
   readHybridResults_ = vm.count("readHybridResults") || vm.count("grid");
   if (readHybridResults_ && !(vm.count("toysFile") || vm.count("grid")))
-    throw std::invalid_argument("combine/HybridNew: must have 'toysFile' or 'grid' option to have 'readHybridResults'\n");
+    throw std::invalid_argument("HybridNew: must have 'toysFile' or 'grid' option to have 'readHybridResults'\n");
   mass_ = vm["mass"].as<float>();
   fullGrid_ = vm.count("fullGrid");
   saveGrid_ = vm.count("saveGrid");
@@ -329,7 +329,7 @@ void HybridNew::validateOptions() {
     CLs_ = false;
     doFC_ = true;
   } else {
-    throw std::invalid_argument("combine/HybridNew: Rule must be either 'CLs' or 'CLsplusb'");
+    throw std::invalid_argument("HybridNew: Rule must be either 'CLs' or 'CLsplusb'");
   }
   if (doFC_)
     noUpdateGrid_ = true;  // Needed since addition of points can skew interval
@@ -380,7 +380,7 @@ void HybridNew::validateOptions() {
     fitNuisances_ = false;
   }
   if (reportPVal_ && workingMode_ != MakeSignificance)
-    throw std::invalid_argument("combine/HybridNew: option --pvalue must go together with --significance");
+    throw std::invalid_argument("HybridNew: option --pvalue must go together with --significance");
 }
 
 void HybridNew::setupPOI(RooStats::ModelConfig *mc_s) {
@@ -708,7 +708,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
         if (verbose)
           Logger::instance().log(
               std::string(
-                  Form("combine/HybridNew.cc: %d Found no interval in which %s is less than target %g, no crossing found!",
+                  Form("HybridNew.cc: %d Found no interval in which %s is less than target %g, no crossing found!",
                        __LINE__,
                        rule_.c_str(),
                        cl)),
@@ -719,7 +719,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
         if (verbose)
           Logger::instance().log(
               std::string(
-                  Form("combine/HybridNew.cc: %d One-sided boundary found for %g %% confidence regions", __LINE__, 100 * cl)),
+                  Form("HybridNew.cc: %d One-sided boundary found for %g %% confidence regions", __LINE__, 100 * cl)),
               Logger::kLogLevelInfo,
               __func__);
         int ib = 0;
@@ -728,7 +728,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
         std::cout << "  " << points[ib].first << " (+/-" << points[ib].second << ")" << (ib == 1 ? " < " : " > ")
                   << r->GetName() << std::endl;
         if (verbose)
-          Logger::instance().log(std::string(Form("combine/HybridNew.cc: %d  %g (+/- %g) %s %s",
+          Logger::instance().log(std::string(Form("HybridNew.cc: %d  %g (+/- %g) %s %s",
                                                   __LINE__,
                                                   points[ib].first,
                                                   points[ib].second,
@@ -744,7 +744,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
         std::cout << "combine/HybridNew -- found  " << 100 * cl << "%% confidence regions " << std::endl;
         if (verbose)
           Logger::instance().log(
-              std::string(Form("combine/HybridNew.cc: %d found %g %% confidence regions", __LINE__, 100 * cl)),
+              std::string(Form("HybridNew.cc: %d found %g %% confidence regions", __LINE__, 100 * cl)),
               Logger::kLogLevelInfo,
               __func__);
         for (unsigned int ib = 1; ib < points.size() - 2; ib += 2) {
@@ -752,7 +752,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
                     << " < " << r->GetName() << " < " << points[ib + 1].first << " (+/-" << points[ib + 1].second << ")"
                     << std::endl;
           if (verbose)
-            Logger::instance().log(std::string(Form("combine/HybridNew.cc: %d  %g (+/- %g) < %s < %g (+/- %g) ",
+            Logger::instance().log(std::string(Form("HybridNew.cc: %d  %g (+/- %g) < %s < %g (+/- %g) ",
                                                     __LINE__,
                                                     points[ib].first,
                                                     points[ib].second,
@@ -839,7 +839,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
       limitPlot_->GetXaxis()->SetRangeUser(xmin, xmax);
       //limitPlot_->GetYaxis()->SetRangeUser(0.5*clsTarget, 1.5*clsTarget);
     }
-    limitPlot_->SetTitle(Form("combine/HybridNew -- target %s = %g%%", rule_.c_str(), 100 * (1 - clsTarget)));
+    limitPlot_->SetTitle(Form("HybridNew -- target %s = %g%%", rule_.c_str(), 100 * (1 - clsTarget)));
     limitPlot_->Draw("AP");
     if (!done && !doFC_)
       expoFit.Draw("SAME");  // needed expo fit
@@ -1104,7 +1104,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     // print the values of the parameters used to generate the toy
     if (verbose > 2) {
       Logger::instance().log(
-          std::string(Form("combine/HybridNew.cc: %d -- Using the following (post-fit) parameters for No signal hypothesis ",
+          std::string(Form("HybridNew.cc: %d -- Using the following (post-fit) parameters for No signal hypothesis ",
                            __LINE__)),
           Logger::kLogLevelInfo,
           __func__);
@@ -1112,7 +1112,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
       for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
         TString varstring = utils::printRooArgAsString(a);
         Logger::instance().log(
-            std::string(Form("combine/HybridNew.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
+            std::string(Form("HybridNew.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
       }
     }
 
@@ -1142,7 +1142,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     if (verbose > 2) {
       Logger::instance().log(
           std::string(
-              Form("combine/HybridNew.cc: %d -- Using the following (post-fit) parameters for S+B hypothesis ", __LINE__)),
+              Form("HybridNew.cc: %d -- Using the following (post-fit) parameters for S+B hypothesis ", __LINE__)),
           Logger::kLogLevelInfo,
           __func__);
       RooArgSet reportParams;
@@ -1152,7 +1152,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
       for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
         TString varstring = utils::printRooArgAsString(a);
         Logger::instance().log(
-            std::string(Form("combine/HybridNew.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
+            std::string(Form("HybridNew.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
       }
     }
   } else {
@@ -1160,7 +1160,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
   }
 
   // since ModelConfig cannot allow re-setting sets, we have to re-make everything
-  setup.modelConfig = ModelConfig("combine/HybridNew_mc_s", w);
+  setup.modelConfig = ModelConfig("HybridNew_mc_s", w);
   setup.modelConfig.SetPdf(*mc_s->GetPdf());
   setup.modelConfig.SetObservables(*mc_s->GetObservables());
   setup.modelConfig.SetParametersOfInterest(*mc_s->GetParametersOfInterest());
@@ -1172,7 +1172,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     // if (genGlobalObs_ && mc_s->GetGlobalObservables())  snapGlobalObs_.reset(mc_s->GetGlobalObservables()->snapshot());
   }
 
-  setup.modelConfig_bonly = ModelConfig("combine/HybridNew_mc_b", w);
+  setup.modelConfig_bonly = ModelConfig("HybridNew_mc_b", w);
   setup.modelConfig_bonly.SetPdf(*mc_b->GetPdf());
   setup.modelConfig_bonly.SetObservables(*mc_b->GetObservables());
   setup.modelConfig_bonly.SetParametersOfInterest(mc_b->GetParametersOfInterest() ? *mc_b->GetParametersOfInterest()
@@ -1255,7 +1255,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
         std::cerr << "ALERT: using LEP test statistics with --fitNuisances is not validated and most likely broken"
                   << std::endl;
         if (verbose)
-          Logger::instance().log(std::string(Form("combine/HybridNew.cc: %d using LEP test statistics with --fitNuisances is "
+          Logger::instance().log(std::string(Form("HybridNew.cc: %d using LEP test statistics with --fitNuisances is "
                                                   "not validated and most likely broken",
                                                   __LINE__)),
                                  Logger::kLogLevelDebug,
@@ -1277,7 +1277,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     } else {
       std::cerr << "ALERT: LEP test statistics without optimization not validated." << std::endl;
       if (verbose)
-        Logger::instance().log(std::string(Form("combine/HybridNew.cc: %d LEP test statistics not yet validated.", __LINE__)),
+        Logger::instance().log(std::string(Form("HybridNew.cc: %d LEP test statistics not yet validated.", __LINE__)),
                                Logger::kLogLevelDebug,
                                __func__);
       RooArgSet paramsSnap;
@@ -1290,7 +1290,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     std::cerr << "ALERT: Tevatron test statistics not yet validated." << std::endl;
     if (verbose)
       Logger::instance().log(
-          std::string(Form("combine/HybridNew.cc: %d Tevatron test statistics not yet validated.", __LINE__)),
+          std::string(Form("HybridNew.cc: %d Tevatron test statistics not yet validated.", __LINE__)),
           Logger::kLogLevelDebug,
           __func__);
     RooAbsPdf *pdfB = factorizedPdf_b;
@@ -1504,7 +1504,7 @@ std::pair<double, double> HybridNew::eval(RooStats::HybridCalculator &hc,
               << "\tCLsplusb = " << hcResult->CLsplusb() << " +/- " << hcResult->CLsplusbError() << "\n"
               << std::endl;
     Logger::instance().log(
-        std::string(Form("combine/HybridNew.cc: %d -- CLs = %g +/- %g\n\tCLb = %g +/- %g\n\tCLsplusb = %g +/- %g",
+        std::string(Form("HybridNew.cc: %d -- CLs = %g +/- %g\n\tCLb = %g +/- %g\n\tCLsplusb = %g +/- %g",
                          __LINE__,
                          hcResult->CLs(),
                          hcResult->CLsError(),
@@ -1726,7 +1726,7 @@ RooStats::HypoTestResult *HybridNew::evalGeneric(RooStats::HybridCalculator &hc,
     TStopwatch timer;
     timer.Start();
     RooStats::HypoTestResult *ret = hc.GetHypoTest();
-    if (runtimedef::get("combine/HybridNew_Timing"))
+    if (runtimedef::get("HybridNew_Timing"))
       std::cout << "Evaluated toys in " << timer.RealTime() << " s " << std::endl;
     return ret;
   }
@@ -1910,7 +1910,7 @@ RooStats::HypoTestResult *HybridNew::readToysFromFile(const RooAbsCollection &rV
     std::cout << "ERROR: parameter point not found in input root file" << std::endl;
     if (verbose)
       Logger::instance().log(
-          std::string(Form("combine/HybridNew.cc: %d -- Parameter point not foung in input root file!", __LINE__)),
+          std::string(Form("HybridNew.cc: %d -- Parameter point not foung in input root file!", __LINE__)),
           Logger::kLogLevelError,
           __func__);
     throw std::invalid_argument("Missing input");
@@ -1921,7 +1921,7 @@ RooStats::HypoTestResult *HybridNew::readToysFromFile(const RooAbsCollection &rV
               << "\tCLsplusb = " << ret->CLsplusb() << " +/- " << ret->CLsplusbError() << "\n"
               << std::endl;
     Logger::instance().log(
-        std::string(Form("combine/HybridNew.cc: %d -- CLs = %g +/- %g\n\tCLb = %g +/- %g\n\tCLsplusb = %g +/- %g",
+        std::string(Form("HybridNew.cc: %d -- CLs = %g +/- %g\n\tCLb = %g +/- %g\n\tCLsplusb = %g +/- %g",
                          __LINE__,
                          ret->CLs(),
                          ret->CLsError(),
@@ -1966,7 +1966,7 @@ void HybridNew::readGrid(TDirectory *toyDir, double rMin, double rMax) {
       std::cout << "combine/HybridNew::readGrid: HypoTestResult with non-conformant name " << name << " will be skipped"
                 << std::endl;
       if (verbose)
-        Logger::instance().log(std::string(Form("combine/HybridNew.cc: %d -- HypoTestResult with non-conformant name %s found "
+        Logger::instance().log(std::string(Form("HybridNew.cc: %d -- HypoTestResult with non-conformant name %s found "
                                                 "when reading grid, it will be skipped",
                                                 __LINE__,
                                                 k->GetName())),
@@ -2155,7 +2155,7 @@ std::pair<double, double> HybridNew::updateGridPoint(RooWorkspace *w,
   if (verbose) {
     Logger::instance().log(
         std::string(
-            Form("combine/HybridNew.cc: %d -- At %s = %g:\n, \tCLs = %g +/- %g\n\tCLb = %g +/- %g\n\tCLsplusb = %g +/- %g",
+            Form("HybridNew.cc: %d -- At %s = %g:\n, \tCLs = %g +/- %g\n\tCLb = %g +/- %g\n\tCLsplusb = %g +/- %g",
                  __LINE__,
                  r->GetName(),
                  point->first,
@@ -2242,7 +2242,7 @@ std::vector<std::pair<double, double> > HybridNew::findIntervalsFromSplines(TGra
                     << ", cl=" << limitPlot_->GetY()[tpi] << ", poi=" << limitPlot_->GetX()[tpi] << std::endl;
           Logger::instance().log(
               std::string(
-                  Form("combine/HybridNew.cc: %d -- Adding local point to calculate interval boundaries, %d, cl=%g, poi=%g",
+                  Form("HybridNew.cc: %d -- Adding local point to calculate interval boundaries, %d, cl=%g, poi=%g",
                        __LINE__,
                        count,
                        limitPlot_->GetY()[tpi],

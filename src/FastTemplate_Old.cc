@@ -36,7 +36,7 @@ void FastTemplate::CopyValues(const TH2 &other) {
   for (unsigned int i = 0, ix = 1, nx = other.GetNbinsX(), ny = other.GetNbinsY(); ix <= nx; ++ix) {
     for (unsigned int iy = 1; iy <= ny; ++iy, ++i) {
       values_[i] = other.GetBinContent(ix, iy);
-      //printf("combine/FastTemplate::CopyValues from %s: (ix,iy) = (%d/%d,%d/%d), i = %d/%d, val = %.5f\n", other.GetName(), ix, nx, iy, ny,  i, size_, values_[i]);
+      //printf("FastTemplate::CopyValues from %s: (ix,iy) = (%d/%d,%d/%d), i = %d/%d, val = %.5f\n", other.GetName(), ix, nx, iy, ny,  i, size_, values_[i]);
     }
   }
 }
@@ -46,7 +46,7 @@ void FastTemplate::CopyValues(const TH3 &other) {
     for (unsigned int iy = 1; iy <= ny; ++iy) {
       for (unsigned int iz = 1; iz <= nz; ++iz, ++i) {
         values_[i] = other.GetBinContent(ix, iy, iz);
-        //printf("combine/FastTemplate::CopyValues from %s: (ix,iy) = (%d/%d,%d/%d), i = %d/%d, val = %.5f\n", other.GetName(), ix, nx, iy, ny,  i, size_, values_[i]);
+        //printf("FastTemplate::CopyValues from %s: (ix,iy) = (%d/%d,%d/%d), i = %d/%d, val = %.5f\n", other.GetName(), ix, nx, iy, ny,  i, size_, values_[i]);
       }
     }
   }

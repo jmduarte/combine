@@ -369,7 +369,7 @@ void cmsmath::OneDimMinimizer::moveTo(double x) {
 }
 
 void cmsmath::SequentialMinimizer::SetFunction(const ROOT::Math::IMultiGenFunction &func) {
-  DEBUG_SM_printf("combine/SequentialMinimizer::SetFunction: nDim = %u\n", func.NDim());
+  DEBUG_SM_printf("SequentialMinimizer::SetFunction: nDim = %u\n", func.NDim());
   func_.reset(new MinimizerContext(&func));
   nFree_ = nDim_ = func_->x.size();
   // create dummy workers
@@ -380,7 +380,7 @@ void cmsmath::SequentialMinimizer::SetFunction(const ROOT::Math::IMultiGenFuncti
 }
 
 void cmsmath::SequentialMinimizer::Clear() {
-  DEBUGV_SM_printf("combine/SequentialMinimizer::Clear()\n");
+  DEBUGV_SM_printf("SequentialMinimizer::Clear()\n");
   minValue_ = std::numeric_limits<double>::quiet_NaN();
   edm_ = std::numeric_limits<double>::infinity();
   state_ = Cleared;
@@ -400,7 +400,7 @@ bool cmsmath::SequentialMinimizer::SetVariable(unsigned int ivar, const std::str
 
 bool cmsmath::SequentialMinimizer::SetLimitedVariable(
     unsigned int ivar, const std::string &name, double val, double step, double lower, double upper) {
-  DEBUGV_SM_printf("combine/SequentialMinimizer::SetLimitedVariable(idx %u, name %s, var %g, step %g, min %g, max %g)\n",
+  DEBUGV_SM_printf("SequentialMinimizer::SetLimitedVariable(idx %u, name %s, var %g, step %g, min %g, max %g)\n",
                    ivar,
                    name.c_str(),
                    val,
@@ -415,7 +415,7 @@ bool cmsmath::SequentialMinimizer::SetLimitedVariable(
 }
 
 bool cmsmath::SequentialMinimizer::SetFixedVariable(unsigned int ivar, const std::string &name, double val) {
-  DEBUGV_SM_printf("combine/SequentialMinimizer::SetFixedVariable(idx %u, name %s, var %g)\n", ivar, name.c_str(), val);
+  DEBUGV_SM_printf("SequentialMinimizer::SetFixedVariable(idx %u, name %s, var %g)\n", ivar, name.c_str(), val);
   assert(ivar < nDim_);
   func_->x[ivar] = val;
   workers_[ivar].initUnbound(*func_, ivar, 1.0, name);
@@ -429,7 +429,7 @@ bool cmsmath::SequentialMinimizer::minimize(int smallsteps) {
   for (unsigned int i = 0; i < nDim_; ++i) {
     Worker &w = workers_[i];
     if (!w.isInit() || w.state == Unknown)
-      throw std::runtime_error(Form("combine/SequentialMinimizer::worker[%u/%u] not initialized!\n", i, nDim_));
+      throw std::runtime_error(Form("SequentialMinimizer::worker[%u/%u] not initialized!\n", i, nDim_));
     if (w.state != Fixed) {
       w.minimize(1);
       w.state = Ready;

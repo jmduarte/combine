@@ -133,7 +133,7 @@ void MarkovChainMC::applyOptions(const boost::program_options::variables_map &vm
     std::cerr << "combine/MarkovChainMC: proposal type " << proposalTypeName_ << " not known."
               << "\n"
               << options_ << std::endl;
-    throw std::invalid_argument("combine/MarkovChainMC: unsupported proposal");
+    throw std::invalid_argument("MarkovChainMC: unsupported proposal");
   }
 
   runMinos_ = vm.count("runMinos");
@@ -243,7 +243,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
   }
 
   if (withSystematics && (mc_s->GetNuisanceParameters() == 0)) {
-    throw std::logic_error("combine/MarkovChainMC: running with systematics enabled, but nuisances not defined.");
+    throw std::logic_error("MarkovChainMC: running with systematics enabled, but nuisances not defined.");
   }
 
   w->loadSnapshot("clean");

@@ -43,7 +43,7 @@ bool AsymptoticLimits::strictBounds_ = false;
 
 RooAbsData *AsymptoticLimits::asimovDataset_ = nullptr;
 
-AsymptoticLimits::AsymptoticLimits() : LimitAlgo("combine/AsymptoticLimits specific options") {
+AsymptoticLimits::AsymptoticLimits() : LimitAlgo("AsymptoticLimits specific options") {
   options_.add_options()("rAbsAcc",
                          boost::program_options::value<double>(&rAbsAccuracy_)->default_value(rAbsAccuracy_),
                          "Absolute accuracy on r to reach to terminate the scan")(
@@ -78,7 +78,7 @@ AsymptoticLimits::AsymptoticLimits() : LimitAlgo("combine/AsymptoticLimits speci
 void AsymptoticLimits::applyOptions(const boost::program_options::variables_map &vm) {
   if (vm.count("singlePoint") && !vm["singlePoint"].defaulted()) {
     if (!vm["run"].defaulted())
-      throw std::invalid_argument("combine/AsymptoticLimits: when using --singlePoint you can't use --run (at least for now)");
+      throw std::invalid_argument("AsymptoticLimits: when using --singlePoint you can't use --run (at least for now)");
     what_ = "singlePoint";
   } else {
     if (what_ != "observed" && what_ != "expected" && what_ != "both" && what_ != "blind")
@@ -94,7 +94,7 @@ void AsymptoticLimits::applyOptions(const boost::program_options::variables_map 
   else if (rule_ == "CLsplusb")
     doCLs_ = false;
   else
-    throw std::invalid_argument("combine/AsymptoticLimits: Rule must be either 'CLs' or 'CLsplusb'");
+    throw std::invalid_argument("AsymptoticLimits: Rule must be either 'CLs' or 'CLsplusb'");
 
   if (what_ == "blind") {
     what_ = "expected";
@@ -241,7 +241,7 @@ bool AsymptoticLimits::runLimit(RooWorkspace *w,
   if (verbose > 0) {
     std::cout << "NLL at global minimum of data: " << minNllD_ << " (" << r->GetName() << " = " << r->getVal() << ")"
               << std::endl;
-    Logger::instance().log(std::string(Form("combine/AsymptoticLimits.cc: %d -- NLL at global minimum of data = %g (%s=%g)",
+    Logger::instance().log(std::string(Form("AsymptoticLimits.cc: %d -- NLL at global minimum of data = %g (%s=%g)",
                                             __LINE__,
                                             minNllD_,
                                             r->GetName(),
@@ -270,7 +270,7 @@ bool AsymptoticLimits::runLimit(RooWorkspace *w,
   if (verbose > 0) {
     std::cout << "NLL at global minimum of asimov: " << minNllA_ << " (" << r->GetName() << " = " << r->getVal() << ")"
               << std::endl;
-    Logger::instance().log(std::string(Form("combine/AsymptoticLimits.cc: %d -- NLL at global minimum of asimov = %g (%s=%g)",
+    Logger::instance().log(std::string(Form("AsymptoticLimits.cc: %d -- NLL at global minimum of asimov = %g (%s=%g)",
                                             __LINE__,
                                             minNllA_,
                                             r->GetName(),
@@ -302,7 +302,7 @@ bool AsymptoticLimits::runLimit(RooWorkspace *w,
       if (verbose > 0)
         Logger::instance().log(
             std::string(
-                Form("combine/AsymptoticLimits.cc: %d -- Minimization failed in an unrecoverable way for calculation of limit",
+                Form("AsymptoticLimits.cc: %d -- Minimization failed in an unrecoverable way for calculation of limit",
                      __LINE__)),
             Logger::kLogLevelError,
             __func__);
@@ -342,7 +342,7 @@ bool AsymptoticLimits::runLimit(RooWorkspace *w,
       if (verbose > 0)
         Logger::instance().log(
             std::string(
-                Form("combine/AsymptoticLimits.cc: %d -- Minimization failed in an unrecoverable way for calculation of limit",
+                Form("AsymptoticLimits.cc: %d -- Minimization failed in an unrecoverable way for calculation of limit",
                      __LINE__)),
             Logger::kLogLevelError,
             __func__);
@@ -443,7 +443,7 @@ double AsymptoticLimits::getCLs(RooRealVar &r, double rVal, bool getAlsoExpected
            CLsb,
            CLb,
            CLs);
-    Logger::instance().log(std::string(Form("combine/AsymptoticLimits.cc: %d -- At %s = %f:\tq_mu = %.5f\tq_A  = %.5f\tCLsb = "
+    Logger::instance().log(std::string(Form("AsymptoticLimits.cc: %d -- At %s = %f:\tq_mu = %.5f\tq_A  = %.5f\tCLsb = "
                                             "%7.5f\tCLb  = %7.5f\tCLs  = %7.5f",
                                             __LINE__,
                                             r.GetName(),
@@ -556,7 +556,7 @@ std::vector<std::pair<float, float> > AsymptoticLimits::runLimitExpected(RooWork
              r->getVal(),
              r->getVal() / r->getMax(),
              r->GetName());
-      Logger::instance().log(std::string(Form("combine/AsymptoticLimits.cc: %d -- Best fit of asimov dataset is at %s = %f (%f "
+      Logger::instance().log(std::string(Form("AsymptoticLimits.cc: %d -- Best fit of asimov dataset is at %s = %f (%f "
                                               "times %sMax), while it should be at zero",
                                               __LINE__,
                                               r->GetName(),
@@ -577,7 +577,7 @@ std::vector<std::pair<float, float> > AsymptoticLimits::runLimitExpected(RooWork
     std::cout << "Median for expected limits: " << median << std::endl;
     std::cout << "Sigma  for expected limits: " << sigma << std::endl;
     Logger::instance().log(
-        std::string(Form("combine/AsymptoticLimits.cc: %d -- Median for expected limits = %g (Sigma for expected limits = %g)",
+        std::string(Form("AsymptoticLimits.cc: %d -- Median for expected limits = %g (Sigma for expected limits = %g)",
                          __LINE__,
                          median,
                          sigma)),
@@ -773,7 +773,7 @@ float AsymptoticLimits::findExpectedLimitFromCrossing(
       }
     } else if (minosAlgo_ == "new") {
       if (strictBounds_)
-        throw std::invalid_argument("combine/AsymptoticLimits: --minosAlgo=new doesn't work with --strictBounds\n");
+        throw std::invalid_argument("AsymptoticLimits: --minosAlgo=new doesn't work with --strictBounds\n");
       if (verbose > 1)
         printf("Will search for NLL crossing with new algorithm.\n");
       //
@@ -934,7 +934,7 @@ float AsymptoticLimits::findExpectedLimitFromCrossing(
     printf("fail search for crossing of %s between %f and %f\n", r->GetName(), rMin, rMax);
   if (verbose > 0)
     Logger::instance().log(
-        std::string(Form("combine/AsymptoticLimits.cc: %d -- fail search for crossing of %s between %f and %f",
+        std::string(Form("AsymptoticLimits.cc: %d -- fail search for crossing of %s between %f and %f",
                          __LINE__,
                          r->GetName(),
                          rMin,
@@ -993,7 +993,7 @@ float AsymptoticLimits::calculateLimitFromGrid(RooRealVar *r, double quantile, d
     std::cout << "Cannot Find r with CL above threshold for quantile " << quantiles[iq]
               << ", using lowest value of r found" << std::endl;
     if (verbose)
-      Logger::instance().log(std::string(Form("combine/AsymptoticLimits.cc: %d -- Cannot Find r with CL above threshold for "
+      Logger::instance().log(std::string(Form("AsymptoticLimits.cc: %d -- Cannot Find r with CL above threshold for "
                                               "quantile %g, using lowest value of r found",
                                               __LINE__,
                                               quantiles[iq])),
@@ -1005,7 +1005,7 @@ float AsymptoticLimits::calculateLimitFromGrid(RooRealVar *r, double quantile, d
     std::cout << "Cannot Find r with CL below threshold for quantile " << quantiles[iq]
               << ", using largest value of r found" << std::endl;
     if (verbose)
-      Logger::instance().log(std::string(Form("combine/AsymptoticLimits.cc: %d -- Cannot Find r with CL below threshold for "
+      Logger::instance().log(std::string(Form("AsymptoticLimits.cc: %d -- Cannot Find r with CL below threshold for "
                                               "quantile %g, using largest value of r found",
                                               __LINE__,
                                               quantiles[iq])),

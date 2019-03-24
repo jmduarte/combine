@@ -719,13 +719,13 @@ void Combine::run(
     if (verbose > 0) {
       std::cout << "Set floating the following parameters: ";
       toFloat.Print("");
-      Logger::instance().log(std::string(Form("combine/Combine.cc: %d -- Set floating the following parameters: ", __LINE__)),
+      Logger::instance().log(std::string(Form("Combine.cc: %d -- Set floating the following parameters: ", __LINE__)),
                              Logger::kLogLevelInfo,
                              __func__);
       std::unique_ptr<TIterator> iter(toFloat.createIterator());
       for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
         Logger::instance().log(
-            std::string(Form("combine/Combine.cc: %d  %s ", __LINE__, a->GetName())), Logger::kLogLevelInfo, __func__);
+            std::string(Form("Combine.cc: %d  %s ", __LINE__, a->GetName())), Logger::kLogLevelInfo, __func__);
       }
     }
     utils::setAllConstant(toFloat, false);
@@ -760,13 +760,13 @@ void Combine::run(
     if (verbose > 0) {
       std::cout << "Freezing the following parameters: ";
       toFreeze.Print("");
-      Logger::instance().log(std::string(Form("combine/Combine.cc: %d -- Freezing the following parameters: ", __LINE__)),
+      Logger::instance().log(std::string(Form("Combine.cc: %d -- Freezing the following parameters: ", __LINE__)),
                              Logger::kLogLevelInfo,
                              __func__);
       std::unique_ptr<TIterator> iter(toFreeze.createIterator());
       for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
         Logger::instance().log(
-            std::string(Form("combine/Combine.cc: %d  %s ", __LINE__, a->GetName())), Logger::kLogLevelInfo, __func__);
+            std::string(Form("Combine.cc: %d  %s ", __LINE__, a->GetName())), Logger::kLogLevelInfo, __func__);
       }
     }
     utils::setAllConstant(toFreeze, true);
@@ -848,7 +848,7 @@ void Combine::run(
     std::cout << "To make things easier, I will assume you have done it." << std::endl;
     if (verbose)
       Logger::instance().log(
-          std::string(Form("combine/Combine.cc: %d -- The signal model has no constrained nuisance parameters so I have "
+          std::string(Form("Combine.cc: %d -- The signal model has no constrained nuisance parameters so I have "
                            "assumed you don't need a pdf for them. Please re-run with -S 0 to be sure!",
                            __LINE__)),
           Logger::kLogLevelInfo,
@@ -1064,13 +1064,13 @@ void Combine::run(
           // print the values of the parameters used to generate the toy
           if (verbose > 2) {
             Logger::instance().log(
-                std::string(Form("combine/Combine.cc: %d -- Generate Asimov toy from parameter values ... ", __LINE__)),
+                std::string(Form("Combine.cc: %d -- Generate Asimov toy from parameter values ... ", __LINE__)),
                 Logger::kLogLevelInfo,
                 __func__);
             std::unique_ptr<TIterator> iter(genPdf->getParameters((const RooArgSet *)0)->createIterator());
             for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
               TString varstring = utils::printRooArgAsString(a);
-              Logger::instance().log(std::string(Form("combine/Combine.cc: %d -- %s", __LINE__, varstring.Data())),
+              Logger::instance().log(std::string(Form("Combine.cc: %d -- %s", __LINE__, varstring.Data())),
                                      Logger::kLogLevelInfo,
                                      __func__);
             }
@@ -1098,7 +1098,7 @@ void Combine::run(
               << (iToy == 0 ? "observation (a-posteriori)" : "expected outcome (a-priori)") << std::endl;
     if (verbose)
       Logger::instance().log(
-          std::string(Form("combine/Combine.cc: %d -- Computing results starting from %s",
+          std::string(Form("Combine.cc: %d -- Computing results starting from %s",
                            __LINE__,
                            (iToy == 0 ? "observation (a-posteriori)" : "expected outcome (a-priori)"))),
           Logger::kLogLevelInfo,
@@ -1194,14 +1194,14 @@ void Combine::run(
         if (verbose > 2) {
           Logger::instance().log(
               std::string(
-                  Form("combine/Combine.cc: %d -- Generating toy %d/%d, from parameter values ... ", __LINE__, iToy, nToys)),
+                  Form("Combine.cc: %d -- Generating toy %d/%d, from parameter values ... ", __LINE__, iToy, nToys)),
               Logger::kLogLevelInfo,
               __func__);
           std::unique_ptr<TIterator> iter(genPdf->getParameters((const RooArgSet *)0)->createIterator());
           for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
             TString varstring = utils::printRooArgAsString(a);
             Logger::instance().log(
-                std::string(Form("combine/Combine.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
+                std::string(Form("Combine.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
           }
         }
 
@@ -1363,7 +1363,7 @@ void Combine::addDiscreteNuisances(RooWorkspace *w) {
         if (verbose) {
           std::cout << "Adding discrete " << cat->GetName() << "\n";
           if (verbose)
-            Logger::instance().log(std::string(Form("combine/Combine.cc: %d -- Adding discrete %s ", __LINE__, cat->GetName())),
+            Logger::instance().log(std::string(Form("Combine.cc: %d -- Adding discrete %s ", __LINE__, cat->GetName())),
                                    Logger::kLogLevelInfo,
                                    __func__);
         }
@@ -1383,7 +1383,7 @@ void Combine::addDiscreteNuisances(RooWorkspace *w) {
         if (verbose) {
           std::cout << "Adding discrete " << cat->GetName() << "\n";
           if (verbose)
-            Logger::instance().log(std::string(Form("combine/Combine.cc: %d -- Adding discrete %s ", __LINE__, cat->GetName())),
+            Logger::instance().log(std::string(Form("Combine.cc: %d -- Adding discrete %s ", __LINE__, cat->GetName())),
                                    Logger::kLogLevelInfo,
                                    __func__);
         }

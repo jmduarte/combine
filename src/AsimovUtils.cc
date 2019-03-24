@@ -21,14 +21,14 @@ RooAbsData *asimovutils::asimovDatasetNominal(RooStats::ModelConfig *mc, double 
   toymcoptutils::SimPdfGenInfo newToyMC(*mc->GetPdf(), *mc->GetObservables(), false);
 
   if (verbose > 2) {
-    Logger::instance().log(std::string(Form("combine/AsimovUtils.cc: %d -- Parameters after fit for asimov dataset", __LINE__)),
+    Logger::instance().log(std::string(Form("AsimovUtils.cc: %d -- Parameters after fit for asimov dataset", __LINE__)),
                            Logger::kLogLevelInfo,
                            __func__);
     std::unique_ptr<TIterator> iter(mc->GetPdf()->getParameters((const RooArgSet *)0)->createIterator());
     for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
       TString varstring = utils::printRooArgAsString(a);
       Logger::instance().log(
-          std::string(Form("combine/AsimovUtils.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
+          std::string(Form("AsimovUtils.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
     }
   }
 
@@ -81,14 +81,14 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
   }
 
   if (verbose > 2) {
-    Logger::instance().log(std::string(Form("combine/AsimovUtils.cc: %d -- Parameters after fit for asimov dataset", __LINE__)),
+    Logger::instance().log(std::string(Form("AsimovUtils.cc: %d -- Parameters after fit for asimov dataset", __LINE__)),
                            Logger::kLogLevelInfo,
                            __func__);
     std::unique_ptr<TIterator> iter(mc->GetPdf()->getParameters(realdata)->createIterator());
     for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
       TString varstring = utils::printRooArgAsString(a);
       Logger::instance().log(
-          std::string(Form("combine/AsimovUtils.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
+          std::string(Form("AsimovUtils.cc: %d -- %s", __LINE__, varstring.Data())), Logger::kLogLevelInfo, __func__);
     }
   }
 
@@ -110,12 +110,12 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
     std::unique_ptr<RooAbsPdf> nuispdf(utils::makeNuisancePdf(*mc));
     RooProdPdf *prod = dynamic_cast<RooProdPdf *>(nuispdf.get());
     if (prod == 0)
-      throw std::runtime_error("combine/AsimovUtils: the nuisance pdf is not a RooProdPdf!");
+      throw std::runtime_error("AsimovUtils: the nuisance pdf is not a RooProdPdf!");
     std::unique_ptr<TIterator> iter(prod->pdfList().createIterator());
     for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
       RooAbsPdf *cterm = dynamic_cast<RooAbsPdf *>(a);
       if (!cterm)
-        throw std::logic_error("combine/AsimovUtils: a factor of the nuisance pdf is not a Pdf!");
+        throw std::logic_error("AsimovUtils: a factor of the nuisance pdf is not a Pdf!");
       if (!cterm->dependsOn(nuis))
         continue;  // dummy constraints
       if (typeid(*cterm) == typeid(RooUniform))
@@ -124,7 +124,7 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
       std::unique_ptr<RooArgSet> cgobs(cterm->getObservables(&gobs));
       if (cgobs->getSize() != 1) {
         throw std::runtime_error(
-            Form("combine/AsimovUtils: constraint term %s has multiple global observables", cterm->GetName()));
+            Form("AsimovUtils: constraint term %s has multiple global observables", cterm->GetName()));
       }
       RooRealVar &rrv = dynamic_cast<RooRealVar &>(*cgobs->first());
 
@@ -138,7 +138,7 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
           if (rrv2 != 0 && !rrv2->isConstant()) {
             if (match != 0)
               throw std::runtime_error(
-                  Form("combine/AsimovUtils: constraint term %s has multiple floating params", cterm->GetName()));
+                  Form("AsimovUtils: constraint term %s has multiple floating params", cterm->GetName()));
             match = rrv2;
           }
         }
@@ -149,11 +149,11 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
         cpars->Print("V");
         std::cerr << "Observables: " << std::endl;
         cgobs->Print("V");
-        throw std::runtime_error(Form("combine/AsimovUtils: can't find nuisance for constraint term %s", cterm->GetName()));
+        throw std::runtime_error(Form("AsimovUtils: can't find nuisance for constraint term %s", cterm->GetName()));
       }
       std::string pdfName(cterm->ClassName());
-      if (pdfName == "RooGaussian" || pdfName == "combine/SimpleGaussianConstraint" || pdfName == "RooBifurGauss" ||
-          pdfName == "RooPoisson" || pdfName == "combine/SimplePoissonConstraint" || pdfName == "RooGenericPdf") {
+      if (pdfName == "RooGaussian" || pdfName == "SimpleGaussianConstraint" || pdfName == "RooBifurGauss" ||
+          pdfName == "RooPoisson" || pdfName == "SimplePoissonConstraint" || pdfName == "RooGenericPdf") {
         // this is easy
         rrv.setVal(match->getVal());
       } else if (pdfName == "RooGamma") {
@@ -174,7 +174,7 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
             continue;
           if (!rar->isConstant())
             throw std::runtime_error(
-                Form("combine/AsimovUtils: extra floating parameter %s of RooGamma %s.", rar->GetName(), cterm->GetName()));
+                Form("AsimovUtils: extra floating parameter %s of RooGamma %s.", rar->GetName(), cterm->GetName()));
           if (rar->getVal() == 0)
             continue;  // this could be mu
           if (match2 != 0)
@@ -184,7 +184,7 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
         }
         if (match2 == 0)
           throw std::runtime_error(
-              Form("combine/AsimovUtils: could not find the scaling term for  RooGamma %s.", cterm->GetName()));
+              Form("AsimovUtils: could not find the scaling term for  RooGamma %s.", cterm->GetName()));
         //std::cout << " nuisance "   << match->GetName() << " = x = " << match->getVal() << std::endl;
         //std::cout << " scaling param "   << match2->GetName() << " = theta = " << match2->getVal() << std::endl;
         //std::cout << " global obs " << rrv.GetName() << " = kappa = " << rrv.getVal() << std::endl;
@@ -192,7 +192,7 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
         rrv.setVal(match->getVal() / match2->getVal() + 1.);
       } else {
         throw std::runtime_error(
-            Form("combine/AsimovUtils: can't handle constraint term %s of type %s", cterm->GetName(), cterm->ClassName()));
+            Form("AsimovUtils: can't handle constraint term %s of type %s", cterm->GetName(), cterm->ClassName()));
       }
     }
 

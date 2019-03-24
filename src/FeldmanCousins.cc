@@ -14,7 +14,7 @@ float FeldmanCousins::toysFactor_ = 1;
 float FeldmanCousins::rAbsAccuracy_ = 0.1;
 float FeldmanCousins::rRelAccuracy_ = 0.02;
 
-FeldmanCousins::FeldmanCousins() : LimitAlgo("combine/FeldmanCousins specific options") {
+FeldmanCousins::FeldmanCousins() : LimitAlgo("FeldmanCousins specific options") {
   options_.add_options()("rAbsAcc",
                          boost::program_options::value<float>(&rAbsAccuracy_)->default_value(rAbsAccuracy_),
                          "Absolute accuracy on r to reach to terminate the scan")(

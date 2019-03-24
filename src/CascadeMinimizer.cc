@@ -103,7 +103,7 @@ bool CascadeMinimizer::improve(int verbose, bool cascade) {
         std::cerr << "Failed minimization with " << nominalType << "," << nominalAlgo << " and tolerance " << nominalTol
                   << std::endl;
         Logger::instance().log(
-            std::string(Form("combine/CascadeMinimizer.cc: %d -- Failed minimization with %s, %s and tolerance %g",
+            std::string(Form("CascadeMinimizer.cc: %d -- Failed minimization with %s, %s and tolerance %g",
                              __LINE__,
                              nominalType.c_str(),
                              nominalAlgo.c_str(),
@@ -205,7 +205,7 @@ bool CascadeMinimizer::improveOnce(int verbose, bool noHesse) {
       minimizer_->setPrintLevel(verbose - 1);
       if (verbose + 2 > 0)
         Logger::instance().log(
-            std::string(Form("combine/CascadeMinimizer.cc: %d -- Hesse finished with status=%d", __LINE__, status)),
+            std::string(Form("CascadeMinimizer.cc: %d -- Hesse finished with status=%d", __LINE__, status)),
             Logger::kLogLevelDebug,
             __func__);
     }
@@ -218,11 +218,11 @@ bool CascadeMinimizer::improveOnce(int verbose, bool noHesse) {
                 << std::endl;
     if (verbose + 2 > 0) {
       Logger::instance().log(
-          std::string(Form("combine/CascadeMinimizer.cc: %d -- Minimisation finished with status=%d", __LINE__, status)),
+          std::string(Form("CascadeMinimizer.cc: %d -- Minimisation finished with status=%d", __LINE__, status)),
           Logger::kLogLevelInfo,
           __func__);
       if (status == 1)
-        Logger::instance().log(std::string(Form("combine/CascadeMinimizer.cc: %d -- finished with status 1 (covariance forced "
+        Logger::instance().log(std::string(Form("CascadeMinimizer.cc: %d -- finished with status 1 (covariance forced "
                                                 "positive definite), this could indicate a problem with the minimim.",
                                                 __LINE__)),
                                Logger::kLogLevelDebug,
@@ -231,12 +231,12 @@ bool CascadeMinimizer::improveOnce(int verbose, bool noHesse) {
   }
   if (verbose + 2 > 0) {
     if (outcome)
-      Logger::instance().log(std::string(Form("combine/CascadeMinimizer.cc: %d -- Minimization success! status=0", __LINE__)),
+      Logger::instance().log(std::string(Form("CascadeMinimizer.cc: %d -- Minimization success! status=0", __LINE__)),
                              Logger::kLogLevelInfo,
                              __func__);
     else
       Logger::instance().log(
-          std::string(Form("combine/CascadeMinimizer.cc: %d -- Minimization ended with latest status != 0 or 1", __LINE__)),
+          std::string(Form("CascadeMinimizer.cc: %d -- Minimization ended with latest status != 0 or 1", __LINE__)),
           Logger::kLogLevelDebug,
           __func__);
   }
@@ -274,7 +274,7 @@ bool CascadeMinimizer::minos(const RooArgSet &params, int verbose) {
   int iret = minimizer_->minos(params);
   if (verbose > 0)
     Logger::instance().log(
-        std::string(Form("combine/CascadeMinimizer.cc: %d -- Minos finished with status=%d", __LINE__, iret)),
+        std::string(Form("CascadeMinimizer.cc: %d -- Minos finished with status=%d", __LINE__, iret)),
         Logger::kLogLevelDebug,
         __func__);
 
@@ -510,7 +510,7 @@ bool CascadeMinimizer::minimize(int verbose, bool cascade) {
             " [WARNING] Are you sure your model is correct?\n");
     Logger::instance().log(
         std::string(
-            Form("combine/CascadeMinimizer.cc: %d -- After fit, some parameters are found at the boundary (within ~1sigma)",
+            Form("CascadeMinimizer.cc: %d -- After fit, some parameters are found at the boundary (within ~1sigma)",
                  __LINE__)),
         Logger::kLogLevelInfo,
         __func__);
@@ -786,7 +786,7 @@ void CascadeMinimizer::applyOptions(const boost::program_options::variables_map 
           "--cminDefaultMinimizerType and --cminDefaultMinimizerAlgo",
           defaultMinimizerType_.c_str(),
           defaultMinimizerAlgo_.c_str());
-      //Logger::instance().log(std::string(Form("combine/CascadeMinimizer.cc: %d -- The combination of minimizer type/algo %s/%s, is not recognized. Please set these with --cminDefaultMinimizerType and --cminDefaultMinimizerAlgo",__LINE__,defaultMinimizerType_.c_str(),defaultMinimizerAlgo_.c_str())),Logger::kLogLevelError,__func__);
+      //Logger::instance().log(std::string(Form("CascadeMinimizer.cc: %d -- The combination of minimizer type/algo %s/%s, is not recognized. Please set these with --cminDefaultMinimizerType and --cminDefaultMinimizerAlgo",__LINE__,defaultMinimizerType_.c_str(),defaultMinimizerAlgo_.c_str())),Logger::kLogLevelError,__func__);
       exit(0);
     }
   }
@@ -836,7 +836,7 @@ void CascadeMinimizer::applyOptions(const boost::program_options::variables_map 
             "again",
             type.c_str(),
             algo.c_str());
-        //Logger::instance().log(std::string(Form("combine/CascadeMinimizer.cc: %d -- The fallback combination of minimizer type/algo %s/%s, is not recognized. Please check --cminFallbackAlgo again",__LINE__,defaultMinimizerType_.c_str(),algo.c_str())),Logger::kLogLevelError,__func__);
+        //Logger::instance().log(std::string(Form("CascadeMinimizer.cc: %d -- The fallback combination of minimizer type/algo %s/%s, is not recognized. Please check --cminFallbackAlgo again",__LINE__,defaultMinimizerType_.c_str(),algo.c_str())),Logger::kLogLevelError,__func__);
         exit(0);
       }
       fallbacks_.push_back(Algo(type, algo, tolerance, strategy));
@@ -950,7 +950,7 @@ bool CascadeMinimizer::autoBoundsOk(int verbose) {
   }
   if (!ok && verbose) {
     std::cout << "At least one of the POIs was close to the boundary, repeating the fit." << std::endl;
-    Logger::instance().log(std::string(Form("combine/CascadeMinimizer.cc: %d -- On checking with autoBounds on, At least one "
+    Logger::instance().log(std::string(Form("CascadeMinimizer.cc: %d -- On checking with autoBounds on, At least one "
                                             "of the POIs was close to the boundary, repeating the fit.",
                                             __LINE__)),
                            Logger::kLogLevelDebug,

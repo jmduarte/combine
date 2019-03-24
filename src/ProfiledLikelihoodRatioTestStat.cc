@@ -5,7 +5,7 @@
 
 Double_t ProfiledLikelihoodRatioTestStat::Evaluate(RooAbsData& data, RooArgSet& nullPOI) {
   if (data.numEntries() != 1)
-    throw std::invalid_argument("combine/HybridNew::TestSimpleStatistics: dataset doesn't have exactly 1 entry.");
+    throw std::invalid_argument("HybridNew::TestSimpleStatistics: dataset doesn't have exactly 1 entry.");
   CloseCoutSentry(true);
 
   const RooArgSet* entry = data.get(0);

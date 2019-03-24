@@ -73,7 +73,7 @@ std::vector<float> MultiDimFit::specifiedVals_;
 RooArgList MultiDimFit::specifiedList_;
 bool MultiDimFit::saveInactivePOI_ = false;
 
-MultiDimFit::MultiDimFit() : FitterAlgoBase("combine/MultiDimFit specific options") {
+MultiDimFit::MultiDimFit() : FitterAlgoBase("MultiDimFit specific options") {
   options_.add_options()("algo",
                          boost::program_options::value<std::string>()->default_value("none"),
                          "Algorithm to compute uncertainties")(
@@ -300,7 +300,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
 
   //set snapshot for best fit
   if (savingSnapshot_)
-    w->saveSnapshot("combine/MultiDimFit", utils::returnAllVars(w));
+    w->saveSnapshot("MultiDimFit", utils::returnAllVars(w));
 
   if (autoRange_ > 0) {
     std::cout << "Adjusting range of POIs to +/- " << autoRange_ << " standard deviations" << std::endl;

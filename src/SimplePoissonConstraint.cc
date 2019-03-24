@@ -8,10 +8,10 @@
 void SimplePoissonConstraint::init() {
   if (!x.arg().InheritsFrom("RooRealVar") && !x.arg().InheritsFrom("RooConstVar")) {
     throw std::invalid_argument(
-        std::string("combine/SimplePoissonConstraint created with non-RooRealVar non-RooConstVar sigma: ") + GetName());
+        std::string("SimplePoissonConstraint created with non-RooRealVar non-RooConstVar sigma: ") + GetName());
   }
   if (!x.arg().isConstant()) {
-    throw std::invalid_argument(std::string("combine/SimplePoissonConstraint created with non-constant x: ") + GetName());
+    throw std::invalid_argument(std::string("SimplePoissonConstraint created with non-constant x: ") + GetName());
   }
   Double_t observed = x;
   logGamma_ = TMath::LnGamma(observed + 1.);

@@ -104,7 +104,7 @@ Double_t RooMultiPdf::evaluate() const {
   // coefficients depends on the normalization set, and we don't really know
   // how this information is propagated.
   // So, we just forward the getVal which is anyway the contract for RooMultiPdf.
-  throw std::invalid_argument("combine/RooMultiPdf::evaluate() called\n");
+  throw std::invalid_argument("RooMultiPdf::evaluate() called\n");
 }
 
 //_____________________________________________________________________________
