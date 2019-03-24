@@ -18,22 +18,23 @@ namespace RooStats {
   class ModelConfig;
 }
 
-extern Float_t t_cpu_, t_real_, g_quantileExpected_;
-extern bool g_fillTree_;
-//RooWorkspace *writeToysHere = 0;
-extern TDirectory *outputFile;
-extern TDirectory *writeToysHere;
-extern TDirectory *readToysFromHere;
-extern LimitAlgo *algo, *hintAlgo;
-extern int verbose;
+extern Float_t g_quantileExpected;
+extern bool g_fillTree;
+extern TDirectory *g_outputFile;
+extern TDirectory *g_writeToysHere;
+extern TDirectory *g_readToysFromHere;
+extern LimitAlgo *algo;
+extern LimitAlgo *g_hintAlgo;
+extern int g_verbose;
 extern bool g_withSystematics;
-extern bool g_doSignificance, lowerLimit_;
-extern float cl;
+extern bool g_doSignificance;
+extern bool g_lowerLimit;
+extern float g_confidenceLevel;
 extern float g_mass;
-extern bool bypassFrequentistFit_;
-extern std::string setPhysicsModelParameterExpression_;
-extern std::string setPhysicsModelParameterRangeExpression_;
-extern std::string defineBackgroundOnlyModelParameterExpression_;
+extern bool g_bypassFrequentistFit;
+extern std::string g_setPhysicsModelParameterExpression;
+extern std::string g_setPhysicsModelParameterRangeExpression;
+extern std::string g_defineBackgroundOnlyModelParameterExpression;
 
 namespace {
   struct ToCleanUp {

@@ -63,7 +63,7 @@ bool BayesianFlatPrior::run(RooWorkspace *w,
   for (;;) {
     BayesianCalculator bcalc(data, *mc_s);
     bcalc.SetLeftSideTailFraction(0);
-    bcalc.SetConfidenceLevel(cl);
+    bcalc.SetConfidenceLevel(g_confidenceLevel);
     std::unique_ptr<SimpleInterval> bcInterval(bcalc.GetInterval());
     if (bcInterval.get() == 0)
       return false;
@@ -76,12 +76,12 @@ bool BayesianFlatPrior::run(RooWorkspace *w,
       r->setMax(r->getMax() * 2);
       continue;
     }
-    if (verbose > -1) {
+    if (g_verbose > -1) {
       std::cout << "\n -- BayesianSimple -- "
                 << "\n";
-      std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << cl * 100 << "% CL" << std::endl;
+      std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL" << std::endl;
     }
-    if (verbose > 200) {
+    if (g_verbose > 200) {
       // FIXME!!!!!
       TCanvas c1("c1", "c1");
       std::unique_ptr<RooPlot> bcPlot(bcalc.GetPosteriorPlot(true, 0.1));

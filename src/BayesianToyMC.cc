@@ -93,7 +93,7 @@ bool BayesianToyMC::run(RooWorkspace *w,
     for (unsigned int i = 0; i < tries_; ++i) {
       BayesianCalculator bcalc(data, *mc_s);
       bcalc.SetLeftSideTailFraction(0);
-      bcalc.SetConfidenceLevel(cl);
+      bcalc.SetConfidenceLevel(g_confidenceLevel);
       if (!integrationType_.empty())
         bcalc.SetIntegrationType(integrationType_.c_str());
       if (numIters_)
@@ -124,21 +124,21 @@ bool BayesianToyMC::run(RooWorkspace *w,
       // add to running sum(x) and sum(x2)
       limit += lim;
       limitErr += lim * lim;
-      if (tries_ > 1 && verbose > 1)
+      if (tries_ > 1 && g_verbose > 1)
         std::cout << " - limit from try " << i << ": " << lim << std::endl;
     }
     if (rerun)
       continue;
     limit /= tries_;
     limitErr = (tries_ > 1 ? std::sqrt((limitErr / tries_ - limit * limit) / ((tries_ - 1) * tries_)) : 0);
-    if (verbose > -1) {
+    if (g_verbose > -1) {
       std::cout << "\n -- BayesianToyMC -- "
                 << "\n";
       if (limitErr > 0) {
-        std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << cl * 100 << "% CL"
+        std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << g_confidenceLevel * 100 << "% CL"
                   << std::endl;
       } else {
-        std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << cl * 100 << "% CL" << std::endl;
+        std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL" << std::endl;
       }
     }
     break;
@@ -163,7 +163,7 @@ bool BayesianToyMC::runBayesFactor(RooWorkspace *w,
     RooArgSet points[2];
     for (int i = 0; i < 2; ++i) {
       utils::createSnapshotFromString(twoPoints_[i], POI, points[i], "--twoPoints");
-      if (verbose > 1) {
+      if (g_verbose > 1) {
         std::cout << "Point " << i + 1 << " : " << std::endl;
         points[i].Print("V");
       }
@@ -173,7 +173,7 @@ bool BayesianToyMC::runBayesFactor(RooWorkspace *w,
   }
   limit = ppS.first / ppB.first;
   limitErr = std::hypot(ppS.second / ppB.first, ppS.first * ppB.second / (ppB.first * ppB.first));
-  if (verbose > -1) {
+  if (g_verbose > -1) {
     std::cout << "\n -- BayesianToyMC -- "
               << "\n";
     std::cout << "Bayes factor: " << limit << " +/- " << limitErr << std::endl;
@@ -211,7 +211,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
     poiToGen.add(*mc->GetParametersOfInterest());
   if (point != 0)
     poiToGen.remove(*point, false, true);
-  if (verbose && poiToGen.getSize()) {
+  if (g_verbose && poiToGen.getSize()) {
     std::cout << "POI to generate:";
     poiToGen.Print();
   }
@@ -223,7 +223,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
     otherParams.remove(*mc->GetParametersOfInterest());
   if (g_withSystematics && mc->GetNuisanceParameters())
     otherParams.remove(*mc->GetNuisanceParameters());
-  if (verbose && otherParams.getSize()) {
+  if (g_verbose && otherParams.getSize()) {
     std::cout << "Other unnamed parameters to generate:";
     otherParams.Print();
   }
@@ -251,7 +251,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
         *params = *poiValues->get(i);
       if (otherParams.getSize())
         RooStats::RandomizeCollection(otherParams);
-      if (verbose > 2) {
+      if (g_verbose > 2) {
         std::cout << "\n\n==== POINT " << t << "," << i << " ====" << std::endl;
         params->Print("V");
       }
@@ -261,7 +261,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
           *offset = nllVal;
         nllVal -= *offset;
       }
-      if (verbose > 1)
+      if (g_verbose > 1)
         std::cout << "nll[" << t << "," << i << "] = " << nllVal << ", p = " << std::exp(-nllVal) << std::endl;
       results.push_back(std::exp(-nllVal));
       sum += results.back();

@@ -103,7 +103,7 @@ bool GoodnessOfFit::run(RooWorkspace *w,
     if (!is_init) {
       initKSandAD(mc_s);
       if (makePlots_) {
-        plotDir_ = outputFile ? outputFile->mkdir("GoodnessOfFit") : 0;
+        plotDir_ = g_outputFile ? g_outputFile->mkdir("GoodnessOfFit") : 0;
       }
       is_init = true;
     }
@@ -196,7 +196,7 @@ bool GoodnessOfFit::runSaturatedModel(RooWorkspace *w,
     saturated.reset(saturatedPdfi);
   }
 
-  CloseCoutSentry sentry(verbose < 2);
+  CloseCoutSentry sentry(g_verbose < 2);
 
   const RooCmdArg &constrainCmdArg = g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
   std::unique_ptr<RooAbsReal> nominal_nll(pdf_nominal->createNLL(data, constrainCmdArg));
@@ -207,7 +207,7 @@ bool GoodnessOfFit::runSaturatedModel(RooWorkspace *w,
   }
   CascadeMinimizer minimn(*nominal_nll, CascadeMinimizer::Unconstrained);
   // minimn.setStrategy(minimizerStrategy_);
-  minimn.minimize(verbose - 2);
+  minimn.minimize(g_verbose - 2);
   // This test is a special case where we are comparing the likelihoods of two
   // different models and so we can't re-zero the NLL with respect to the
   // initial parameters.
@@ -225,7 +225,7 @@ bool GoodnessOfFit::runSaturatedModel(RooWorkspace *w,
   }
   CascadeMinimizer minims(*saturated_nll, CascadeMinimizer::Unconstrained);
   //minims.setStrategy(minimizerStrategy_);
-  minims.minimize(verbose - 2);
+  minims.minimize(g_verbose - 2);
   if (dynamic_cast<cacheutils::CachingSimNLL *>(saturated_nll.get())) {
     static_cast<cacheutils::CachingSimNLL *>(saturated_nll.get())->clearConstantZeroPoint();
   }
@@ -267,7 +267,7 @@ bool GoodnessOfFit::runKSandAD(RooWorkspace *w,
   RooAbsPdf *obsOnlyPdf = utils::factorizePdf(*mc_s->GetObservables(), *pdf, constraints);
 
   //First, find the best fit values
-  CloseCoutSentry sentry(verbose < 2);
+  CloseCoutSentry sentry(g_verbose < 2);
 
   /*
   const RooCmdArg &minim = RooFit::Minimizer(ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str(),
@@ -282,7 +282,7 @@ bool GoodnessOfFit::runKSandAD(RooWorkspace *w,
   std::unique_ptr<RooAbsReal> nll(pdf->createNLL(data, constrainCmdArg));
   CascadeMinimizer minim(*nll, CascadeMinimizer::Unconstrained);
   //minims.setStrategy(minimizerStrategy_);
-  minim.minimize(verbose - 2);
+  minim.minimize(g_verbose - 2);
 
   sentry.clear();
 
@@ -390,7 +390,7 @@ Double_t GoodnessOfFit::EvaluateADDistance(RooAbsPdf &pdf, RooAbsData &data, Roo
 
     if (kolmo) {
       distance = std::abs(empirical_df - current_cdf_val);
-      if (verbose >= 3) {
+      if (g_verbose >= 3) {
         std::cout << "Observable: " << observableval << "\tdata: " << d->second << "\tedf: " << empirical_df
                   << "\tcdf: " << current_cdf_val << "\tdistance: " << distance << "\n";
       }
@@ -403,7 +403,7 @@ Double_t GoodnessOfFit::EvaluateADDistance(RooAbsPdf &pdf, RooAbsData &data, Roo
       if (current_cdf_val >= 1.0) {
         distance = 0.;
       }
-      if (verbose >= 3) {
+      if (g_verbose >= 3) {
         std::cout << "Observable: " << observableval << "\tdata: " << d->second << "\tedf: " << empirical_df
                   << "\tcdf: " << current_cdf_val << "\tdistance: " << distance << "\n";
       }
@@ -435,11 +435,11 @@ Double_t GoodnessOfFit::EvaluateADDistance(RooAbsPdf &pdf, RooAbsData &data, Roo
 }
 
 RooAbsPdf *GoodnessOfFit::makeSaturatedPdf(RooAbsData &data) {
-  if (verbose > 1)
+  if (g_verbose > 1)
     std::cout << "Generating saturated model for " << data.GetName() << std::endl;
   RooDataHist *rdh = new RooDataHist(TString::Format("%s_binned", data.GetName()), "", *data.get(), data);
   tempData_.push_back(rdh);
-  if (verbose > 1)
+  if (g_verbose > 1)
     utils::printRDH(rdh);
   RooHistPdf *hpdf = new RooHistPdf(TString::Format("%s_shape", data.GetName()), "", *rdh->get(), *rdh);
   RooConstVar *norm = new RooConstVar(TString::Format("%s_norm", data.GetName()), "", data.sumEntries());

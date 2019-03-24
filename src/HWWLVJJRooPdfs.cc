@@ -150,8 +150,8 @@ double RooErfPdf::indefErfIntegral(double val) const {
          width / rootpi * TMath::Exp(-(val - turnOn) * (val - turnOn) / width / width);
 }
 
-void RooErfPdf::printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const {
-  RooAbsPdf::printMultiline(os, contents, verbose, indent);
+void RooErfPdf::printMultiline(std::ostream& os, Int_t contents, Bool_t g_verbose, TString indent) const {
+  RooAbsPdf::printMultiline(os, contents, g_verbose, indent);
   os << indent << "--- RooErfPdf --" << '\n';
   os << indent << "onOff: " << onOff << std::endl;
 }

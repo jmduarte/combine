@@ -92,7 +92,7 @@ bool ChannelCompatibilityCheck::runSpecific(RooWorkspace *w,
       minosVars.add(*w->var(riName));
   }
 
-  CloseCoutSentry sentry(verbose < 2);
+  CloseCoutSentry sentry(g_verbose < 2);
   const RooCmdArg &constCmdArg =
       g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooFit::NumCPU(1);  // use something dummy
   std::unique_ptr<RooFitResult> result_nominal(
@@ -120,7 +120,7 @@ bool ChannelCompatibilityCheck::runSpecific(RooWorkspace *w,
   limit = 2 * (nll_nominal - nll_freeform);
 
   std::cout << "\n --- ChannelCompatibilityCheck --- " << std::endl;
-  //if (verbose) { // We should print out the results by default
+  //if (g_verbose) { // We should print out the results by default
   if (fixedMu_) {
     printf("Nominal fit: %s fixed at %7.4f\n", r->GetName(), r->getVal());
   } else {
@@ -180,8 +180,8 @@ bool ChannelCompatibilityCheck::runSpecific(RooWorkspace *w,
   std::cout << "Chi2-like compatibility variable: " << limit << std::endl;
 
   if (saveFitResult_) {
-    writeToysHere->GetFile()->WriteTObject(result_nominal.release(), "fit_nominal");
-    writeToysHere->GetFile()->WriteTObject(result_freeform.release(), "fit_alternate");
+    g_writeToysHere->GetFile()->WriteTObject(result_nominal.release(), "fit_nominal");
+    g_writeToysHere->GetFile()->WriteTObject(result_freeform.release(), "fit_alternate");
   }
   return true;
 }

@@ -223,7 +223,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
   // start with a best fit
   const RooCmdArg &constrainCmdArg = g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
   std::unique_ptr<RooFitResult> res;
-  if (verbose <= 3)
+  if (g_verbose <= 3)
     RooAbsReal::setEvalErrorLoggingMode(RooAbsReal::CountErrors);
   bool doHesse = (algo_ == Singles || algo_ == Impact) || (saveFitResult_);
   if (!skipInitialFit_) {
@@ -283,7 +283,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
   }
 
   if (robustHesse_) {
-    RobustHesse robustHesse(*nll, verbose - 1);
+    RobustHesse robustHesse(*nll, g_verbose - 1);
     robustHesse.ProtectArgSet(*mc_s->GetParametersOfInterest());
     if (robustHesseSave_ != "") {
       robustHesse.SaveHessianToFile(robustHesseSave_);
@@ -350,7 +350,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
       }
       break;
     case Cross:
-      doBox(*nll, cl, "box", true);
+      doBox(*nll, g_confidenceLevel, "box", true);
       break;
     case Grid:
       doGrid(w, *nll);
@@ -637,7 +637,7 @@ void MultiDimFit::doImpact(RooFitResult &res, RooAbsReal &nll) {
       *params = snap;
       poiVals_[i] = doVals[x];
       poiVars_[i]->setVal(doVals[x]);
-      bool ok = minim.minimize(verbose - 1);
+      bool ok = minim.minimize(g_verbose - 1);
       if (ok) {
         for (unsigned int j = 0; j < poiVars_.size(); j++) {
           poiVals_[j] = poiVars_[j]->getVal();
@@ -735,7 +735,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
         }
       }
 
-      //if (verbose > 1) std::cout << "Point " << i << "/" << points_ << " " << poiVars_[0]->GetName() << " = " << x << std::endl;
+      //if (g_verbose > 1) std::cout << "Point " << i << "/" << points_ << " " << poiVars_[0]->GetName() << " = " << x << std::endl;
       std::cout << "Point " << i << "/" << points_ << " " << poiVars_[0]->GetName() << " = " << x << std::endl;
       *params = snap;
       poiVals_[0] = x;
@@ -756,7 +756,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
       }
       bool ok = fastScan_ || (hasMaxDeltaNLLForProf_ && (nll.getVal() - nll0) > maxDeltaNLLForProf_)
                     ? true
-                    : minim.minimize(verbose - 1);
+                    : minim.minimize(g_verbose - 1);
       if (ok) {
         deltaNLL_ = nll.getVal() - nll0;
         double qN = 2 * (deltaNLL_);
@@ -777,7 +777,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
     unsigned int sqrn = ceil(sqrt(double(points_)));
     unsigned int ipoint = 0, nprint = ceil(0.005 * sqrn * sqrn);
     RooAbsReal::setEvalErrorLoggingMode(RooAbsReal::CountErrors);
-    CloseCoutSentry sentry(verbose < 2);
+    CloseCoutSentry sentry(g_verbose < 2);
     double deltaX = (pmax[0] - pmin[0]) / sqrn;
     double deltaY = (pmax[1] - pmin[1]) / sqrn;
     double spacingOffset = 0.5;
@@ -799,7 +799,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
         *params = snap;
         double x = pmin[0] + (i + spacingOffset) * deltaX;
         double y = pmin[1] + (j + spacingOffset) * deltaY;
-        if (verbose && (ipoint % nprint == 0)) {
+        if (g_verbose && (ipoint % nprint == 0)) {
           fprintf(sentry.trueStdOut(),
                   "Point %d/%d, (i,j) = (%d,%d), %s = %f, %s = %f\n",
                   ipoint,
@@ -854,7 +854,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
         }
         // now we minimize
         bool skipme = hasMaxDeltaNLLForProf_ && (nll.getVal() - nll0) > maxDeltaNLLForProf_;
-        bool ok = fastScan_ || skipme ? true : minim.minimize(verbose - 1);
+        bool ok = fastScan_ || skipme ? true : minim.minimize(g_verbose - 1);
         if (ok) {
           deltaNLL_ = nll.getVal() - nll0;
           double qN = 2 * (deltaNLL_);
@@ -903,7 +903,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
               }
               deltaNLL_ = nll.getVal() - nll0;
               if (forceProfile || (!fastScan_ && std::min(fabs(deltaNLL_ - 1.15), fabs(deltaNLL_ - 2.995)) < 0.5)) {
-                minim.minimize(verbose - 1);
+                minim.minimize(g_verbose - 1);
                 deltaNLL_ = nll.getVal() - nll0;
               }
               double qN = 2 * (deltaNLL_);
@@ -930,7 +930,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
     unsigned int ipoint = 0, nprint = ceil(0.005 * TMath::Power((double)rootn, (double)n));
 
     RooAbsReal::setEvalErrorLoggingMode(RooAbsReal::CountErrors);
-    CloseCoutSentry sentry(verbose < 2);
+    CloseCoutSentry sentry(g_verbose < 2);
 
     // Create permutations
     std::vector<int> axis_points;
@@ -952,7 +952,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
         break;
       *params = snap;
 
-      if (verbose && (ipoint % nprint == 0)) {
+      if (g_verbose && (ipoint % nprint == 0)) {
         fprintf(sentry.trueStdOut(), "Point %d/%d, ", ipoint, npermutations);
       }
       for (unsigned int poi_i = 0; poi_i < n; poi_i++) {
@@ -969,11 +969,11 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
         double xi = pmin[poi_i] + deltaXi * (ip + spacingOffset);
         poiVals_[poi_i] = xi;
         poiVars_[poi_i]->setVal(xi);
-        if (verbose && (ipoint % nprint == 0)) {
+        if (g_verbose && (ipoint % nprint == 0)) {
           fprintf(sentry.trueStdOut(), " %s = %f ", poiVars_[poi_i]->GetName(), xi);
         }
       }
-      if (verbose && (ipoint % nprint == 0))
+      if (g_verbose && (ipoint % nprint == 0))
         fprintf(sentry.trueStdOut(), "\n");
 
       nll.clearEvalErrorLog();
@@ -995,7 +995,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
       }
       // now we minimize
       bool skipme = hasMaxDeltaNLLForProf_ && (nll.getVal() - nll0) > maxDeltaNLLForProf_;
-      bool ok = fastScan_ || skipme ? true : minim.minimize(verbose - 1);
+      bool ok = fastScan_ || skipme ? true : minim.minimize(g_verbose - 1);
       if (ok) {
         deltaNLL_ = nll.getVal() - nll0;
         double qN = 2 * (deltaNLL_);
@@ -1038,8 +1038,8 @@ void MultiDimFit::doRandomPoints(RooWorkspace *w, RooAbsReal &nll) {
     }
     // now we minimize
     {
-      CloseCoutSentry sentry(verbose < 3);
-      bool ok = minim.minimize(verbose - 1);
+      CloseCoutSentry sentry(g_verbose < 3);
+      bool ok = minim.minimize(g_verbose - 1);
       if (ok) {
         double qN = 2 * (nll.getVal() - nll0);
         double prob = ROOT::Math::chisquared_cdf_c(qN, n + nOtherFloatingPoi_);
@@ -1078,9 +1078,9 @@ void MultiDimFit::doFixedPoint(RooWorkspace *w, RooAbsReal &nll) {
   //}
   if (fixedPointPOIs_ != "") {
     utils::setModelParameters(fixedPointPOIs_, w->allVars());
-  } else if (setPhysicsModelParameterExpression_ != "") {
+  } else if (g_setPhysicsModelParameterExpression != "") {
     std::cout << " --fixedPointPOIs option not used, so will use the argument of --setParameters instead" << std::endl;
-    utils::setModelParameters(setPhysicsModelParameterExpression_, w->allVars());
+    utils::setModelParameters(g_setPhysicsModelParameterExpression, w->allVars());
   }
 
   for (unsigned int i = 0; i < n; ++i) {
@@ -1090,8 +1090,8 @@ void MultiDimFit::doFixedPoint(RooWorkspace *w, RooAbsReal &nll) {
   }
   // now we minimize
   {
-    CloseCoutSentry sentry(verbose < 3);
-    bool ok = minim.minimize(verbose - 1);
+    CloseCoutSentry sentry(g_verbose < 3);
+    bool ok = minim.minimize(g_verbose - 1);
     if (ok) {
       nll0Value_ = nll0;
       nllValue_ = nll.getVal();
@@ -1125,17 +1125,17 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
   double y0 = poiVals_[1];
   float &y = poiVals_[1];
 
-  double threshold = nll.getVal() + 0.5 * ROOT::Math::chisquared_quantile_c(1 - cl, 2 + nOtherFloatingPoi_);
-  if (verbose > 0)
+  double threshold = nll.getVal() + 0.5 * ROOT::Math::chisquared_quantile_c(1 - g_confidenceLevel, 2 + nOtherFloatingPoi_);
+  if (g_verbose > 0)
     std::cout << "Best fit point is for " << xv->GetName() << ", " << yv->GetName() << " =  " << x0 << ", " << y0
               << std::endl;
 
   // make a box
-  doBox(nll, cl, "box");
+  doBox(nll, g_confidenceLevel, "box");
   double xMin = xv->getMin("box"), xMax = xv->getMax("box");
   double yMin = yv->getMin("box"), yMax = yv->getMax("box");
 
-  verbose--;  // reduce verbosity to avoid messages from findCrossing
+  g_verbose--;  // reduce verbosity to avoid messages from findCrossing
   // ===== Get relative min/max of x for several fixed y values =====
   yv->setConstant(true);
   for (unsigned int j = 0; j <= points_; ++j) {
@@ -1156,12 +1156,12 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
       minimXI.setAutoMax(&autoMaxPOISet_);
     //minimXI.setStrategy(minimizerStrategy_);
     {
-      CloseCoutSentry sentry(verbose < 3);
-      minimXI.minimize(verbose - 1);
+      CloseCoutSentry sentry(g_verbose < 3);
+      minimXI.minimize(g_verbose - 1);
     }
     double xc = xv->getVal();
     xv->setConstant(true);
-    if (verbose > -1)
+    if (g_verbose > -1)
       std::cout << "Best fit " << xv->GetName() << " for  " << yv->GetName() << " = " << yv->getVal() << " is at " << xc
                 << std::endl;
     // ===== Then get the range =====
@@ -1174,9 +1174,9 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
     if (!std::isnan(xup)) {
       x = xup;
       y = yv->getVal();
-      Combine::commitPoint(true, /*quantile=*/1 - cl);
-      if (verbose > -1)
-        std::cout << "Minimum of " << xv->GetName() << " at " << cl << " CL for " << yv->GetName() << " = " << y
+      Combine::commitPoint(true, /*quantile=*/1 - g_confidenceLevel);
+      if (g_verbose > -1)
+        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName() << " = " << y
                   << " is " << x << std::endl;
     }
 
@@ -1184,14 +1184,14 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
     if (!std::isnan(xdn)) {
       x = xdn;
       y = yv->getVal();
-      Combine::commitPoint(true, /*quantile=*/1 - cl);
-      if (verbose > -1)
-        std::cout << "Maximum of " << xv->GetName() << " at " << cl << " CL for " << yv->GetName() << " = " << y
+      Combine::commitPoint(true, /*quantile=*/1 - g_confidenceLevel);
+      if (g_verbose > -1)
+        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName() << " = " << y
                   << " is " << x << std::endl;
     }
   }
 
-  verbose++;  // restore verbosity
+  g_verbose++;  // restore verbosity
 }
 
 void MultiDimFit::doStitch2D(RooWorkspace *, RooAbsReal &nll) {
@@ -1201,14 +1201,14 @@ void MultiDimFit::doStitch2D(RooWorkspace *, RooAbsReal &nll) {
   //RooRealVar *yv = poiVars_[1]; double y0 = poiVals_[1]; float &y = poiVals_[1];
 
   //double threshold = nll.getVal() + 0.5*ROOT::Math::chisquared_quantile_c(1-cl,2+nOtherFloatingPoi_);
-  //if (verbose>0) std::cout << "Best fit point is for " << xv->GetName() << ", "  << yv->GetName() << " =  " << x0 << ", " << y0 << std::endl;
+  //if (g_verbose>0) std::cout << "Best fit point is for " << xv->GetName() << ", "  << yv->GetName() << " =  " << x0 << ", " << y0 << std::endl;
 
   // make a box
-  //doBox(nll, cl, "box");
+  //doBox(nll, g_confidenceLevel, "box");
   //double xMin = xv->getMin("box"), xMax = xv->getMax("box");
   //double yMin = yv->getMin("box"), yMax = yv->getMax("box");
 
-  //    verbose--; // reduce verbosity to avoid messages from findCrossing
+  //    g_verbose--; // reduce verbosity to avoid messages from findCrossing
   //    // ===== Get relative min/max of x for several fixed y values =====
   //    yv->setConstant(true);
   //    for (unsigned int j = 0; j <= points_; ++j) {
@@ -1222,33 +1222,33 @@ void MultiDimFit::doStitch2D(RooWorkspace *, RooAbsReal &nll) {
   //        CascadeMinimizer minimXI(nll, CascadeMinimizer::Unconstrained, xv);
   //        minimXI.setStrategy(minimizerStrategy_);
   //        {
-  //            CloseCoutSentry sentry(verbose < 3);
-  //            minimXI.minimize(verbose-1);
+  //            CloseCoutSentry sentry(g_verbose < 3);
+  //            minimXI.minimize(g_verbose-1);
   //        }
   //        double xc = xv->getVal(); xv->setConstant(true);
-  //        if (verbose>-1) std::cout << "Best fit " << xv->GetName() << " for  " << yv->GetName() << " = " << yv->getVal() << " is at " << xc << std::endl;
+  //        if (g_verbose>-1) std::cout << "Best fit " << xv->GetName() << " for  " << yv->GetName() << " = " << yv->getVal() << " is at " << xc << std::endl;
   //        // ===== Then get the range =====
   //        CascadeMinimizer minim(nll, CascadeMinimizer::Constrained);
   //        double xup = findCrossing(minim, nll, *xv, threshold, xc, xMax);
   //        if (!std::isnan(xup)) {
   //            x = xup; y = yv->getVal(); Combine::commitPoint(true, /*quantile=*/1-cl);
-  //            if (verbose>-1) std::cout << "Minimum of " << xv->GetName() << " at " << cl << " CL for " << yv->GetName() << " = " << y << " is " << x << std::endl;
+  //            if (g_verbose>-1) std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName() << " = " << y << " is " << x << std::endl;
   //        }
   //
   //        double xdn = findCrossing(minim, nll, *xv, threshold, xc, xMin);
   //        if (!std::isnan(xdn)) {
   //            x = xdn; y = yv->getVal(); Combine::commitPoint(true, /*quantile=*/1-cl);
-  //            if (verbose>-1) std::cout << "Maximum of " << xv->GetName() << " at " << cl << " CL for " << yv->GetName() << " = " << y << " is " << x << std::endl;
+  //            if (g_verbose>-1) std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName() << " = " << y << " is " << x << std::endl;
   //        }
   //    }
   //
-  //    verbose++; // restore verbosity
+  //    g_verbose++; // restore verbosity
 }
 
-void MultiDimFit::doBox(RooAbsReal &nll, double cl, const char *name, bool commitPoints) {
+void MultiDimFit::doBox(RooAbsReal &nll, double g_confidenceLevel, const char *name, bool commitPoints) {
   unsigned int n = poi_.size();
   double nll0 = nll.getVal(),
-         threshold = nll0 + 0.5 * ROOT::Math::chisquared_quantile_c(1 - cl, n + nOtherFloatingPoi_);
+         threshold = nll0 + 0.5 * ROOT::Math::chisquared_quantile_c(1 - g_confidenceLevel, n + nOtherFloatingPoi_);
 
   std::vector<double> p0(n);
   for (unsigned int i = 0; i < n; ++i) {
@@ -1256,7 +1256,7 @@ void MultiDimFit::doBox(RooAbsReal &nll, double cl, const char *name, bool commi
     poiVars_[i]->setConstant(false);
   }
 
-  verbose--;  // reduce verbosity due to findCrossing
+  g_verbose--;  // reduce verbosity due to findCrossing
   for (unsigned int i = 0; i < n; ++i) {
     RooRealVar *xv = poiVars_[i];
     xv->setConstant(true);
@@ -1271,13 +1271,13 @@ void MultiDimFit::doBox(RooAbsReal &nll, double cl, const char *name, bool commi
       poiVars_[j]->setVal(p0[j]);
     double xMin = findCrossing(minimX, nll, *xv, threshold, p0[i], xv->getMin());
     if (!std::isnan(xMin)) {
-      if (verbose > -1)
-        std::cout << "Minimum of " << xv->GetName() << " at " << cl << " CL for all others floating is " << xMin
+      if (g_verbose > -1)
+        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is " << xMin
                   << std::endl;
       for (unsigned int j = 0; j < n; ++j)
         poiVals_[j] = poiVars_[j]->getVal();
       if (commitPoints)
-        Combine::commitPoint(true, /*quantile=*/1 - cl);
+        Combine::commitPoint(true, /*quantile=*/1 - g_confidenceLevel);
     } else {
       xMin = xv->getMin();
       for (unsigned int j = 0; j < n; ++j)
@@ -1285,8 +1285,8 @@ void MultiDimFit::doBox(RooAbsReal &nll, double cl, const char *name, bool commi
       double prob = ROOT::Math::chisquared_cdf_c(2 * (nll.getVal() - nll0), n + nOtherFloatingPoi_);
       if (commitPoints)
         Combine::commitPoint(true, /*quantile=*/prob);
-      if (verbose > -1)
-        std::cout << "Minimum of " << xv->GetName() << " at " << cl << " CL for all others floating is " << xMin
+      if (g_verbose > -1)
+        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is " << xMin
                   << " (on the boundary, p-val " << prob << ")" << std::endl;
     }
 
@@ -1294,13 +1294,13 @@ void MultiDimFit::doBox(RooAbsReal &nll, double cl, const char *name, bool commi
       poiVars_[j]->setVal(p0[j]);
     double xMax = findCrossing(minimX, nll, *xv, threshold, p0[i], xv->getMax());
     if (!std::isnan(xMax)) {
-      if (verbose > -1)
-        std::cout << "Maximum of " << xv->GetName() << " at " << cl << " CL for all others floating is " << xMax
+      if (g_verbose > -1)
+        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is " << xMax
                   << std::endl;
       for (unsigned int j = 0; j < n; ++j)
         poiVals_[j] = poiVars_[j]->getVal();
       if (commitPoints)
-        Combine::commitPoint(true, /*quantile=*/1 - cl);
+        Combine::commitPoint(true, /*quantile=*/1 - g_confidenceLevel);
     } else {
       xMax = xv->getMax();
       double prob = ROOT::Math::chisquared_cdf_c(2 * (nll.getVal() - nll0), n + nOtherFloatingPoi_);
@@ -1308,19 +1308,19 @@ void MultiDimFit::doBox(RooAbsReal &nll, double cl, const char *name, bool commi
         poiVals_[j] = poiVars_[j]->getVal();
       if (commitPoints)
         Combine::commitPoint(true, /*quantile=*/prob);
-      if (verbose > -1)
-        std::cout << "Maximum of " << xv->GetName() << " at " << cl << " CL for all others floating is " << xMax
+      if (g_verbose > -1)
+        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is " << xMax
                   << " (on the boundary, p-val " << prob << ")" << std::endl;
     }
 
     xv->setRange(name, xMin, xMax);
     xv->setConstant(false);
   }
-  verbose++;  // restore verbosity
+  g_verbose++;  // restore verbosity
 }
 
 void MultiDimFit::saveResult(RooFitResult &res) {
-  if (verbose > 2)
+  if (g_verbose > 2)
     res.Print("V");
   fitOut.reset(TFile::Open(("multidimfit" + name_ + ".root").c_str(), "RECREATE"));
   fitOut->WriteTObject(&res, "fit_mdf");

@@ -25,7 +25,7 @@ public:
   // base class methods to be implemented
   virtual TObject *clone(const char *newname) const { return new SimpleCacheSentry(*this, newname); }
   virtual RooAbsArg *createFundamental(const char *newname = 0) const { return 0; }
-  virtual Bool_t readFromStream(std::istream &is, Bool_t compact, Bool_t verbose = kFALSE) { return false; }
+  virtual Bool_t readFromStream(std::istream &is, Bool_t compact, Bool_t g_verbose = kFALSE) { return false; }
   virtual void writeToStream(std::ostream &os, Bool_t compact) const {}
   virtual Bool_t operator==(const RooAbsArg &other) { return this == &other; }
   virtual void syncCache(const RooArgSet *nset = 0) {}

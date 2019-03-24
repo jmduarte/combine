@@ -75,8 +75,8 @@ Double_t CMSHistFuncWrapper::evaluate() const {
   return cache_.GetAt(x_);
 }
 
-void CMSHistFuncWrapper::printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const {
-  RooAbsReal::printMultiline(os, contents, verbose, indent);
+void CMSHistFuncWrapper::printMultiline(std::ostream& os, Int_t contents, Bool_t g_verbose, TString indent) const {
+  RooAbsReal::printMultiline(os, contents, g_verbose, indent);
   std::cout << ">> Current cache:\n";
   cache_.Dump();
   std::cout << ">> Sentry: " << sentry_.good() << "\n";

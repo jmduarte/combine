@@ -588,30 +588,30 @@ void utils::copyAttributes(const RooAbsArg &from, RooAbsArg &to) {
   }
 }
 
-void utils::guessChannelMode(RooSimultaneous &simPdf, RooAbsData &simData, bool verbose) {
+void utils::guessChannelMode(RooSimultaneous &simPdf, RooAbsData &simData, bool g_verbose) {
   RooAbsCategoryLValue &cat = const_cast<RooAbsCategoryLValue &>(simPdf.indexCat());
   TList *split = simData.split(cat, kTRUE);
   for (int i = 0, n = cat.numBins((const char *)0); i < n; ++i) {
     cat.setBin(i);
     RooAbsPdf *pdf = simPdf.getPdf(cat.getLabel());
     if (pdf->getAttribute("forceGenBinned") || pdf->getAttribute("forceGenUnbinned")) {
-      if (verbose)
+      if (g_verbose)
         std::cout << " - " << cat.getLabel() << " has generation mode already set" << std::endl;
       continue;
     }
     RooAbsData *spl = (RooAbsData *)split->FindObject(cat.getLabel());
     if (spl == 0) {
-      if (verbose)
+      if (g_verbose)
         std::cout << " - " << cat.getLabel() << " has no dataset, cannot guess" << std::endl;
       continue;
     }
     if (spl->numEntries() != spl->sumEntries()) {
-      if (verbose)
+      if (g_verbose)
         std::cout << " - " << cat.getLabel() << " has " << spl->numEntries() << " num entries of sum "
                   << spl->sumEntries() << ", mark as binned" << std::endl;
       pdf->setAttribute("forceGenBinned");
     } else {
-      if (verbose)
+      if (g_verbose)
         std::cout << " - " << cat.getLabel() << " has " << spl->numEntries() << " num entries of sum "
                   << spl->sumEntries() << ", mark as unbinned" << std::endl;
       pdf->setAttribute("forceGenUnbinned");
@@ -622,7 +622,7 @@ void utils::guessChannelMode(RooSimultaneous &simPdf, RooAbsData &simData, bool 
 void utils::setChannelGenModes(RooSimultaneous &simPdf,
                                const std::string &binned,
                                const std::string &unbinned,
-                               int verbose) {
+                               int g_verbose) {
   std::regex r_binned(binned, std::regex::ECMAScript);
   std::regex r_unbinned(unbinned, std::regex::ECMAScript);
   std::smatch match;
@@ -634,12 +634,12 @@ void utils::setChannelGenModes(RooSimultaneous &simPdf,
     RooAbsPdf *pdf = simPdf.getPdf(label.c_str());
     if (!binned.empty() && std::regex_match(label, match, r_binned)) {
       if (pdf->getAttribute("forceGenUnbinned")) {
-        if (verbose)
+        if (g_verbose)
           std::cout << "Overriding generation mode for " << pdf->GetName() << " in " << label
                     << " from unbinned to binned." << std::endl;
         pdf->setAttribute("forceGenUnbinned", false);
       } else {
-        if (verbose)
+        if (g_verbose)
           std::cout << "Setting generation mode for " << pdf->GetName() << " in " << label << " to binned."
                     << std::endl;
       }
@@ -647,19 +647,19 @@ void utils::setChannelGenModes(RooSimultaneous &simPdf,
     }
     if (!unbinned.empty() && std::regex_match(label, match, r_unbinned)) {
       if (pdf->getAttribute("forceGenBinned")) {
-        if (verbose)
+        if (g_verbose)
           std::cout << "Overriding generation mode for " << pdf->GetName() << " in " << label
                     << " from binned to unbinned." << std::endl;
         pdf->setAttribute("forceGenBinned", false);
       } else {
-        if (verbose)
+        if (g_verbose)
           std::cout << "Setting generation mode for " << pdf->GetName() << " in " << label << " to unbinned."
                     << std::endl;
       }
       pdf->setAttribute("forceGenUnbinned");
     }
     if (!pdf->getAttribute("forceGenUnbinned") && !pdf->getAttribute("forceGenBinned")) {
-      if (verbose > -1)
+      if (g_verbose > -1)
         std::cout << "Warning: pdf generation mode for " << pdf->GetName() << " in " << label << " is not set"
                   << std::endl;
     }

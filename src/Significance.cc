@@ -110,12 +110,12 @@ Significance::MinimizerSentry::MinimizerSentry(const std::string &minimizerAlgo,
   if (minimizerAlgo.find(",") != std::string::npos) {
     size_t idx = minimizerAlgo.find(",");
     std::string type = minimizerAlgo.substr(0, idx), algo = minimizerAlgo.substr(idx + 1);
-    if (verbose > 1)
+    if (g_verbose > 1)
       std::cout << "Set default minimizer to " << type << ", algorithm " << algo << ", tolerance " << tolerance
                 << std::endl;
     ROOT::Math::MinimizerOptions::SetDefaultMinimizer(type.c_str(), algo.c_str());
   } else {
-    if (verbose > 1)
+    if (g_verbose > 1)
       std::cout << "Set default minimizer to " << minimizerAlgo << ", tolerance " << tolerance << std::endl;
     ROOT::Math::MinimizerOptions::SetDefaultMinimizer(minimizerAlgo.c_str());
   }
@@ -135,7 +135,7 @@ bool Significance::run(RooWorkspace *w,
                        double &limitErr,
                        const double *hint) {
   //MinimizerSentry minimizerConfig(minimizerAlgo_, minimizerTolerance_);
-  CloseCoutSentry sentry(verbose < 0);
+  CloseCoutSentry sentry(g_verbose < 0);
 
   double minimizerTolerance_ = ROOT::Math::MinimizerOptions::DefaultTolerance();
   RooRealVar *r = dynamic_cast<RooRealVar *>(mc_s->GetParametersOfInterest()->first());
@@ -154,7 +154,7 @@ bool Significance::run(RooWorkspace *w,
         RooArgSet set(*mc_s->GetNuisanceParameters());
         RooDataSet *randoms = nuisancePdf->generate(set, 1);
         set = *randoms->get(0);
-        if (verbose > 2) {
+        if (g_verbose > 2) {
           std::cout << "Starting minimization from point " << std::endl;
           r->Print("V");
           set.Print("V");
@@ -163,15 +163,15 @@ bool Significance::run(RooWorkspace *w,
       }
     }
     if (preFit_) {
-      CloseCoutSentry sentry(verbose < 2);
+      CloseCoutSentry sentry(g_verbose < 2);
       RooFitResult *res = mc_s->GetPdf()->fitTo(data, RooFit::Save(1), RooFit::Minimizer("Minuit2"));
       if (res == 0 || res->covQual() != 3 || res->edm() > minimizerTolerance_) {
-        if (verbose > 1)
+        if (g_verbose > 1)
           std::cout << "Fit failed (covQual " << (res ? res->covQual() : -1) << ", edm " << (res ? res->edm() : 0)
                     << ")" << std::endl;
         continue;
       }
-      if (verbose > 1) {
+      if (g_verbose > 1) {
         res->Print("V");
         std::cout << "Covariance quality: " << res->covQual() << ", Edm = " << res->edm() << std::endl;
       }
@@ -202,19 +202,19 @@ bool Significance::run(RooWorkspace *w,
         spreadOut = max(spreadOut, diff);
       }
     }
-    if (verbose > 0) {
+    if (g_verbose > 0) {
       std::cout << "Numer of tries: " << i << "   Number of successes: " << nresults << ", Outliers: " << noutlier
                 << " (frac = " << noutlier / double(nresults) << ")"
                 << ", Spread of non-outliers: " << spreadIn << " / of outliers: " << spreadOut << std::endl;
     }
     if (noutlier <= maxOutlierFraction_ * nresults) {
-      if (verbose > 0)
+      if (g_verbose > 0)
         std::cout << " \\--> success! " << std::endl;
       success = true;
       limit = median;
       break;
     } else if (noutlier > maxOutliers_) {
-      if (verbose > 0)
+      if (g_verbose > 0)
         std::cout << " \\--> failure! " << std::endl;
       break;
     }
@@ -228,23 +228,23 @@ bool Significance::runLimit(
   RooRealVar *r = dynamic_cast<RooRealVar *>(poi.first());
   double rMax = r->getMax();
   bool success = false;
-  CloseCoutSentry coutSentry(verbose <=
+  CloseCoutSentry coutSentry(g_verbose <=
                              1);  // close standard output and error, so that we don't flood them with minuit messages
 
   double minimizerTolerance_ = ROOT::Math::MinimizerOptions::DefaultTolerance();
 
   while (!success) {
-    ProfileLikelihoodCalculator plcB(data, *mc_s, 1.0 - cl);
+    ProfileLikelihoodCalculator plcB(data, *mc_s, 1.0 - g_confidenceLevel);
     std::unique_ptr<LikelihoodInterval> plInterval;
     if (useMinos_ || bruteForce_) {
       // try first with Minos, unless brute force requested
       if (!bruteForce_) {
-        limit = upperLimitWithMinos(*mc_s->GetPdf(), data, *r, mc_s->GetNuisanceParameters(), minimizerTolerance_, cl);
+        limit = upperLimitWithMinos(*mc_s->GetPdf(), data, *r, mc_s->GetNuisanceParameters(), minimizerTolerance_, g_confidenceLevel);
       }
       // if brute force forced, or minos failed, go with the next one
       if (std::isnan(limit) || bruteForce_) {
         std::pair<double, double> le = upperLimitBruteForce(
-            *mc_s->GetPdf(), data, *r, mc_s->GetNuisanceParameters(), 1e-3 * minimizerTolerance_, cl);
+            *mc_s->GetPdf(), data, *r, mc_s->GetNuisanceParameters(), 1e-3 * minimizerTolerance_, g_confidenceLevel);
         limit = le.first;
         limitErr = le.second;
       }
@@ -252,7 +252,7 @@ bool Significance::runLimit(
       plInterval.reset(plcB.GetInterval());
       if (plInterval.get() == 0)
         break;
-      limit = lowerLimit_ ? plInterval->LowerLimit(*r) : plInterval->UpperLimit(*r);
+      limit = g_lowerLimit ? plInterval->LowerLimit(*r) : plInterval->UpperLimit(*r);
     }
     if (limit >= 0.75 * r->getMax()) {
       std::cout << "Limit " << r->GetName() << " < " << limit << "; " << r->GetName() << " max < " << r->getMax()
@@ -276,15 +276,15 @@ bool Significance::runLimit(
     }
   }
   coutSentry.clear();
-  if (verbose >= 0) {
+  if (g_verbose >= 0) {
     if (success) {
       std::cout << "\n -- Significance -- "
                 << "\n";
       if (limitErr) {
-        std::cout << "Limit: " << r->GetName() << (lowerLimit_ ? " > " : " < ") << limit << " +/- " << limitErr << " @ "
-                  << cl * 100 << "% CL" << std::endl;
+        std::cout << "Limit: " << r->GetName() << (g_lowerLimit ? " > " : " < ") << limit << " +/- " << limitErr << " @ "
+                  << g_confidenceLevel * 100 << "% CL" << std::endl;
       } else {
-        std::cout << "Limit: " << r->GetName() << (lowerLimit_ ? " > " : " < ") << limit << " @ " << cl * 100 << "% CL"
+        std::cout << "Limit: " << r->GetName() << (g_lowerLimit ? " > " : " < ") << limit << " @ " << g_confidenceLevel * 100 << "% CL"
                   << std::endl;
       }
     }
@@ -299,13 +299,13 @@ bool Significance::runSignificance(
 
   if (!uncapped_)
     r->setMin(signalForSignificance_);
-  ProfileLikelihoodCalculator plcS(data, *mc_s, 1.0 - cl);
+  ProfileLikelihoodCalculator plcS(data, *mc_s, 1.0 - g_confidenceLevel);
   RooArgSet nullParamValues;
   r->setVal(signalForSignificance_);
   nullParamValues.addClone(*r);
   plcS.SetNullParameters(nullParamValues);
 
-  CloseCoutSentry coutSentry(verbose <=
+  CloseCoutSentry coutSentry(g_verbose <=
                              1);  // close standard output and error, so that we don't flood them with minuit messages
   double minimizerTolerance_ = ROOT::Math::MinimizerOptions::DefaultTolerance();
 
@@ -328,7 +328,7 @@ bool Significance::runSignificance(
         *mc_s->GetParametersOfInterest(),
         RooArgList(),
         RooArgList(),
-        verbose - 1,
+        g_verbose - 1,
         uncapped_ ? ProfiledLikelihoodTestStatOpt::signFlipDef : ProfiledLikelihoodTestStatOpt::oneSidedDef);
     Double_t q0 = testStat.Evaluate(data, nullParamValues);
     limit = (q0 > 0 ? sqrt(2 * q0) : (uncapped_ ? -sqrt(-2 * q0) : 0));
@@ -351,10 +351,10 @@ bool Significance::runSignificance(
     limit = RooStats::SignificanceToPValue(limit);
   }
 
-  std::cout << "\n -- Significance -- "
-            << "\n";
-  std::cout << (reportPVal_ ? "p-value of background: " : "Significance: ") << limit << std::endl;
-  if (verbose > 0) {
+  if (g_verbose > 0) {
+    std::cout << "\n -- Significance -- "
+              << "\n";
+    std::cout << (reportPVal_ ? "p-value of background: " : "Significance: ") << limit << std::endl;
     if (reportPVal_)
       std::cout << "       (Significance = " << RooStats::PValueToSignificance(limit) << ")" << std::endl;
     else
@@ -364,58 +364,58 @@ bool Significance::runSignificance(
 }
 
 double Significance::upperLimitWithMinos(
-    RooAbsPdf &pdf, RooAbsData &data, RooRealVar &poi, const RooArgSet *nuisances, double tolerance, double cl) const {
+    RooAbsPdf &pdf, RooAbsData &data, RooRealVar &poi, const RooArgSet *nuisances, double tolerance, double confidenceLevel) const {
   std::unique_ptr<RooAbsReal> nll(pdf.createNLL(data, RooFit::Constrain(*nuisances)));
   RooMinimizer minim(*nll);
   minim.setStrategy(0);
-  minim.setPrintLevel(verbose - 1);
-  minim.setErrorLevel(0.5 * TMath::ChisquareQuantile(cl, 1));
-  nllutils::robustMinimize(*nll, minim, verbose - 1);
+  minim.setPrintLevel(g_verbose - 1);
+  minim.setErrorLevel(0.5 * TMath::ChisquareQuantile(confidenceLevel, 1));
+  nllutils::robustMinimize(*nll, minim, g_verbose - 1);
   int minosStat = minim.minos(RooArgSet(poi));
   if (minosStat == -1)
     return std::numeric_limits<double>::quiet_NaN();
   std::unique_ptr<RooFitResult> res(minim.save());
-  double muhat = poi.getVal(), limit = poi.getVal() + (lowerLimit_ ? poi.getAsymErrorLo() : poi.getAsymErrorHi());
+  double muhat = poi.getVal(), limit = poi.getVal() + (g_lowerLimit ? poi.getAsymErrorLo() : poi.getAsymErrorHi());
   double nll0 = nll->getVal();
   poi.setVal(limit);
   double nll2 = nll->getVal();
-  if (nll2 < nll0 + 0.75 * 0.5 * TMath::ChisquareQuantile(cl, 1)) {
+  if (nll2 < nll0 + 0.75 * 0.5 * TMath::ChisquareQuantile(confidenceLevel, 1)) {
     std::cerr << "ERROR: unprofiled likelihood gives better result than profiled one. deltaNLL = " << (nll2 - nll0)
               << ". will try brute force." << std::endl;
     poi.setVal(muhat);
     return std::numeric_limits<double>::quiet_NaN();
   }
-  if (verbose > 1)
+  if (g_verbose > 1)
     res->Print("V");
   return limit;
 }
 
 std::pair<double, double> Significance::upperLimitBruteForce(
-    RooAbsPdf &pdf, RooAbsData &data, RooRealVar &poi, const RooArgSet *nuisances, double tolerance, double cl) const {
+    RooAbsPdf &pdf, RooAbsData &data, RooRealVar &poi, const RooArgSet *nuisances, double tolerance, double confidenceLevel) const {
   poi.setConstant(false);
   std::unique_ptr<RooAbsReal> nll(pdf.createNLL(data, RooFit::Constrain(*nuisances)));
   RooMinimizer minim0(*nll);
   minim0.setStrategy(0);
   minim0.setPrintLevel(-1);
-  nllutils::robustMinimize(*nll, minim0, verbose - 2);
+  nllutils::robustMinimize(*nll, minim0, g_verbose - 2);
   poi.setConstant(true);
   RooMinimizer minim(*nll);
   minim.setPrintLevel(-1);
-  if (!nllutils::robustMinimize(*nll, minim, verbose - 2)) {
+  if (!nllutils::robustMinimize(*nll, minim, g_verbose - 2)) {
     std::cerr << "Initial minimization failed. Aborting." << std::endl;
     return std::pair<double, double>(0, -1);
   }
   std::unique_ptr<RooFitResult> start(minim.save());
   double minnll = nll->getVal();
-  double rval = poi.getVal() + (lowerLimit_ ? -3 : +3) * poi.getError(), rlow = poi.getVal(),
-         rhigh = lowerLimit_ ? poi.getMin() : poi.getMax();
+  double rval = poi.getVal() + (g_lowerLimit ? -3 : +3) * poi.getError(), rlow = poi.getVal(),
+         rhigh = g_lowerLimit ? poi.getMin() : poi.getMax();
   if (rval >= rhigh || rval <= rlow)
     rval = 0.5 * (rlow + rhigh);
-  double target = minnll + 0.5 * TMath::ChisquareQuantile(cl, 1);
-  //minim.setPrintLevel(verbose-2);
+  double target = minnll + 0.5 * TMath::ChisquareQuantile(confidenceLevel, 1);
+  //minim.setPrintLevel(g_verbose-2);
   MinimizerSentry minimizerConfig(minimizerAlgoForBF_, minimizerToleranceForBF_);
   bool fail = false;
-  if (verbose) {
+  if (g_verbose) {
     printf("  %-6s  delta(NLL)\n", poi.GetName());
     printf("%8.5f  %8.5f\n", rval, 0.);
     fflush(stdout);
@@ -423,43 +423,43 @@ std::pair<double, double> Significance::upperLimitBruteForce(
   do {
     poi.setVal(rval);
     minim.setStrategy(0);
-    bool success = nllutils::robustMinimize(*nll, minim, verbose - 2);
+    bool success = nllutils::robustMinimize(*nll, minim, g_verbose - 2);
     if (success == false) {
       std::cerr << "Minimization failed at " << poi.getVal() << ". exiting the bisection loop" << std::endl;
       fail = true;
       break;
     }
     double nllthis = nll->getVal();
-    if (verbose) {
+    if (g_verbose) {
       printf("%8.5f  %8.5f\n", rval, nllthis - minnll);
       fflush(stdout);
     }
     if (fabs(nllthis - target) < tolerance) {
       return std::pair<double, double>(rval, (rhigh - rlow) * 0.5);
     } else if (nllthis < target) {
-      (lowerLimit_ ? rhigh : rlow) = rval;
+      (g_lowerLimit ? rhigh : rlow) = rval;
       rval = 0.5 * (rval + rhigh);
     } else {
-      (lowerLimit_ ? rlow : rhigh) = rval;
+      (g_lowerLimit ? rlow : rhigh) = rval;
       rval = 0.5 * (rval + rlow);
     }
   } while (fabs(rhigh - rlow) > tolerance);
   if (fail) {
     // try do do it in small steps instead
     std::unique_ptr<RooArgSet> pars(nll->getParameters((const RooArgSet *)0));
-    double dx = (lowerLimit_ ? -0.05 : +0.05) * poi.getError();
+    double dx = (g_lowerLimit ? -0.05 : +0.05) * poi.getError();
     *pars = start->floatParsFinal();
     rval = poi.getVal() + dx;
     do {
       poi.setVal(rval);
       minim.setStrategy(0);
-      bool success = nllutils::robustMinimize(*nll, minim, verbose - 2);
+      bool success = nllutils::robustMinimize(*nll, minim, g_verbose - 2);
       if (success == false) {
         std::cerr << "Minimization failed at " << poi.getVal() << ". exiting the stepping loop" << std::endl;
         return std::pair<double, double>(poi.getVal(), fabs(rhigh - rlow) * 0.5);
       }
       double nllthis = nll->getVal();
-      if (verbose) {
+      if (g_verbose) {
         printf("%8.5f  %8.5f\n", rval, nllthis - minnll);
         fflush(stdout);
       }
@@ -486,17 +486,17 @@ double Significance::significanceBruteForce(
   std::unique_ptr<RooAbsReal> nll(pdf.createNLL(data, RooFit::Constrain(*nuisances)));
   CascadeMinimizer minim0(*nll, CascadeMinimizer::Unconstrained, &poi);
   minim0.setStrategy(0);
-  minim0.minimize(verbose - 2);
+  minim0.minimize(g_verbose - 2);
   if (poi.getVal() < 0 && !uncapped_) {
     printf("Minimum found at %s = %8.5f < 0: significance will be zero\n", poi.GetName(), poi.getVal());
     return 0;
   }
   poi.setConstant(true);
   CascadeMinimizer minim(*nll, CascadeMinimizer::Constrained);
-  if (!minim.minimize(verbose - 2)) {
+  if (!minim.minimize(g_verbose - 2)) {
     std::cerr << "Initial minimization failed. Aborting." << std::endl;
     return -1;
-  } else if (verbose > 0) {
+  } else if (g_verbose > 0) {
     printf("Minimum found at %s = %8.5f\n", poi.GetName(), poi.getVal());
   }
   MinimizerSentry minimizerConfig(minimizerAlgoForBF_, minimizerToleranceForBF_);
@@ -504,7 +504,7 @@ double Significance::significanceBruteForce(
   double minnll = nll->getVal(), thisnll = minnll, lastnll = thisnll;
   double rbest = poi.getVal(), rval = rbest;
   TGraph *points = 0;
-  if (verbose) {
+  if (g_verbose) {
     printf("  %-6s  delta(NLL)\n", poi.GetName());
     printf("%8.5f  %8.5f\n", rval, 0.);
     fflush(stdout);
@@ -516,14 +516,14 @@ double Significance::significanceBruteForce(
     rval *= 0.8;
     poi.setVal(rval);
     minim.setStrategy(0);
-    bool success = minim.improve(verbose - 2, /*cascade=*/false);
+    bool success = minim.improve(g_verbose - 2, /*cascade=*/false);
     lastnll = thisnll;
     thisnll = nll->getVal();
     if (success == false) {
       std::cerr << "Minimization failed at " << poi.getVal() << ". exiting the loop" << std::endl;
       return -1;
     }
-    if (verbose) {
+    if (g_verbose) {
       printf("%8.5f  %8.5f\n", rval, thisnll - minnll);
       fflush(stdout);
       points->Set(points->GetN() + 1);
@@ -545,7 +545,7 @@ double Significance::significanceBruteForce(
                 MinimizerSentry minimizerConfig(minimizerAlgo_, minimizerTolerance_);
                 poi.setConstant(false);
                 poi.setVal(rbest);
-                minim.improve(verbose - 1);
+                minim.improve(g_verbose - 1);
                 printf("New global minimum at %8.5f (was %8.5f), the shift in nll is %8.5f\n", poi.getVal(), rbest, nll->getVal()-minnll);
                 minnll = nll->getVal(); 
                 rbest = poi.getVal(); 
@@ -556,7 +556,7 @@ double Significance::significanceBruteForce(
 #endif
   }
   if (points)
-    outputFile->WriteTObject(points);
+    g_outputFile->WriteTObject(points);
   return std::copysign(thisnll - minnll, rbest);
 }
 
@@ -570,7 +570,7 @@ double Significance::significanceFromScan(
   poi.setVal(0.05 * poi.getMax());
   CascadeMinimizer minim0(*nll, CascadeMinimizer::Unconstrained, &poi);
   minim0.setStrategy(0);
-  minim0.minimize(verbose - 2);
+  minim0.minimize(g_verbose - 2);
   if (!stepDown) {
     if (poi.getVal() < 0) {
       printf("Minimum found at %s = %8.5f < 0: significance will be zero\n", poi.GetName(), poi.getVal());
@@ -582,10 +582,10 @@ double Significance::significanceFromScan(
   }
   poi.setConstant(true);
   CascadeMinimizer minim(*nll, CascadeMinimizer::Constrained);
-  if (!minim.minimize(verbose - 2)) {
+  if (!minim.minimize(g_verbose - 2)) {
     std::cerr << "Initial minimization failed. Aborting." << std::endl;
     return -1;
-  } else if (verbose > 0) {
+  } else if (g_verbose > 0) {
     printf("Minimum found at %s = %8.5f\n", poi.GetName(), poi.getVal());
   }
   MinimizerSentry minimizerConfig(minimizerAlgoForBF_, minimizerToleranceForBF_);
@@ -597,7 +597,7 @@ double Significance::significanceFromScan(
   TF1 *fit = new TF1("fit", "[0]*pow(abs(x-[1]), [2])+[3]", 0, poi.getMax());
   fit->SetParNames("norm", "bestfit", "power", "offset");
   points->SetPoint(0, rval, 0);
-  if (verbose) {
+  if (g_verbose) {
     printf("  %-6s  delta(NLL)\n", poi.GetName());
     printf("%8.5f  %8.5f\n", rval, 0.);
     fflush(stdout);
@@ -605,11 +605,11 @@ double Significance::significanceFromScan(
   for (int i = 1; i < steps; ++i) {
     rval = (maxScan * (stepDown ? i : steps - i - 1)) / steps;
     poi.setVal(rval);
-    bool success = minim.improve(verbose - 2, /*cascade=*/false);
+    bool success = minim.improve(g_verbose - 2, /*cascade=*/false);
     thisnll = nll->getVal();
     if (success == false)
       std::cerr << "Minimization failed at " << poi.getVal() << "." << std::endl;
-    if (verbose) {
+    if (g_verbose) {
       printf("%8.5f  %8.5f\n", rval, thisnll - refnll);
       fflush(stdout);
     }
@@ -623,7 +623,7 @@ double Significance::significanceFromScan(
     }
   }
   if (twice) {
-    if (verbose) {
+    if (g_verbose) {
       printf("\nPlay it again, sam.\n");
       printf("  %-6s  delta(NLL)\n", poi.GetName());
       fflush(stdout);
@@ -633,11 +633,11 @@ double Significance::significanceFromScan(
       if (i == 0 && !stepDown)
         rval = rbest;
       poi.setVal(rval);
-      bool success = minim.improve(verbose - 2, /*cascade=*/false);
+      bool success = minim.improve(g_verbose - 2, /*cascade=*/false);
       thisnll = nll->getVal();
       if (success == false)
         std::cerr << "Minimization failed at " << poi.getVal() << "." << std::endl;
-      if (verbose) {
+      if (g_verbose) {
         printf("%8.5f  %8.5f\n", rval, thisnll - refnll);
         fflush(stdout);
       }
@@ -659,8 +659,8 @@ double Significance::significanceFromScan(
     //MinimizerSentry minimizerConfig(minimizerAlgo_, minimizerTolerance_);
     res = points->Fit(fit, "S0");
   }
-  outputFile->WriteTObject(points);
-  outputFile->WriteTObject(fit);
+  g_outputFile->WriteTObject(points);
+  g_outputFile->WriteTObject(fit);
   if (res.Get()->Status() == 0) {
     std::cout << "Using first and last value, the result would be " << ret << std::endl;
     ret = fit->Eval(0) - fit->Eval(fit->GetParameter(1));

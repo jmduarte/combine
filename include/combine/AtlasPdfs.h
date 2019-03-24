@@ -352,7 +352,7 @@ protected:
 
     RooRealVar* frac(Int_t i);
     const RooRealVar* frac(Int_t i) const;
-    void calculateFractions(const RooStarMomentMorph& self, Bool_t verbose = kTRUE) const;
+    void calculateFractions(const RooStarMomentMorph& self, Bool_t g_verbose = kTRUE) const;
     mutable bool _fractionsCalculated;
   };
   mutable RooObjCacheManager _cacheMgr;  // The cache manager

@@ -17,13 +17,13 @@ public:
   enum Mode { Constrained, Unconstrained };
   CascadeMinimizer(RooAbsReal &nll, Mode mode, RooRealVar *poi = 0);
   // do a new minimization, assuming the initial state is random
-  bool minimize(int verbose = 0, bool cascade = true);
+  bool minimize(int g_verbose = 0, bool cascade = true);
   // run minos
-  bool minos(const RooArgSet &, int verbose = 0);
+  bool minos(const RooArgSet &, int g_verbose = 0);
   // run hesse
-  bool hesse(int verbose = 0);
+  bool hesse(int g_verbose = 0);
   // do a new minimization, assuming a plausible initial state
-  bool improve(int verbose = 0, bool cascade = true);
+  bool improve(int g_verbose = 0, bool cascade = true);
   // declare nuisance parameters for pre-fit
   void setNuisanceParameters(const RooArgSet *nuis) { nuisances_ = nuis; }
   RooMinimizer &minimizer() { return *minimizer_; }
@@ -51,8 +51,8 @@ private:
   bool autoBounds_;
   const RooArgSet *poisForAutoBounds_, *poisForAutoMax_;
 
-  bool improveOnce(int verbose, bool noHesse = false);
-  bool autoBoundsOk(int verbose);
+  bool improveOnce(int g_verbose, bool noHesse = false);
+  bool autoBoundsOk(int g_verbose);
 
   bool multipleMinimize(const RooArgSet &, bool &, double &, int, bool, int, std::vector<std::vector<bool> > &);
 

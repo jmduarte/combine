@@ -199,7 +199,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
     std::cerr << " ERROR, cannot use saveShapes  with > 1 toy dataset, \n you should run multiple times with -t 1 "
                  "using random seeds (-s -1) or remove those options."
               << std::endl;
-    if (verbose > 0)
+    if (g_verbose > 0)
       Logger::instance().log(
           std::string(Form("FitDiagnostics.cc: %d -- cannot use saveShapes with > 1 toy dataset, \n you should run "
                            "multiple times with -t 1 using random seeds (-s -1) or remove those options",
@@ -249,7 +249,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
     RooFitResult *res_prefit = 0;
     // Fit to nuisance pdf to get fitRes for sampling
     {
-      CloseCoutSentry sentry(verbose < 2);
+      CloseCoutSentry sentry(g_verbose < 2);
       CascadeMinimizer minim(*nuisanceNLL, CascadeMinimizer::Constrained);
       minim.minimize();
       minim.hesse();
@@ -314,7 +314,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
     res_b = doFit(*mc_s->GetPdf(), data, minos, constCmdArg_s, /*hesse=*/true, /*ndim*/ 1, /*reuseNLL*/ true);
     nll_bonly_ = nll->getVal() - nll0;
   } else {
-    CloseCoutSentry sentry(verbose < 2);
+    CloseCoutSentry sentry(g_verbose < 2);
     RooArgList minos = (*mc_s->GetNuisanceParameters());
     res_b = doFit(*mc_s->GetPdf(), data, minos, constCmdArg_s, /*hesse=*/true, /*ndim*/ 1, /*reuseNLL*/ true);
 
@@ -323,7 +323,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
   }
 
   if (res_b && robustHesse_) {
-    RobustHesse robustHesse(*nll, verbose - 1);
+    RobustHesse robustHesse(*nll, g_verbose - 1);
     robustHesse.ProtectArgSet(*mc_s->GetParametersOfInterest());
     robustHesse.hesse();
     auto res_b_new = robustHesse.GetRooFitResult(res_b);
@@ -332,7 +332,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
   }
 
   if (res_b) {
-    if (verbose > 1)
+    if (g_verbose > 1)
       res_b->Print("V");
     if (fitOut.get()) {
       if (currentToy_ < 1)
@@ -389,7 +389,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
             __func__);
       }
     }
-    if (verbose > 0)
+    if (g_verbose > 0)
       Logger::instance().log(
           std::string(Form("FitDiagnostics.cc: %d -- Fit B-only, status = %d, numBadNLL = %d, covariance quality = %d",
                            __LINE__,
@@ -470,7 +470,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
     res_s = doFit(*mc_s->GetPdf(), data, minos, constCmdArg_s, /*hesse=*/!noErrors_, /*ndim*/ 1, /*reuseNLL*/ true);
     nll_sb_ = nll->getVal() - nll0;
   } else {
-    CloseCoutSentry sentry(verbose < 2);
+    CloseCoutSentry sentry(g_verbose < 2);
     RooArgList minos = (*mc_s->GetNuisanceParameters());
     minos.add((*mc_s->GetParametersOfInterest()));  // Add POI this time
     res_s = doFit(*mc_s->GetPdf(), data, minos, constCmdArg_s, /*hesse=*/true, /*ndim*/ 1, /*reuseNLL*/ true);
@@ -479,7 +479,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
   }
 
   if (res_s && robustHesse_) {
-    RobustHesse robustHesse(*nll, verbose - 1);
+    RobustHesse robustHesse(*nll, g_verbose - 1);
     robustHesse.ProtectArgSet(*mc_s->GetParametersOfInterest());
     robustHesse.hesse();
     auto res_s_new = robustHesse.GetRooFitResult(res_s);
@@ -490,7 +490,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
   if (res_s) {
     limit = r->getVal();
     limitErr = r->getError();
-    if (verbose > 1)
+    if (g_verbose > 1)
       res_s->Print("V");
     if (fitOut.get()) {
       if (currentToy_ < 1)
@@ -550,7 +550,7 @@ bool FitDiagnostics::runSpecific(RooWorkspace *w,
               __func__);
         }
       }
-      if (verbose > 0)
+      if (g_verbose > 0)
         Logger::instance().log(
             std::string(Form("FitDiagnostics.cc: %d -- Fit S+B, status = %d, numBadNLL = %d, covariance quality = %d",
                              __LINE__,
@@ -975,7 +975,7 @@ void FitDiagnostics::getNormalizations(RooAbsPdf *pdf,
   if (saveWithUncertainties_) {
     int ntoys = numToysForShapes_;
 
-    if (verbose > 0)
+    if (g_verbose > 0)
       Logger::instance().log(
           std::string(Form("FitDiagnostics.cc: %d -- Generating toy data for evaluating per-bin uncertainties and "
                            "covariances with post-fit nuisance parameters with %d toys",

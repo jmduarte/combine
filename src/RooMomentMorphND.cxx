@@ -594,7 +594,7 @@ RooAbsPdf* RooMomentMorphND::sumPdf(const RooArgSet* nset) {
   CacheElem* cache = getCache(nset ? nset : _curNormSet);
 
   if (cache->_tracker->hasChanged(kTRUE)) {
-    cache->calculateFractions(*this, kFALSE);  // verbose turned off
+    cache->calculateFractions(*this, kFALSE);  // g_verbose turned off
   }
   return cache->_sumPdf;
 }
@@ -604,7 +604,7 @@ Double_t RooMomentMorphND::evaluate() const {
   CacheElem* cache = getCache(_curNormSet);
 
   if (cache->_tracker->hasChanged(kTRUE)) {
-    cache->calculateFractions(*this, kFALSE);  // verbose turned off
+    cache->calculateFractions(*this, kFALSE);  // g_verbose turned off
   }
 
   Double_t ret = cache->_sumPdf->getVal(_obsList.nset());
@@ -657,7 +657,7 @@ template <typename Iterator> inline bool next_combination(const Iterator first, 
 }
 
 //_____________________________________________________________________________
-void RooMomentMorphND::CacheElem::calculateFractions(const RooMomentMorphND& self, Bool_t verbose) const {
+void RooMomentMorphND::CacheElem::calculateFractions(const RooMomentMorphND& self, Bool_t g_verbose) const {
   int nPdf = self._pdfList.getSize();
   int nPar = self._parList.getSize();
 
@@ -719,7 +719,7 @@ void RooMomentMorphND::CacheElem::calculateFractions(const RooMomentMorphND& sel
       ((RooRealVar*)frac(nPdf + i))->setVal(ffrac);      // need to add up
       ((RooRealVar*)frac(2 * nPdf + i))->setVal(ffrac);  // need to add up
 
-      if (verbose) {
+      if (g_verbose) {
         cout << "NonLinear fraction " << ffrac << endl;
         frac(i)->Print();
         frac(nPdf + i)->Print();
@@ -795,7 +795,7 @@ void RooMomentMorphND::CacheElem::calculateFractions(const RooMomentMorphND& sel
         ((RooRealVar*)frac(2 * nPdf + self._squareIdx[i]))->setVal(origFrac2 + ffrac);  // need to add up
       }
 
-      if (verbose) {
+      if (g_verbose) {
         cout << "Linear fraction " << ffrac << endl;
         frac(self._squareIdx[i])->Print();
         frac(nPdf + self._squareIdx[i])->Print();

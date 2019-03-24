@@ -82,7 +82,7 @@ protected:
 
     RooRealVar* frac(int i);
     const RooRealVar* frac(int i) const;
-    void calculateFractions(const RooMomentMorphND& self, Bool_t verbose = kTRUE) const;
+    void calculateFractions(const RooMomentMorphND& self, Bool_t g_verbose = kTRUE) const;
   };
 
 public:

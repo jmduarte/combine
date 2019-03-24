@@ -17,8 +17,8 @@ namespace toymcoptutils {
                      int forceEvents = 0);
     ~SinglePdfGenInfo();
     RooAbsData *generate(const RooDataSet *protoData = NULL, int forceEvents = 0);
-    RooDataSet *generateAsimov(RooRealVar *&weightVar, double weightScale = 1.0, int verbose = 0);
-    RooDataSet *generatePseudoAsimov(RooRealVar *&weightVar, int nPoints, double weightScale = 1.0, int verbose = 0);
+    RooDataSet *generateAsimov(RooRealVar *&weightVar, double weightScale = 1.0, int g_verbose = 0);
+    RooDataSet *generatePseudoAsimov(RooRealVar *&weightVar, int nPoints, double weightScale = 1.0, int g_verbose = 0);
     const RooAbsPdf *pdf() const { return pdf_; }
     void setCacheTemplates(bool cache) { keepHistoSpec_ = cache; }
     Mode mode() const { return mode_; }
@@ -31,7 +31,7 @@ namespace toymcoptutils {
     TH1 *histoSpec_;
     bool keepHistoSpec_;
     RooRealVar *weightVar_;
-    RooDataSet *generateWithHisto(RooRealVar *&weightVar, bool asimov, double weightScale = 1.0, int verbose = 0);
+    RooDataSet *generateWithHisto(RooRealVar *&weightVar, bool asimov, double weightScale = 1.0, int g_verbose = 0);
     RooDataSet *generateCountingAsimov();
     void setToExpected(RooProdPdf &prod, RooArgSet &obs);
     void setToExpected(RooPoisson &pois, RooArgSet &obs);
@@ -45,7 +45,7 @@ namespace toymcoptutils {
                   int forceEvents = 0);
     ~SimPdfGenInfo();
     RooAbsData *generate(RooRealVar *&weightVar, const RooDataSet *protoData = NULL, int forceEvents = 0);
-    RooAbsData *generateAsimov(RooRealVar *&weightVar, int verbose = 0);
+    RooAbsData *generateAsimov(RooRealVar *&weightVar, int g_verbose = 0);
     RooAbsData *generateEpsilon(RooRealVar *&weightVar);
     void setCopyData(bool copyData) { copyData_ = copyData; }
     void setCacheTemplates(bool cache);

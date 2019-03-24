@@ -1514,7 +1514,7 @@ RooAbsPdf* RooStarMomentMorph::sumPdf(const RooArgSet* nset) {
   CacheElem* cache = getCache(nset ? nset : _curNormSet);
 
   if (!cache->_fractionsCalculated || cache->_tracker->hasChanged(kTRUE)) {
-    cache->calculateFractions(*this, kFALSE);  // verbose turned off
+    cache->calculateFractions(*this, kFALSE);  // g_verbose turned off
   }
 
   return cache->_sumPdf;
@@ -1525,7 +1525,7 @@ Double_t RooStarMomentMorph::evaluate() const {
   CacheElem* cache = getCache(_curNormSet);
 
   if (!cache->_fractionsCalculated || cache->_tracker->hasChanged(kTRUE)) {
-    cache->calculateFractions(*this, kFALSE);  // verbose turned off
+    cache->calculateFractions(*this, kFALSE);  // g_verbose turned off
   }
 
   Double_t ret = cache->_sumPdf->getVal(_pdfList.nset());
@@ -1553,7 +1553,7 @@ RooRealVar* RooStarMomentMorph::CacheElem::frac(Int_t i) { return (RooRealVar*)(
 const RooRealVar* RooStarMomentMorph::CacheElem::frac(Int_t i) const { return (RooRealVar*)(_frac.at(i)); }
 
 //_____________________________________________________________________________
-void RooStarMomentMorph::CacheElem::calculateFractions(const RooStarMomentMorph& self, Bool_t /* verbose */) const {
+void RooStarMomentMorph::CacheElem::calculateFractions(const RooStarMomentMorph& self, Bool_t /* g_verbose */) const {
   _fractionsCalculated = true;
 
   switch (self._setting) {
@@ -1635,7 +1635,7 @@ void RooStarMomentMorph::CacheElem::calculateFractions(const RooStarMomentMorph&
   //     ((RooRealVar*)frac(i))->setVal(ffrac);
   //     // fractions for rms and mean
   //     ((RooRealVar*)frac(nPdf+i))->setVal(ffrac);
-  //     if (verbose) { std::cout << ffrac << std::endl; }
+  //     if (g_verbose) { std::cout << ffrac << std::endl; }
   //   }
 
   //   // various mode settings

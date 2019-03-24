@@ -29,7 +29,7 @@ public:
 
   Double_t evaluate() const;
 
-  void printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const;
+  void printMultiline(std::ostream& os, Int_t contents, Bool_t g_verbose, TString indent) const;
 
   Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName = 0) const;
 

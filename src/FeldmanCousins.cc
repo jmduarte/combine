@@ -48,21 +48,21 @@ bool FeldmanCousins::run(RooWorkspace *w,
   RooStats::FeldmanCousins fc(data, modelConfig);
   fc.FluctuateNumDataEntries(mc_s->GetPdf()->canBeExtended());
   fc.UseAdaptiveSampling(true);
-  fc.SetConfidenceLevel(cl);
+  fc.SetConfidenceLevel(g_confidenceLevel);
   fc.AdditionalNToysFactor(toysFactor_);
 
   fc.SetNBins(10);
   do {
-    if (verbose > 1)
+    if (g_verbose > 1)
       std::cout << "scan in range [" << r->getMin() << ", " << r->getMax() << "]" << std::endl;
     std::unique_ptr<RooStats::PointSetInterval> fcInterval((RooStats::PointSetInterval *)fc.GetInterval());
     if (fcInterval.get() == 0)
       return false;
-    if (verbose > 1)
+    if (g_verbose > 1)
       fcInterval->GetParameterPoints()->Print("V");
     RooDataHist *parameterScan = (RooDataHist *)fc.GetPointsToScan();
     int found = -1;
-    if (lowerLimit_) {
+    if (g_lowerLimit) {
       for (int i = 0; i < parameterScan->numEntries(); ++i) {
         const RooArgSet *tmpPoint = parameterScan->get(i);
         if (!fcInterval->IsInInterval(*tmpPoint))
@@ -80,7 +80,7 @@ bool FeldmanCousins::run(RooWorkspace *w,
           break;
       }
       if (found == -1) {
-        if (verbose)
+        if (g_verbose)
           std::cout << "Points are either all inside or all outside the bound." << std::endl;
         return false;
       }
@@ -91,7 +91,7 @@ bool FeldmanCousins::run(RooWorkspace *w,
                                                  : r->getMax());
     limit = 0.5 * (fcAfter + fcBefore);
     limitErr = 0.5 * (fcAfter - fcBefore);
-    if (verbose > 0)
+    if (g_verbose > 0)
       std::cout << "  would be " << r->GetName() << " < " << limit << " +/- " << limitErr << std::endl;
     r->setMin(std::max(r->getMin(), limit - 3 * limitErr));
     r->setMax(std::min(r->getMax(), limit + 3 * limitErr));
@@ -100,10 +100,10 @@ bool FeldmanCousins::run(RooWorkspace *w,
     }
   } while (limitErr > std::max<float>(rAbsAccuracy_, rRelAccuracy_ * limit));
 
-  if (verbose > -1) {
+  if (g_verbose > -1) {
     std::cout << "\n -- FeldmanCousins++ -- \n";
-    std::cout << "Limit: " << r->GetName() << (lowerLimit_ ? "> " : "< ") << limit << " +/- " << limitErr << " @ "
-              << cl * 100 << "% CL" << std::endl;
+    std::cout << "Limit: " << r->GetName() << (g_lowerLimit ? "> " : "< ") << limit << " +/- " << limitErr << " @ "
+              << g_confidenceLevel * 100 << "% CL" << std::endl;
   }
   return true;
 }

@@ -13,14 +13,14 @@
 #include "combine/CascadeMinimizer.h"
 #include "combine/Logger.h"
 
-RooAbsData *asimovutils::asimovDatasetNominal(RooStats::ModelConfig *mc, double poiValue, int verbose) {
+RooAbsData *asimovutils::asimovDatasetNominal(RooStats::ModelConfig *mc, double poiValue, int g_verbose) {
   RooArgSet poi(*mc->GetParametersOfInterest());
   RooRealVar *r = dynamic_cast<RooRealVar *>(poi.first());
   r->setConstant(true);
   r->setVal(poiValue);
   toymcoptutils::SimPdfGenInfo newToyMC(*mc->GetPdf(), *mc->GetObservables(), false);
 
-  if (verbose > 2) {
+  if (g_verbose > 2) {
     Logger::instance().log(std::string(Form("AsimovUtils.cc: %d -- Parameters after fit for asimov dataset", __LINE__)),
                            Logger::kLogLevelInfo,
                            __func__);
@@ -33,7 +33,7 @@ RooAbsData *asimovutils::asimovDatasetNominal(RooStats::ModelConfig *mc, double 
   }
 
   RooRealVar *weightVar = 0;
-  RooAbsData *asimov = newToyMC.generateAsimov(weightVar, verbose);
+  RooAbsData *asimov = newToyMC.generateAsimov(weightVar, g_verbose);
   delete weightVar;
   return asimov;
 }
@@ -43,13 +43,13 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
                                               RooAbsCollection &snapshot,
                                               bool needsFit,
                                               double poiValue,
-                                              int verbose) {
+                                              int g_verbose) {
   RooArgSet poi(*mc->GetParametersOfInterest());
   RooRealVar *r = dynamic_cast<RooRealVar *>(poi.first());
   r->setConstant(true);
   r->setVal(poiValue);
   {
-    CloseCoutSentry sentry(verbose < 3);
+    CloseCoutSentry sentry(g_verbose < 3);
     if (mc->GetNuisanceParameters()) {
       needsFit &= true;
     } else {
@@ -72,15 +72,15 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
           mc->GetPdf()->createNLL(realdata, constrain, RooFit::Extended(mc->GetPdf()->canBeExtended())));
       CascadeMinimizer minim(*nll, CascadeMinimizer::Constrained);
       minim.setStrategy(1);
-      minim.minimize(verbose - 1);
+      minim.minimize(g_verbose - 1);
     }
   }
-  if (mc->GetNuisanceParameters() && verbose > 1) {
+  if (mc->GetNuisanceParameters() && g_verbose > 1) {
     std::cout << "Nuisance parameters after fit for asimov dataset: " << std::endl;
     mc->GetNuisanceParameters()->Print("V");
   }
 
-  if (verbose > 2) {
+  if (g_verbose > 2) {
     Logger::instance().log(std::string(Form("AsimovUtils.cc: %d -- Parameters after fit for asimov dataset", __LINE__)),
                            Logger::kLogLevelInfo,
                            __func__);
@@ -94,7 +94,7 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
 
   toymcoptutils::SimPdfGenInfo newToyMC(*mc->GetPdf(), *mc->GetObservables(), false);
   RooRealVar *weightVar = 0;
-  RooAbsData *asimov = newToyMC.generateAsimov(weightVar, verbose);
+  RooAbsData *asimov = newToyMC.generateAsimov(weightVar, g_verbose);
   delete weightVar;
 
   // NOW SNAPSHOT THE GLOBAL OBSERVABLES
@@ -205,7 +205,7 @@ RooAbsData *asimovutils::asimovDatasetWithFit(RooStats::ModelConfig *mc,
     // revert things to normal
     gobs = snapGlobalObsData;
 
-    if (verbose > 1) {
+    if (g_verbose > 1) {
       std::cout << "Global observables for data: " << std::endl;
       snapGlobalObsData.Print("V");
       std::cout << "Global observables for asimov: " << std::endl;

@@ -224,7 +224,7 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
     if (quantileForExpectedFromGrid_ <= 0 || quantileForExpectedFromGrid_ >= 1.0)
       throw std::invalid_argument("HybridNew: the quantile for the expected limit must be between 0 and 1");
     expectedFromGrid_ = true;
-    g_quantileExpected_ = quantileForExpectedFromGrid_;
+    g_quantileExpected = quantileForExpectedFromGrid_;
   }
 
   if (vm.count("frequentist")) {
@@ -276,7 +276,7 @@ void HybridNew::applyOptions(const boost::program_options::variables_map &vm) {
   if (genGlobalObs_ && genNuisances_) {
     std::cerr << "ALERT: generating both global observables and nuisance parameters at the same time is not validated."
               << std::endl;
-    if (verbose)
+    if (g_verbose)
       Logger::instance().log(std::string(Form("HybridNew.cc: %d -- generating both global observables and nuisance "
                                               "parameters at the same time is not validated!",
                                               __LINE__)),
@@ -399,7 +399,7 @@ bool HybridNew::run(RooWorkspace *w,
                     double &limit,
                     double &limitErr,
                     const double *hint) {
-  RooFitGlobalKillSentry silence(verbose <= 1 ? RooFit::WARNING : RooFit::DEBUG);
+  RooFitGlobalKillSentry silence(g_verbose <= 1 ? RooFit::WARNING : RooFit::DEBUG);
 
   //double minimizerTolerance_  = ROOT::Math::MinimizerOptions::DefaultTolerance();
   //std::string minimizerAlgo_  = ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo();
@@ -440,7 +440,7 @@ bool HybridNew::runSignificance(RooWorkspace *w,
     for (unsigned int i = 1; i < iterations_; ++i) {
       std::unique_ptr<HypoTestResult> more(evalGeneric(*hc));
       hcResult->Append(more.get());
-      if (verbose)
+      if (g_verbose)
         std::cout << "\t1 - CLb = " << hcResult->CLb() << " +/- " << hcResult->CLbError() << std::endl;
     }
   }
@@ -455,12 +455,12 @@ bool HybridNew::runSignificance(RooWorkspace *w,
       name += Form("_%s%g", rIn->GetName(), rIn->getVal());
     }
     name += Form("_%u", RooRandom::integer(std::numeric_limits<UInt_t>::max() - 1));
-    writeToysHere->WriteTObject(new HypoTestResult(*hcResult), name);
-    if (verbose)
-      std::cout << "Hybrid result saved as " << name << " in " << writeToysHere->GetFile()->GetName() << " : "
-                << writeToysHere->GetPath() << std::endl;
+    g_writeToysHere->WriteTObject(new HypoTestResult(*hcResult), name);
+    if (g_verbose)
+      std::cout << "Hybrid result saved as " << name << " in " << g_writeToysHere->GetFile()->GetName() << " : "
+                << g_writeToysHere->GetPath() << std::endl;
   }
-  if (verbose > 1) {
+  if (g_verbose > 1) {
     std::cout << "Observed test statistics in data: " << hcResult->GetTestStatisticData() << std::endl;
     std::cout << "Background-only toys sampled:     " << hcResult->GetNullDistribution()->GetSize() << std::endl;
   }
@@ -504,7 +504,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
 
   typedef std::pair<double, double> CLs_t;
 
-  double clsTarget = 1 - cl;
+  double clsTarget = 1 - g_confidenceLevel;
   CLs_t clsMin(1, 0), clsMax(0, 0), clsMid(0, 0);
   double rMin = r->getMin(), rMax = r->getMax();
   limit = 0.5 * (rMax + rMin);
@@ -514,7 +514,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
   TF1 expoFit("expoFit", "[0]*exp([1]*(x-[2]))", rMin, rMax);
 
   if (readHybridResults_) {
-    if (verbose > 0)
+    if (g_verbose > 0)
       std::cout << "Search for upper limit using pre-computed grid of p-values" << std::endl;
 
     if (!gridFile_.empty()) {
@@ -530,7 +530,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
       if (grid_.size() <= 1)
         throw std::logic_error("The grid must contain at least 2 points.");
       if (noUpdateGrid_) {
-        if (testStat_ == "LHCFC" && rule_ == "FC" && (saveGrid_ || lowerLimit_)) {
+        if (testStat_ == "LHCFC" && rule_ == "FC" && (saveGrid_ || g_lowerLimit)) {
           std::cout << "Will have to re-run points for which the test statistics was set to zero" << std::endl;
           updateGridDataFC(w, mc_s, mc_b, data, !fullGrid_, clsTarget);
         } else {
@@ -553,7 +553,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
     rMax = limitPlot_->GetX()[limitPlot_->GetN() - 1];
     for (int i = 0, n = limitPlot_->GetN(); i < n; ++i) {
       double x = limitPlot_->GetX()[i], y = limitPlot_->GetY()[i], ey = limitPlot_->GetErrorY(i);
-      if (verbose > 0)
+      if (g_verbose > 0)
         printf("  r %.2f: %s = %6.4f +/- %6.4f\n", x, CLs_ ? "CLs" : "CLsplusb", y, ey);
       if (saveGrid_) {
         limit = x;
@@ -574,13 +574,13 @@ bool HybridNew::runLimit(RooWorkspace *w,
         break;
     }
     limit = nearest;
-    if (verbose > 0)
+    if (g_verbose > 0)
       std::cout << " after scan x ~ " << limit << ", bounds [ " << rMin << ", " << rMax << "]" << std::endl;
     limitErr = std::max(limit - rMin, rMax - limit);
     expoFit.SetRange(rMin, rMax);
 
     if (limitErr < std::max(rAbsAccuracy_, rRelAccuracy_ * limit) && (!doFC_)) {  // need to look for intervals for FC
-      if (verbose > 1)
+      if (g_verbose > 1)
         std::cout << "  reached accuracy " << limitErr << " below " << std::max(rAbsAccuracy_, rRelAccuracy_ * limit)
                   << std::endl;
       done = true;
@@ -588,11 +588,11 @@ bool HybridNew::runLimit(RooWorkspace *w,
   } else {
     limitPlot_.reset(new TGraphErrors());
 
-    if (verbose > 0)
+    if (g_verbose > 0)
       std::cout << "Search for upper limit to the limit" << std::endl;
     for (int tries = 0; tries < 6; ++tries) {
       clsMax = eval(w, mc_s, mc_b, data, rMax);
-      if (lowerLimit_)
+      if (g_lowerLimit)
         break;  // we can't search for lower limits this way
       if (clsMax.first == 0 || clsMax.first + 3 * fabs(clsMax.second) < clsTarget)
         break;
@@ -603,10 +603,10 @@ bool HybridNew::runLimit(RooWorkspace *w,
         return false;
       }
     }
-    if (verbose > 0)
+    if (g_verbose > 0)
       std::cout << "Search for lower limit to the limit" << std::endl;
     clsMin = (CLs_ && rMin == 0 ? CLs_t(1, 0) : eval(w, mc_s, mc_b, data, rMin));
-    if (!lowerLimit_ && clsMin.first != 1 && clsMin.first - 3 * fabs(clsMin.second) < clsTarget) {
+    if (!g_lowerLimit && clsMin.first != 1 && clsMin.first - 3 * fabs(clsMin.second) < clsTarget) {
       if (CLs_) {
         rMin = 0;
         clsMin = CLs_t(1, 0);  // this is always true for CLs
@@ -626,7 +626,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
       }
     }
 
-    if (verbose > 0)
+    if (g_verbose > 0)
       std::cout << "Now doing proper bracketing & bisection" << std::endl;
     do {
       // determine point by bisection or interpolation
@@ -648,7 +648,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
 
       // exit if reached accuracy on r
       if (limitErr < std::max(rAbsAccuracy_, rRelAccuracy_ * limit)) {
-        if (verbose > 1)
+        if (g_verbose > 1)
           std::cout << "  reached accuracy " << limitErr << " below " << std::max(rAbsAccuracy_, rRelAccuracy_ * limit)
                     << std::endl;
         done = true;
@@ -672,7 +672,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
           clsMin = clsMid;
         }
       } else {
-        if (verbose > 0)
+        if (g_verbose > 0)
           std::cout << "Trying to move the interval edges closer" << std::endl;
         double rMinBound = rMin, rMaxBound = rMax;
         // try to reduce the size of the interval
@@ -703,24 +703,24 @@ bool HybridNew::runLimit(RooWorkspace *w,
     if (doFC_) {
       points = findIntervalsFromSplines(limitPlot_.get(), clsTarget);  // re use CLS_t ?
       if (points.size() < 2) {
-        std::cout << " HybridNew -- Found no interval in which " << rule_.c_str() << " is less than target " << cl
+        std::cout << " HybridNew -- Found no interval in which " << rule_.c_str() << " is less than target " << g_confidenceLevel
                   << ", no crossings found " << std::endl;
-        if (verbose)
+        if (g_verbose)
           Logger::instance().log(
               std::string(
                   Form("HybridNew.cc: %d Found no interval in which %s is less than target %g, no crossing found!",
                        __LINE__,
                        rule_.c_str(),
-                       cl)),
+                       g_confidenceLevel)),
               Logger::kLogLevelError,
               __func__);
       } else if (points.size() == 2) {
-        std::cout << "combine/HybridNew -- One-sided boundary found for  " << 100 * cl << "%% confidence regions "
+        std::cout << "combine/HybridNew -- One-sided boundary found for  " << 100 * g_confidenceLevel << "%% confidence regions "
                   << std::endl;
-        if (verbose)
+        if (g_verbose)
           Logger::instance().log(
               std::string(
-                  Form("HybridNew.cc: %d One-sided boundary found for %g %% confidence regions", __LINE__, 100 * cl)),
+                  Form("HybridNew.cc: %d One-sided boundary found for %g %% confidence regions", __LINE__, 100 * g_confidenceLevel)),
               Logger::kLogLevelInfo,
               __func__);
         int ib = 0;
@@ -728,7 +728,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
           ib = 1;
         std::cout << "  " << points[ib].first << " (+/-" << points[ib].second << ")" << (ib == 1 ? " < " : " > ")
                   << r->GetName() << std::endl;
-        if (verbose)
+        if (g_verbose)
           Logger::instance().log(std::string(Form("HybridNew.cc: %d  %g (+/- %g) %s %s",
                                                   __LINE__,
                                                   points[ib].first,
@@ -742,17 +742,17 @@ bool HybridNew::runLimit(RooWorkspace *w,
         limitErr = points[ib].second;
         Combine::commitPoint(false, clsTarget);
       } else {
-        std::cout << "combine/HybridNew -- found  " << 100 * cl << "%% confidence regions " << std::endl;
-        if (verbose)
+        std::cout << "combine/HybridNew -- found  " << 100 * g_confidenceLevel << "%% confidence regions " << std::endl;
+        if (g_verbose)
           Logger::instance().log(
-              std::string(Form("HybridNew.cc: %d found %g %% confidence regions", __LINE__, 100 * cl)),
+              std::string(Form("HybridNew.cc: %d found %g %% confidence regions", __LINE__, 100 * g_confidenceLevel)),
               Logger::kLogLevelInfo,
               __func__);
         for (unsigned int ib = 1; ib < points.size() - 2; ib += 2) {
           std::cout << "  " << points[ib].first << " (+/-" << points[ib].second << ")"
                     << " < " << r->GetName() << " < " << points[ib + 1].first << " (+/-" << points[ib + 1].second << ")"
                     << std::endl;
-          if (verbose)
+          if (g_verbose)
             Logger::instance().log(std::string(Form("HybridNew.cc: %d  %g (+/- %g) < %s < %g (+/- %g) ",
                                                     __LINE__,
                                                     points[ib].first,
@@ -775,7 +775,7 @@ bool HybridNew::runLimit(RooWorkspace *w,
     } else {
       double rMinBound, rMaxBound;
       expoFit.GetRange(rMinBound, rMaxBound);
-      if (verbose) {
+      if (g_verbose) {
         std::cout << "\n -- HybridNew, before fit -- \n";
         std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " [" << rMinBound << ", "
                   << rMaxBound << "]\n";
@@ -797,8 +797,8 @@ bool HybridNew::runLimit(RooWorkspace *w,
       for (int i = 0, imax = (readHybridResults_ ? 0 : 8); i <= imax; ++i, ++npoints) {
         limitPlot_->Sort();
         limitPlot_->Fit(&expoFit,
-                        (verbose <= 1 ? "QNR EX0" : "NR EX0"));  // For FC, might be more appropriate to fit pol2?
-        if (verbose) {
+                        (g_verbose <= 1 ? "QNR EX0" : "NR EX0"));  // For FC, might be more appropriate to fit pol2?
+        if (g_verbose) {
           std::cout << "Fit to " << npoints << " points: " << expoFit.GetParameter(2) << " +/- "
                     << expoFit.GetParError(2) << std::endl;
         }
@@ -871,8 +871,8 @@ bool HybridNew::runLimit(RooWorkspace *w,
   }
 
   std::cout << "\n -- Hybrid New -- \n";
-  std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << cl * 100 << "% CL\n";
-  if (verbose > 1)
+  std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << g_confidenceLevel * 100 << "% CL\n";
+  if (g_verbose > 1)
     std::cout << "Total toys: " << perf_totalToysRun_ << std::endl;
   return true;
 }
@@ -887,7 +887,7 @@ bool HybridNew::runSinglePoint(RooWorkspace *w,
   std::pair<double, double> result = eval(w, mc_s, mc_b, data, rValues_, clsAccuracy_ != 0);
   std::cout << "\n -- Hybrid New -- \n";
   std::cout << (CLs_ ? "CLs = " : "CLsplusb = ") << result.first << " +/- " << result.second << std::endl;
-  if (verbose > 1)
+  if (g_verbose > 1)
     std::cout << "Total toys: " << perf_totalToysRun_ << std::endl;
   limit = result.first;
   limitErr = result.second;
@@ -972,7 +972,7 @@ std::pair<double, double> HybridNew::eval(RooWorkspace *w,
   for (RooRealVar *rIn = (RooRealVar *)it.Next(); rIn != 0; rIn = (RooRealVar *)it.Next()) {
     RooRealVar *r = dynamic_cast<RooRealVar *>(mc_s->GetParametersOfInterest()->find(rIn->GetName()));
     r->setVal(rIn->getVal());
-    if (verbose)
+    if (g_verbose)
       std::cout << "  " << r->GetName() << " = " << rIn->getVal() << " +/- " << r->getError() << std::endl;
   }
   std::unique_ptr<RooStats::HybridCalculator> hc(create(w, mc_s, mc_b, data, rVals, setup));
@@ -1088,22 +1088,22 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     std::unique_ptr<RooAbsReal> nll(
         pdfB->createNLL(data, RooFit::Extended(isExt), RooFit::Constrain(*mc_s->GetNuisanceParameters())));
     {
-      CloseCoutSentry sentry(verbose < 3);
+      CloseCoutSentry sentry(g_verbose < 3);
       CascadeMinimizer minim(*nll, CascadeMinimizer::Constrained, r);
-      minim.minimize(verbose - 3);
+      minim.minimize(g_verbose - 3);
       //pdfB->fitTo(data, RooFit::Minimizer("Minuit2","minimize"), RooFit::Strategy(1), RooFit::Hesse(0), RooFit::Extended(isExt), RooFit::Constrain(*mc_s->GetNuisanceParameters()));
       fitZero.readFrom(*paramsToFit);
     }
-    if (verbose > 1) {
+    if (g_verbose > 1) {
       std::cout << "Zero signal fit" << std::endl;
       fitZero.Print("V");
     }
-    if (verbose > 1) {
+    if (g_verbose > 1) {
       std::cout << "Fitting of the background hypothesis done in " << timer.RealTime() << " s" << std::endl;
     }
 
     // print the values of the parameters used to generate the toy
-    if (verbose > 2) {
+    if (g_verbose > 2) {
       Logger::instance().log(
           std::string(Form("HybridNew.cc: %d -- Using the following (post-fit) parameters for No signal hypothesis ",
                            __LINE__)),
@@ -1125,22 +1125,22 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
           mc_s->GetPdf()->createNLL(data, RooFit::Extended(isExt), RooFit::Constrain(*mc_s->GetNuisanceParameters())));
     }
     {
-      CloseCoutSentry sentry(verbose < 3);
+      CloseCoutSentry sentry(g_verbose < 3);
       CascadeMinimizer minim(*nll, CascadeMinimizer::Constrained, r);
-      minim.minimize(verbose - 3);
+      minim.minimize(g_verbose - 3);
       //mc_s->GetPdf()->fitTo(data, RooFit::Minimizer("Minuit2","minimize"), RooFit::Strategy(1), RooFit::Hesse(0), RooFit::Extended(isExt), RooFit::Constrain(*mc_s->GetNuisanceParameters()));
       fitMu.readFrom(*paramsToFit);
     }
-    if (verbose > 1) {
+    if (g_verbose > 1) {
       std::cout << "Reference signal fit" << std::endl;
       fitMu.Print("V");
     }
-    if (verbose > 1) {
+    if (g_verbose > 1) {
       std::cout << "Fitting of the signal-plus-background hypothesis done in " << timer.RealTime() << " s" << std::endl;
     }
 
     // print the values of the parameters used to generate the toy
-    if (verbose > 2) {
+    if (g_verbose > 2) {
       Logger::instance().log(
           std::string(
               Form("HybridNew.cc: %d -- Using the following (post-fit) parameters for S+B hypothesis ", __LINE__)),
@@ -1255,7 +1255,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
       } else {
         std::cerr << "ALERT: using LEP test statistics with --fitNuisances is not validated and most likely broken"
                   << std::endl;
-        if (verbose)
+        if (g_verbose)
           Logger::instance().log(std::string(Form("HybridNew.cc: %d using LEP test statistics with --fitNuisances is "
                                                   "not validated and most likely broken",
                                                   __LINE__)),
@@ -1277,7 +1277,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
       }
     } else {
       std::cerr << "ALERT: LEP test statistics without optimization not validated." << std::endl;
-      if (verbose)
+      if (g_verbose)
         Logger::instance().log(std::string(Form("HybridNew.cc: %d LEP test statistics not yet validated.", __LINE__)),
                                Logger::kLogLevelDebug,
                                __func__);
@@ -1289,7 +1289,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     }
   } else if (testStat_ == "TEV") {
     std::cerr << "ALERT: Tevatron test statistics not yet validated." << std::endl;
-    if (verbose)
+    if (g_verbose)
       Logger::instance().log(
           std::string(Form("HybridNew.cc: %d Tevatron test statistics not yet validated.", __LINE__)),
           Logger::kLogLevelDebug,
@@ -1300,7 +1300,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     if (optimizeTestStatistics_) {
       setup.qvar.reset(new ProfiledLikelihoodRatioTestStatOpt(
           *mc_s->GetObservables(), *pdfB, *mc_s->GetPdf(), mc_s->GetNuisanceParameters(), paramsZero, params));
-      ((ProfiledLikelihoodRatioTestStatOpt &)*setup.qvar).setPrintLevel(verbose);
+      ((ProfiledLikelihoodRatioTestStatOpt &)*setup.qvar).setPrintLevel(g_verbose);
     } else {
       setup.qvar.reset(new RatioOfProfiledLikelihoodsTestStat(*mc_s->GetPdf(), *pdfB, setup.modelConfig.GetSnapshot()));
       ((RatioOfProfiledLikelihoodsTestStat &)*setup.qvar).SetSubtractMLE(false);
@@ -1325,7 +1325,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
                                                          poi,
                                                          gobsParams,
                                                          gobs,
-                                                         verbose,
+                                                         g_verbose,
                                                          side));
     } else {
       std::cerr << "ALERT: LHC test statistics without optimization not validated." << std::endl;
@@ -1340,7 +1340,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
     if (workingMode_ == MakeSignificance)
       r->setVal(0.0);
     setup.qvar.reset(new BestFitSigmaTestStat(
-        *mc_s->GetObservables(), *mc_s->GetPdf(), mc_s->GetNuisanceParameters(), params, verbose));
+        *mc_s->GetObservables(), *mc_s->GetPdf(), mc_s->GetNuisanceParameters(), params, g_verbose));
   }
 
   RooAbsPdf *nuisancePdf = 0;
@@ -1361,7 +1361,7 @@ std::unique_ptr<RooStats::HybridCalculator> HybridNew::create(RooWorkspace *w,
 
   if (nCpu_ > 0) {
     std::cerr << "ALERT: running with proof not validated." << std::endl;
-    if (verbose > 1)
+    if (g_verbose > 1)
       std::cout << "  Will use " << nCpu_ << " CPUs." << std::endl;
     setup.pc.reset(new ProofConfig(*w, nCpu_, "", kFALSE));
     setup.toymcsampler->SetProofConfig(setup.pc.get());
@@ -1460,7 +1460,7 @@ std::pair<double, double> HybridNew::eval(RooStats::HybridCalculator &hc,
     hcResult->SetPValueIsRightTail(!hcResult->GetPValueIsRightTail());
   }
   std::pair<double, double> cls = eval(*hcResult, rVals);
-  if (verbose)
+  if (g_verbose)
     std::cout << (CLs_ ? "\tCLs = " : "\tCLsplusb = ") << cls.first << " +/- " << cls.second << std::endl;
   if (adaptive) {
     if (CLs_) {
@@ -1481,7 +1481,7 @@ std::pair<double, double> HybridNew::eval(RooStats::HybridCalculator &hc,
       if (expectedFromGrid_)
         applyExpectedQuantile(*hcResult);
       cls = eval(*hcResult, rVals);
-      if (verbose)
+      if (g_verbose)
         std::cout << (CLs_ ? "\tCLs = " : "\tCLsplusb = ") << cls.first << " +/- " << cls.second << std::endl;
     }
   } else if (iterations_ > 1) {
@@ -1494,12 +1494,12 @@ std::pair<double, double> HybridNew::eval(RooStats::HybridCalculator &hc,
       if (expectedFromGrid_)
         applyExpectedQuantile(*hcResult);
       cls = eval(*hcResult, rVals);
-      if (verbose)
+      if (g_verbose)
         std::cout << (CLs_ ? "\tCLs = " : "\tCLsplusb = ") << cls.first << " +/- " << cls.second << std::endl;
     }
   }
 
-  if (verbose > 0) {
+  if (g_verbose > 0) {
     std::cout << "\tCLs      = " << hcResult->CLs() << " +/- " << hcResult->CLsError() << "\n"
               << "\tCLb      = " << hcResult->CLb() << " +/- " << hcResult->CLbError() << "\n"
               << "\tCLsplusb = " << hcResult->CLsplusb() << " +/- " << hcResult->CLsplusbError() << "\n"
@@ -1533,10 +1533,10 @@ std::pair<double, double> HybridNew::eval(RooStats::HybridCalculator &hc,
       name += Form("_%s%g", rIn->GetName(), rIn->getVal());
     }
     name += Form("_%u", RooRandom::integer(std::numeric_limits<UInt_t>::max() - 1));
-    writeToysHere->WriteTObject(new HypoTestResult(*hcResult), name);
-    if (verbose)
-      std::cout << "Hybrid result saved as " << name << " in " << writeToysHere->GetFile()->GetName() << " : "
-                << writeToysHere->GetPath() << std::endl;
+    g_writeToysHere->WriteTObject(new HypoTestResult(*hcResult), name);
+    if (g_verbose)
+      std::cout << "Hybrid result saved as " << name << " in " << g_writeToysHere->GetFile()->GetName() << " : "
+                << g_writeToysHere->GetPath() << std::endl;
   }
 
   return cls;
@@ -1612,7 +1612,7 @@ void HybridNew::applyExpectedQuantile(RooStats::HypoTestResult &hcres) {
       std::sort(btoys.begin(), btoys.end());
       Double_t testStat =
           btoys[std::min<int>(floor((1. - quantileForExpectedFromGrid_) * btoys.size() + 0.5), btoys.size())];
-      if (verbose > 0)
+      if (g_verbose > 0)
         std::cout << "Text statistics for " << quantileForExpectedFromGrid_ << " quantile: " << testStat << std::endl;
       hcres.SetTestStatisticData(testStat);
       //std::cout << "CLs quantile = " << (CLs_ ? hcres.CLs() : hcres.CLsplusb()) << " for test stat = " << testStat << std::endl;
@@ -1715,7 +1715,7 @@ void HybridNew::applySignalQuantile(RooStats::HypoTestResult &hcres) {
   std::vector<Double_t> stoys = hcres.GetAltDistribution()->GetSamplingDistribution();
   std::sort(stoys.begin(), stoys.end());
   Double_t testStat = stoys[std::min<int>(floor(quantileForExpectedFromGrid_ * stoys.size() + 0.5), stoys.size())];
-  if (verbose > 0)
+  if (g_verbose > 0)
     std::cout << "Text statistics for " << quantileForExpectedFromGrid_ << " quantile: " << testStat << std::endl;
   hcres.SetTestStatisticData(testStat);
 }
@@ -1795,7 +1795,7 @@ RooStats::HypoTestResult *HybridNew::evalWithFork(RooStats::HybridCalculator &hc
                   // and deleting of intermediate objects, and when the statics get deleted it crashes
                   // in 5.27.06 (but not in 5.28)
   }
-  if (verbose > 1) {
+  if (g_verbose > 1) {
     std::cout << "      Evaluation of p-values done in  " << timer.RealTime() << " s" << std::endl;
   }
   return result.release();
@@ -1823,19 +1823,19 @@ RooStats::HypoTestResult * HybridNew::evalFrequentist(RooStats::HybridCalculator
     std::vector<Double_t> distSB, distB;
     *parS = *snapGlobalObs_;
     Double_t tsData = hc.GetTestStatSampler()->GetTestStatistic()->Evaluate(*realData_, nullPoi);
-    if (verbose > 2) std::cout << "Test statistics on data: " << tsData << std::endl;
+    if (g_verbose > 2) std::cout << "Test statistics on data: " << tsData << std::endl;
     for (int i = 0; i < toysSB; ++i) {
        // Initialize parameters to snapshot
        *parS = *hc.GetAlternateModel()->GetSnapshot(); 
        // Throw global observables, and set them
-       if (verbose > 2) { std::cout << "Generating global obs starting from " << std::endl; parS->Print("V"); }
+       if (g_verbose > 2) { std::cout << "Generating global obs starting from " << std::endl; parS->Print("V"); }
        std::unique_ptr<RooDataSet> gdata(nuisPdf->generate(gobs, 1));
        *parS = *gdata->get(0);
-       if (verbose > 2) { std::cout << "Generated global obs" << std::endl; utils::printRAD(&*gdata); }
+       if (g_verbose > 2) { std::cout << "Generated global obs" << std::endl; utils::printRAD(&*gdata); }
        // Throw observables
-       if (verbose > 2) { std::cout << "Generating obs starting from " << std::endl; parS->Print("V"); }
+       if (g_verbose > 2) { std::cout << "Generating obs starting from " << std::endl; parS->Print("V"); }
        std::unique_ptr<RooDataSet> data(factorS->generate(obs, RooFit::Extended()));
-       if (verbose > 2) { std::cout << "Generated obs" << std::endl; utils::printRAD(&*data); }
+       if (g_verbose > 2) { std::cout << "Generated obs" << std::endl; utils::printRAD(&*data); }
        // Evaluate T.S.
        distSB.push_back(hc.GetTestStatSampler()->GetTestStatistic()->Evaluate(*data, nullPoi));
        //if std::cout << "Test statistics on S+B : " << distSB.back() << std::endl;
@@ -1845,14 +1845,14 @@ RooStats::HypoTestResult * HybridNew::evalFrequentist(RooStats::HybridCalculator
        *parB = *hc.GetNullModel()->GetSnapshot();
        //*parB = *hc.GetAlternateModel()->GetSnapshot(); 
        // Throw global observables, and set them
-       if (verbose > 2) { std::cout << "Generating global obs starting from " << std::endl; parB->Print("V"); }
+       if (g_verbose > 2) { std::cout << "Generating global obs starting from " << std::endl; parB->Print("V"); }
        std::unique_ptr<RooDataSet> gdata(nuisPdf->generate(gobs, 1));
        *parB = *gdata->get(0);
-       if (verbose > 2) { std::cout << "Generated global obs" << std::endl; utils::printRAD(&*gdata); }
+       if (g_verbose > 2) { std::cout << "Generated global obs" << std::endl; utils::printRAD(&*gdata); }
        // Throw observables
-       if (verbose > 2) { std::cout << "Generating obs starting from " << std::endl; parB->Print("V"); }
+       if (g_verbose > 2) { std::cout << "Generating obs starting from " << std::endl; parB->Print("V"); }
        std::unique_ptr<RooDataSet> data(factorB->generate(obs, RooFit::Extended()));
-       if (verbose > 2) { std::cout << "Generated obs" << std::endl; utils::printRAD(&*data); }
+       if (g_verbose > 2) { std::cout << "Generated obs" << std::endl; utils::printRAD(&*data); }
        // Evaluate T.S.
        distB.push_back(hc.GetTestStatSampler()->GetTestStatistic()->Evaluate(*data, nullPoi));
        //std::cout << "Test statistics on B   : " << distB.back() << std::endl;
@@ -1867,23 +1867,23 @@ RooStats::HypoTestResult * HybridNew::evalFrequentist(RooStats::HybridCalculator
 #endif
 
 RooStats::HypoTestResult *HybridNew::readToysFromFile(const RooAbsCollection &rVals) {
-  if (!readToysFromHere)
+  if (!g_readToysFromHere)
     throw std::logic_error("Cannot use readHypoTestResult: option toysFile not specified, or input file empty");
-  TDirectory *toyDir = readToysFromHere->GetDirectory("toys");
+  TDirectory *toyDir = g_readToysFromHere->GetDirectory("toys");
   if (!toyDir)
     throw std::logic_error("Cannot use readHypoTestResult: empty toy dir in input file empty");
-  if (verbose)
+  if (g_verbose)
     std::cout << "Reading toys for ";
   TString prefix1 = TString::Format("HypoTestResult_mh%g", mass_);
   TString prefix2 = TString::Format("HypoTestResult");
   RooLinkedListIter it = rVals.iterator();
   for (RooRealVar *rIn = (RooRealVar *)it.Next(); rIn != 0; rIn = (RooRealVar *)it.Next()) {
-    if (verbose)
+    if (g_verbose)
       std::cout << rIn->GetName() << " = " << rIn->getVal() << "   ";
     prefix1 += Form("_%s%g", rIn->GetName(), rIn->getVal());
     prefix2 += Form("_%s%g", rIn->GetName(), rIn->getVal());
   }
-  if (verbose)
+  if (g_verbose)
     std::cout << std::endl;
   std::unique_ptr<RooStats::HypoTestResult> ret;
   TIter next(toyDir->GetListOfKeys());
@@ -1894,7 +1894,7 @@ RooStats::HypoTestResult *HybridNew::readToysFromFile(const RooAbsCollection &rV
     RooStats::HypoTestResult *toy = dynamic_cast<RooStats::HypoTestResult *>(toyDir->Get(k->GetName()));
     if (toy == 0)
       continue;
-    if (verbose > 1)
+    if (g_verbose > 1)
       std::cout << " - " << k->GetName() << std::endl;
     if (ret.get() == 0) {
       ret.reset(new RooStats::HypoTestResult(*toy));
@@ -1906,17 +1906,17 @@ RooStats::HypoTestResult *HybridNew::readToysFromFile(const RooAbsCollection &rV
   if (ret.get() == 0) {
     std::cout << "ERROR: parameter point not found in input root file.\n";
     rVals.Print("V");
-    if (verbose > 0)
+    if (g_verbose > 0)
       toyDir->ls();
     std::cout << "ERROR: parameter point not found in input root file" << std::endl;
-    if (verbose)
+    if (g_verbose)
       Logger::instance().log(
           std::string(Form("HybridNew.cc: %d -- Parameter point not foung in input root file!", __LINE__)),
           Logger::kLogLevelError,
           __func__);
     throw std::invalid_argument("Missing input");
   }
-  if (verbose > 0) {
+  if (g_verbose > 0) {
     std::cout << "\tCLs      = " << ret->CLs() << " +/- " << ret->CLsError() << "\n"
               << "\tCLb      = " << ret->CLb() << " +/- " << ret->CLbError() << "\n"
               << "\tCLsplusb = " << ret->CLsplusb() << " +/- " << ret->CLsplusbError() << "\n"
@@ -1966,7 +1966,7 @@ void HybridNew::readGrid(TDirectory *toyDir, double rMin, double rMax) {
       // let's put a warning here, since results of this form were supported in the past
       std::cout << "combine/HybridNew::readGrid: HypoTestResult with non-conformant name " << name << " will be skipped"
                 << std::endl;
-      if (verbose)
+      if (g_verbose)
         Logger::instance().log(std::string(Form("HybridNew.cc: %d -- HypoTestResult with non-conformant name %s found "
                                                 "when reading grid, it will be skipped",
                                                 __LINE__,
@@ -1979,7 +1979,7 @@ void HybridNew::readGrid(TDirectory *toyDir, double rMin, double rMax) {
     double rVal = atof(name.Data());
     if (rVal < rMin || rVal > rMax)
       continue;
-    if (verbose > 2)
+    if (g_verbose > 2)
       std::cout << "  Do " << k->GetName() << " -> " << name << " --> " << rVal << std::endl;
     RooStats::HypoTestResult *toy = dynamic_cast<RooStats::HypoTestResult *>(toyDir->Get(k->GetName()));
     RooStats::HypoTestResult *&merge = grid_[rVal];
@@ -1989,7 +1989,7 @@ void HybridNew::readGrid(TDirectory *toyDir, double rMin, double rMax) {
       merge->Append(toy);
     merge->ResetBit(1);
   }
-  if (verbose > 1) {
+  if (g_verbose > 1) {
     std::cout << "GRID, as is." << std::endl;
     typedef std::map<double, RooStats::HypoTestResult *>::iterator point;
     for (point it = grid_.begin(), ed = grid_.end(); it != ed; ++it) {
@@ -2024,29 +2024,29 @@ void HybridNew::updateGridData(RooWorkspace *w,
     }
     int iMin = 0, iMax = points.size() - 1;
     while (iMax - iMin > 3) {
-      if (verbose > 1)
+      if (g_verbose > 1)
         std::cout << "Bisecting range [" << iMin << ", " << iMax << "]" << std::endl;
       int iMid = (iMin + iMax) / 2;
       CLs_t clsMid = values[iMid] = updateGridPoint(w, mc_s, mc_b, data, points[iMid]);
-      if (verbose > 1)
+      if (g_verbose > 1)
         std::cout << "    Midpoint " << iMid << " value " << clsMid.first << " +/- " << clsMid.second << std::endl;
       if (clsMid.first - 3 * max(clsMid.second, 0.01) > clsTarget_) {
-        if (verbose > 1)
+        if (g_verbose > 1)
           std::cout << "    Replacing Min" << std::endl;
         iMin = iMid;
         continue;
       } else if (clsMid.first + 3 * max(clsMid.second, 0.01) < clsTarget_) {
-        if (verbose > 1)
+        if (g_verbose > 1)
           std::cout << "    Replacing Max" << std::endl;
         iMax = iMid;
         continue;
       } else {
-        if (verbose > 1)
+        if (g_verbose > 1)
           std::cout << "    Tightening Range" << std::endl;
         while (iMin < iMid - 1) {
           int iLo = (iMin + iMid) / 2;
           CLs_t clsLo = values[iLo] = updateGridPoint(w, mc_s, mc_b, data, points[iLo]);
-          if (verbose > 1)
+          if (g_verbose > 1)
             std::cout << "        Lowpoint " << iLo << " value " << clsLo.first << " +/- " << clsLo.second << std::endl;
           if (clsLo.first - 3 * max(clsLo.second, 0.01) > clsTarget_)
             iMin = iLo;
@@ -2056,7 +2056,7 @@ void HybridNew::updateGridData(RooWorkspace *w,
         while (iMax > iMid + 1) {
           int iHi = (iMax + iMid) / 2;
           CLs_t clsHi = values[iHi] = updateGridPoint(w, mc_s, mc_b, data, points[iHi]);
-          if (verbose > 1)
+          if (g_verbose > 1)
             std::cout << "        Highpoint " << iHi << " value " << clsHi.first << " +/- " << clsHi.second
                       << std::endl;
           if (clsHi.first + 3 * max(clsHi.second, 0.01) < clsTarget_)
@@ -2067,28 +2067,28 @@ void HybridNew::updateGridData(RooWorkspace *w,
         break;
       }
     }
-    if (verbose > 1)
+    if (g_verbose > 1)
       std::cout << "Final range [" << iMin << ", " << iMax << "]" << std::endl;
     for (int i = 0; i < iMin; ++i) {
       points[i]->second->SetBit(1);
       updateGridPoint(w, mc_s, mc_b, data, points[i]);
-      if (verbose > 1)
+      if (g_verbose > 1)
         std::cout << "  Will not use point " << i << " (r " << points[i]->first << ")" << std::endl;
     }
     for (int i = iMin; i <= iMax; ++i) {
       points[i]->second->ResetBit(1);
       if (values[i].first < -2) {
-        if (verbose > 1)
+        if (g_verbose > 1)
           std::cout << "   Updating point " << i << " (r " << points[i]->first << ")" << std::endl;
         updateGridPoint(w, mc_s, mc_b, data, points[i]);
-      } else if (verbose > 1)
+      } else if (g_verbose > 1)
         std::cout << "   Point " << i << " (r " << points[i]->first << ") was already updated during search."
                   << std::endl;
     }
     for (int i = iMax + 1, n = points.size(); i < n; ++i) {
       points[i]->second->SetBit(1);
       updateGridPoint(w, mc_s, mc_b, data, points[i]);
-      if (verbose > 1)
+      if (g_verbose > 1)
         std::cout << "  Will not use point " << i << " (r " << points[i]->first << ")" << std::endl;
     }
   }
@@ -2110,7 +2110,7 @@ void HybridNew::updateGridDataFC(RooWorkspace *w,
       pointToUpdate.push_back(it);
     }
   }
-  if (verbose > 0)
+  if (g_verbose > 0)
     std::cout << "A total of " << rToUpdate.size() << " points will be updated." << std::endl;
   Setup setup;
   std::unique_ptr<RooStats::HybridCalculator> hc = create(w, mc_s, mc_b, data, rToUpdate.back(), setup);
@@ -2119,7 +2119,7 @@ void HybridNew::updateGridDataFC(RooWorkspace *w,
   for (int i = 0, n = rToUpdate.size(); i < n; ++i) {
     pointToUpdate[i]->second->SetTestStatisticData(qVals[i] - EPS);
   }
-  if (verbose > 0)
+  if (g_verbose > 0)
     std::cout << "All points have been updated." << std::endl;
 }
 
@@ -2146,14 +2146,14 @@ std::pair<double, double> HybridNew::updateGridPoint(RooWorkspace *w,
     double testStat = setup.qvar->Evaluate(data, nullPOI);
     point->second->SetTestStatisticData(testStat + (isProfile ? EPS : EPS));
   }
-  if (verbose > 1) {
+  if (g_verbose > 1) {
     std::cout << "At " << r->GetName() << " = " << point->first << ":\n"
               << "\tCLs      = " << point->second->CLs() << " +/- " << point->second->CLsError() << "\n"
               << "\tCLb      = " << point->second->CLb() << " +/- " << point->second->CLbError() << "\n"
               << "\tCLsplusb = " << point->second->CLsplusb() << " +/- " << point->second->CLsplusbError() << "\n"
               << std::endl;
   }
-  if (verbose) {
+  if (g_verbose) {
     Logger::instance().log(
         std::string(
             Form("HybridNew.cc: %d -- At %s = %g:\n, \tCLs = %g +/- %g\n\tCLb = %g +/- %g\n\tCLsplusb = %g +/- %g",
@@ -2238,7 +2238,7 @@ std::vector<std::pair<double, double> > HybridNew::findIntervalsFromSplines(TGra
       for (int tpi = previousCross; tpi <= pti + 1; tpi++) {
         reverse->SetPoint(count, limitPlot_->GetY()[tpi], limitPlot_->GetX()[tpi]);
         reverse->SetPointError(count, limitPlot_->GetErrorY(tpi), 0);
-        if (verbose) {
+        if (g_verbose) {
           std::cout << " Adding local point to calculate interval boundaries, " << count
                     << ", cl=" << limitPlot_->GetY()[tpi] << ", poi=" << limitPlot_->GetX()[tpi] << std::endl;
           Logger::instance().log(

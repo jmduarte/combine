@@ -44,10 +44,8 @@ double combine(std::string const &datacard,
             int argc,
             char **argv,
             std::string const &whichMethod,
-            int verbosity,
             int runToys,
             float expectSignal) {
-  verbose = verbosity;
 
   using namespace std;
   using namespace boost;
@@ -151,13 +149,13 @@ double combine(std::string const &datacard,
 
   if (!whichHintMethod.empty()) {
     map<string, LimitAlgo *>::const_iterator it_hint = methods.find(whichHintMethod);
-    hintAlgo = it_hint->second;
-    hintAlgo->applyDefaultOptions();
+    g_hintAlgo = it_hint->second;
+    g_hintAlgo->applyDefaultOptions();
     cout << ">>> method used to hint where the upper limit is " << whichHintMethod << endl;
   }
 
   if (seed == -1) {
-    if (verbose > 0)
+    if (g_verbose > 0)
       std::cout << ">>> Using OpenSSL to get a really random seed " << std::endl;
     FILE *rpipe = popen("openssl rand 8", "r");
     std::cout << ">>> Used OpenSSL to get a really random seed " << seed << std::endl;
@@ -183,7 +181,7 @@ double combine(std::string const &datacard,
       } else {
         std::string name = rmp->substr(0, idx);
         std::string svalue = rmp->substr(idx + 1);
-        if (verbose > 0)
+        if (g_verbose > 0)
           std::cout << "Setting keyword " << name << " to " << svalue << std::endl;
         modelParamNameVector_.push_back(name);
         modelParamValVector_.push_back(svalue);
@@ -194,7 +192,7 @@ double combine(std::string const &datacard,
 
   TString fileName = "higgsCombine" + name + "." + whichMethod + "." + massName + toyName + "root";
   TFile *test = new TFile(fileName, "RECREATE");
-  outputFile = test;
+  g_outputFile = test;
   TTree *t = new TTree("limit", "limit");
   int syst, iToy, iSeed, iChannel;
   ValueWithError<double> limit;
@@ -204,17 +202,15 @@ double combine(std::string const &datacard,
   t->Branch("iToy", &iToy, "iToy/I");
   t->Branch("iSeed", &iSeed, "iSeed/I");
   t->Branch("iChannel", &iChannel, "iChannel/I");
-  t->Branch("t_cpu", &t_cpu_, "t_cpu/F");
-  t->Branch("t_real", &t_real_, "t_real/F");
-  t->Branch("quantileExpected", &g_quantileExpected_, "quantileExpected/F");
+  t->Branch("quantileExpected", &g_quantileExpected, "quantileExpected/F");
   for (unsigned int mpi = 0; mpi < modelParamNameVector_.size(); ++mpi) {
     std::string name = modelParamNameVector_[mpi];
     t->Branch(Form("%s", name.c_str()), &modelParamValVector_[mpi]);
   }
 
-  writeToysHere = test->mkdir("toys", "toys");
+  g_writeToysHere = test->mkdir("toys", "toys");
   if (toysFile != "")
-    readToysFromHere = TFile::Open(toysFile.c_str());
+    g_readToysFromHere = TFile::Open(toysFile.c_str());
 
   syst = g_withSystematics;
   iSeed = seed;
@@ -251,13 +247,13 @@ double combine(std::string const &datacard,
     std::string::size_type idx = rtdp->find('=');
     if (idx == std::string::npos) {
       runtimedef::set(*rtdp, 1);
-      if (verbose > 0)
+      if (g_verbose > 0)
         std::cout << "Turning on runtime-define " << *rtdp << std::endl;
     } else {
       std::string name = rtdp->substr(0, idx);
       std::string svalue = rtdp->substr(idx + 1);
       int ivalue = atoi(svalue.c_str());
-      if (verbose > 0)
+      if (g_verbose > 0)
         std::cout << "Setting runtime-define " << name << " to " << ivalue << std::endl;
       runtimedef::set(name, ivalue);
     }
@@ -265,7 +261,7 @@ double combine(std::string const &datacard,
 
   try {
     combiner.run(datacard, dataset, limit.value, limit.error, iToy, t, runToys);
-    if (verbose > 0)
+    if (g_verbose > 0)
       Logger::instance().printLog();
   } catch (std::exception &ex) {
     cerr << "Error when running the combination:\n\t" << ex.what() << std::endl;
@@ -301,11 +297,12 @@ double _combine(std::string const &datacard,
   for (size_t i = 0; i < argsVector.size(); ++i)
     args.push_back(const_cast<char *>(argsVector[i].c_str()));
 
+  g_verbose = verbose;
   g_mass = mass;
   g_withSystematics = withSystematics;
   g_doSignificance = significance;
 
-  return combine(datacard, args.size(), &args[0], method, verbose, toys, expectSignal);
+  return combine(datacard, args.size(), &args[0], method, toys, expectSignal);
 }
 
 PYBIND11_MODULE(_combine, m) {

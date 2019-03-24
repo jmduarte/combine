@@ -1047,8 +1047,8 @@ double CMSHistFunc::integrateTemplate(FastTemplate const& t) const {
   return total.sum();
 }
 
-void CMSHistFunc::printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const {
-  RooAbsReal::printMultiline(os, contents, verbose, indent);
+void CMSHistFunc::printMultiline(std::ostream& os, Int_t contents, Bool_t g_verbose, TString indent) const {
+  RooAbsReal::printMultiline(os, contents, g_verbose, indent);
   std::cout << ">> Current cache:\n";
   cache().Dump();
   std::cout << ">> Errors:\n";

@@ -483,8 +483,8 @@ Double_t CMSHistErrorPropagator::evaluate() const {
   return cache().GetAt(x_);
 }
 
-void CMSHistErrorPropagator::printMultiline(std::ostream& os, Int_t contents, Bool_t verbose, TString indent) const {
-  RooAbsReal::printMultiline(os, contents, verbose, indent);
+void CMSHistErrorPropagator::printMultiline(std::ostream& os, Int_t contents, Bool_t g_verbose, TString indent) const {
+  RooAbsReal::printMultiline(os, contents, g_verbose, indent);
   updateCache();
   if (bintypes_.size()) {
     std::cout << ">> Bin types are:\n";

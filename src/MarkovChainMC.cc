@@ -164,9 +164,9 @@ bool MarkovChainMC::run(RooWorkspace *w,
     proposalType_ = UniformP;
   }
 
-  RooFitGlobalKillSentry silence(verbose > 0 ? RooFit::INFO : RooFit::WARNING);
+  RooFitGlobalKillSentry silence(g_verbose > 0 ? RooFit::INFO : RooFit::WARNING);
 
-  CloseCoutSentry coutSentry(verbose <=
+  CloseCoutSentry coutSentry(g_verbose <=
                              0);  // close standard output and error, so that we don't flood them with minuit messages
 
   // Get degrees of freedom
@@ -185,11 +185,11 @@ bool MarkovChainMC::run(RooWorkspace *w,
     for (unsigned int i = 0; i < tries_; ++i) {
       if (int nacc = runOnce(w, mc_s, mc_b, data, limit, limitErr, thehint)) {
         suma += nacc;
-        if (verbose > 1)
+        if (g_verbose > 1)
           std::cout << "Limit from this run: " << limit << std::endl;
         limits.push_back(limit);
         if (updateHint_ && tries_ > 1 && limit > savhint) {
-          if (verbose > 0)
+          if (g_verbose > 0)
             std::cout << "Updating hint from " << savhint << " to " << limit << std::endl;
           savhint = limit;
           thehint = &savhint;
@@ -213,17 +213,17 @@ bool MarkovChainMC::run(RooWorkspace *w,
   }
   coutSentry.clear();
 
-  if (verbose >= 0) {
+  if (g_verbose >= 0) {
     std::cout << "\n -- MarkovChainMC -- "
               << "\n";
     RooRealVar *r = dynamic_cast<RooRealVar *>(mc_s->GetParametersOfInterest()->first());
     if (num > 1) {
-      std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << cl * 100 << "% CL ("
+      std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << g_confidenceLevel * 100 << "% CL ("
                 << num << " tries)" << std::endl;
-      if (verbose > 0 && !readChains_)
+      if (g_verbose > 0 && !readChains_)
         std::cout << "Average chain acceptance: " << suma << std::endl;
     } else {
-      std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << cl * 100 << "% CL" << std::endl;
+      std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL" << std::endl;
     }
   }
   return true;
@@ -249,7 +249,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
   w->loadSnapshot("clean");
   std::unique_ptr<RooFitResult> fit = nullptr;
   if (proposalType_ == FitP || (cropNSigmas_ > 0)) {
-    CloseCoutSentry coutSentry(verbose <=
+    CloseCoutSentry coutSentry(g_verbose <=
                                1);  // close standard output and error, so that we don't flood them with minuit messages
     fit.reset(mc_s->GetPdf()->fitTo(data, RooFit::Save(), RooFit::Minos(runMinos_)));
     coutSentry.clear();
@@ -257,7 +257,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
       std::cerr << "Fit failed." << std::endl;
       return false;
     }
-    if (verbose > 1)
+    if (g_verbose > 1)
       fit->Print("V");
     if (!noReset_)
       w->loadSnapshot("clean");
@@ -278,7 +278,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
         min = (std::max(v->getMin(), fv->getVal() - cropNSigmas_ * fv->getError()));
         max = (std::min(v->getMax(), fv->getVal() + cropNSigmas_ * fv->getError()));
       }
-      if (verbose > 1) {
+      if (g_verbose > 1) {
         std::cout << "  " << fv->GetName() << "[" << v->getMin() << ", " << v->getMax() << "] -> [" << min << ", "
                   << max << "]" << std::endl;
       }
@@ -292,20 +292,20 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
   ProposalHelper ph;
   switch (proposalType_) {
     case UniformP:
-      if (verbose)
+      if (g_verbose)
         std::cout << "Using uniform proposal" << std::endl;
       ownedPdfProp.reset(new UniformProposal());
       pdfProp = ownedPdfProp.get();
       break;
     case FitP:
-      if (verbose)
+      if (g_verbose)
         std::cout << "Using fit proposal" << std::endl;
       ph.SetVariables(fit->floatParsFinal());
       ph.SetCovMatrix(fit->covarianceMatrix());
       pdfProp = ph.GetProposalFunction();
       break;
     case MultiGaussianP:
-      if (verbose)
+      if (g_verbose)
         std::cout << "Using multi-gaussian proposal" << std::endl;
       ph.SetVariables(*mc_s->GetNuisanceParameters());
       ph.SetWidthRangeDivisor(proposalHelperWidthRangeDivisor_);
@@ -319,7 +319,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
         for (unsigned int i = 0, n = discreteModelPoints_.size(); i < n; ++i) {
           utils::createSnapshotFromString(
               discreteModelPoints_[i], poi, discreteModelPointSets_[i], "--discreteModelPoints");
-          if (verbose > 1) {
+          if (g_verbose > 1) {
             std::cout << "\nDiscrete model point " << (i + 1) << std::endl;
             discreteModelPointSets_[i].Print("V");
           }
@@ -330,7 +330,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
           if (discreteModelPointSets_[0].find(a->GetName()))
             discretePOI.add(*a);
         }
-        if (verbose > 1) {
+        if (g_verbose > 1) {
           std::cout << "Discrete POI: ";
           discretePOI.Print("");
         }
@@ -351,7 +351,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
 
   MCMCCalculator mc(data, *mc_s);
   mc.SetNumIters(iterations_);
-  mc.SetConfidenceLevel(cl);
+  mc.SetConfidenceLevel(g_confidenceLevel);
   mc.SetNumBurnInSteps(burnInSteps_);
   mc.SetProposalFunction(debugProposal_ > 0 ? *pdfDebugProp : *pdfProp);
   mc.SetLeftSideTailFraction(0);
@@ -405,7 +405,7 @@ int MarkovChainMC::runOnce(RooWorkspace *w,
     if (mergeChains_)
       chains_.Add(chain);
     if (saveChain_)
-      writeToysHere->WriteTObject(
+      g_writeToysHere->WriteTObject(
           chain,
           TString::Format("MarkovChain_mh%g_%u", mass_, RooRandom::integer(std::numeric_limits<UInt_t>::max() - 1)));
     return chain->Size();
@@ -487,7 +487,7 @@ RooStats::MarkovChain *MarkovChainMC::mergeChains(const RooArgSet &poi, const st
   }
   if (chains_.GetSize() == 0)
     throw std::runtime_error("No chains to merge");
-  if (verbose > 1)
+  if (g_verbose > 1)
     std::cout << "Will merge " << chains_.GetSize() << " chains." << std::endl;
   RooArgSet pars(poi);
   RooStats::MarkovChain *merged = new RooStats::MarkovChain("Merged", "", pars);
@@ -499,7 +499,7 @@ RooStats::MarkovChain *MarkovChainMC::mergeChains(const RooArgSet &poi, const st
       continue;
     int burninSteps =
         adaptiveBurnIn_ ? guessBurnInSteps(*other) : max<int>(burnInSteps_, other->Size() * burnInFraction_);
-    if (verbose > 1)
+    if (g_verbose > 1)
       std::cout << "Adding chain of " << other->Size() << " entries, skipping the first " << burninSteps
                 << "; individual limit " << limits[index] << std::endl;
     for (int i = burninSteps, n = other->Size(); i < n; ++i) {
@@ -507,7 +507,7 @@ RooStats::MarkovChain *MarkovChainMC::mergeChains(const RooArgSet &poi, const st
       double nllval = other->NLL();
       double weight = other->Weight();
       merged->Add(point, nllval, weight);
-      if (verbose > 2 && (i % 500 == 0))
+      if (g_verbose > 2 && (i % 500 == 0))
         std::cout << "   added " << i << "/" << other->Size() << " entries." << std::endl;
     }
   }
@@ -518,9 +518,9 @@ void MarkovChainMC::readChains(const RooArgSet &poi, std::vector<double> &limits
   double mylim, myerr;
   chains_.Clear();
   chains_.SetOwner(false);
-  if (!readToysFromHere)
+  if (!g_readToysFromHere)
     throw std::logic_error("Cannot use readChains: option toysFile not specified, or input file empty");
-  TDirectory *toyDir = readToysFromHere->GetDirectory("toys");
+  TDirectory *toyDir = g_readToysFromHere->GetDirectory("toys");
   if (!toyDir)
     throw std::logic_error("Cannot use readChains: empty toy dir in input file empty");
   TString prefix = TString::Format("MarkovChain_mh%g_", mass_);
@@ -533,12 +533,12 @@ void MarkovChainMC::readChains(const RooArgSet &poi, std::vector<double> &limits
     if (toy == 0)
       continue;
     limitFromChain(mylim, myerr, poi, *toy);
-    if (verbose > 1)
+    if (g_verbose > 1)
       std::cout << " limit " << mylim << " +/- " << myerr << std::endl;
     // vvvvv ---- begin convergence test, still being developed, not recommended yet.
     if (runtimedef::get("MCMC_STATIONARITY")) {
       if (!stationarityTest(*toy, poi, 30)) {
-        if (verbose > 1)
+        if (g_verbose > 1)
           std::cout << " ---> rejecting chain!" << std::endl;
         continue;
       }
@@ -547,7 +547,7 @@ void MarkovChainMC::readChains(const RooArgSet &poi, std::vector<double> &limits
     chains_.Add(toy);
     limits.push_back(mylim);
   }
-  if (verbose) {
+  if (g_verbose) {
     std::cout << "Read " << chains_.GetSize() << " Markov Chains from input file." << std::endl;
   }
 }
@@ -562,11 +562,11 @@ void MarkovChainMC::limitFromChain(
   }
 #if 1  // This is much faster and gives the same result
   QuantileCalculator qc(*chain.GetAsConstDataSet(), poi.first()->GetName(), burnInSteps);
-  limit = qc.quantileAndError(cl, QuantileCalculator::Simple).first;
+  limit = qc.quantileAndError(g_confidenceLevel, QuantileCalculator::Simple).first;
 #else
   MCMCInterval interval("", poi, chain);
   RooArgList axes(poi);
-  interval.SetConfidenceLevel(cl);
+  interval.SetConfidenceLevel(g_confidenceLevel);
   interval.SetIntervalType(MCMCInterval::kTailFraction);
   interval.SetLeftSideTailFraction(0);
   interval.SetNumBurnInSteps(burnInSteps);
