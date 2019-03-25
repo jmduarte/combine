@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
-from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+from combine.PhysicsModel import *
 
 ### This base class implements signal yields by production and decay mode
 ### Specific models can be obtained redefining getHiggsSignalYieldScale

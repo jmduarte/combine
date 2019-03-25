@@ -289,7 +289,7 @@ bool Combine::mklimit(RooWorkspace *w,
 }
 
 void Combine::run(
-    TString hlfFile, const std::string &dataset, double &limit, double &limitErr, int &iToy, TTree *tree, int nToys) {
+    TString workspaceFile, const std::string &dataset, double &limit, double &limitErr, int &iToy, TTree *tree, int nToys) {
   ToCleanUp garbageCollect;  // use this to close and delete temporary files
 
   TString tmpDir = "", tmpFile = "", pwd(gSystem->pwd());
@@ -299,7 +299,7 @@ void Combine::run(
     mkdtemp(const_cast<char *>(tmpDir.Data()));
     gSystem->cd(tmpDir.Data());
     garbageCollect.path = tmpDir.Data();  // request that we delete this dir when done
-  } else if (!hlfFile.EndsWith(".hlf") && !hlfFile.EndsWith(".root")) {
+  } else if (!workspaceFile.EndsWith(".root")) {
     char buff[99];
     snprintf(buff, 98, "roostats-XXXXXX");
     int fd = mkstemp(buff);
@@ -308,15 +308,11 @@ void Combine::run(
     unlink(tmpFile);  // this is to be deleted, since we'll use tmpFile+".root"
   }
 
-  bool isTextDatacard = false, isBinary = false;
-  TString fileToLoad = (hlfFile[0] == '/' ? hlfFile : pwd + "/" + hlfFile);
+  bool isTextDatacard = false;
+  TString fileToLoad = (workspaceFile[0] == '/' ? workspaceFile : pwd + "/" + workspaceFile);
   if (!boost::filesystem::exists(fileToLoad.Data()))
     throw std::invalid_argument(("File " + fileToLoad + " does not exist").Data());
-  if (hlfFile.EndsWith(".hlf")) {
-    // nothing to do
-  } else if (hlfFile.EndsWith(".root")) {
-    isBinary = true;
-  } else {
+  if (!workspaceFile.EndsWith(".root")) {
     TString txtFile = fileToLoad.Data();
     TString options = TString::Format(" -m %f -D %s", g_mass, dataset.c_str());
     if (!g_withSystematics)
@@ -333,13 +329,8 @@ void Combine::run(
     for (auto mp : modelPoints_) {
       options += TString::Format(" --keyword-value %s", mp.c_str());
     }
-    //-- Text mode: old default
-    //int status = gSystem->Exec("text2workspace.py "+options+" '"+txtFile+"' -o "+tmpFile+".hlf");
-    //isTextDatacard = true; fileToLoad = tmpFile+".hlf";
-    //-- Binary mode: new default
     int status = gSystem->Exec("text2workspace.py " + options + " '" + txtFile + "' -b -o " + tmpFile + ".root " +
                                textToWorkspaceString_);
-    isBinary = true;
     fileToLoad = tmpFile + ".root";
     if (status != 0 || !boost::filesystem::exists(fileToLoad.Data())) {
       throw std::invalid_argument(
@@ -367,204 +358,151 @@ void Combine::run(
   RooStats::ModelConfig *mc = 0, *mc_bonly = 0;
   std::unique_ptr<RooStats::HLFactory> hlf = nullptr;
 
-  if (isBinary) {
-    TFile *fIn = TFile::Open(fileToLoad);
-    garbageCollect.tfile = fIn;  // request that we close this file when done
+  TFile *fIn = TFile::Open(fileToLoad);
+  garbageCollect.tfile = fIn;  // request that we close this file when done
 
-    w = dynamic_cast<RooWorkspace *>(fIn->Get(workspaceName_.c_str()));
-    if (w == 0) {
-      std::cerr << "Could not find workspace '" << workspaceName_ << "' in file " << fileToLoad << std::endl;
-      fIn->ls();
-      throw std::invalid_argument("Missing Workspace");
-    }
+  w = dynamic_cast<RooWorkspace *>(fIn->Get(workspaceName_.c_str()));
+  if (w == 0) {
+    std::cerr << "Could not find workspace '" << workspaceName_ << "' in file " << fileToLoad << std::endl;
+    fIn->ls();
+    throw std::invalid_argument("Missing Workspace");
+  }
 
-    if (g_verbose > 3) {
-      std::cout << "Input workspace '" << workspaceName_ << "': \n";
-      w->Print("V");
-    }
-    RooRealVar *MH = w->var("MH");
-    if (MH != 0) {
-      if (g_verbose > 2)
-        std::cerr << "Setting variable 'MH' in workspace to the higgs mass " << g_mass << std::endl;
-      MH->setVal(g_mass);
-    }
-    mc = dynamic_cast<RooStats::ModelConfig *>(w->genobj(modelConfigName_.c_str()));
-    mc_bonly = dynamic_cast<RooStats::ModelConfig *>(w->genobj(modelConfigNameB_.c_str()));
-
-    if (mc == 0) {
-      std::cerr << "Could not find ModelConfig '" << modelConfigName_ << "' in workspace '" << workspaceName_
-                << "' in file " << fileToLoad << std::endl;
-      throw std::invalid_argument("Missing ModelConfig");
-    } else if (g_verbose > 3) {
-      std::cout << "Workspace has a ModelConfig for signal called '" << modelConfigName_ << "', with contents:\n";
-      mc->Print("V");
-    }
-    if (g_verbose > 3) {
-      std::cout << "Input ModelConfig '" << modelConfigName_ << "': \n";
-      mc->Print("V");
-    }
-    const RooArgSet *POI = mc->GetParametersOfInterest();
-    if (POI == 0 || POI->getSize() == 0)
-      throw std::invalid_argument("ModelConfig '" + modelConfigName_ + "' does not define parameters of interest.");
-    if (POI->getSize() > 1)
-      std::cerr << "ModelConfig '" << modelConfigName_
-                << "' defines more than one parameter of interest. This is not supported in some statistical methods."
-                << std::endl;
-    if (mc->GetObservables() == 0)
-      throw std::invalid_argument("ModelConfig '" + modelConfigName_ + "' does not define observables.");
-    if (mc->GetPdf() == 0)
-      throw std::invalid_argument("ModelConfig '" + modelConfigName_ + "' does not define a pdf.");
-    if (rebuildSimPdf_ && typeid(*mc->GetPdf()) == typeid(RooSimultaneous)) {
-      RooSimultaneous *newpdf =
-          utils::rebuildSimPdf(*mc->GetObservables(), dynamic_cast<RooSimultaneous *>(mc->GetPdf()));
-      w->import(*newpdf);
-      mc->SetPdf(*newpdf);
-    }
-    if (optSimPdf_ && typeid(*mc->GetPdf()) == typeid(RooSimultaneous)) {
-      RooSimultaneousOpt *optpdf = new RooSimultaneousOpt(static_cast<RooSimultaneous &>(*mc->GetPdf()),
-                                                          TString(mc->GetPdf()->GetName()) + "_opt");
-      w->import(*optpdf);
-      mc->SetPdf(*optpdf);
-    }
-    if (mc_bonly == 0 && !noMCbonly_) {
-      std::cerr << "Missing background ModelConfig '" << modelConfigNameB_ << "' in workspace '" << workspaceName_
-                << "' in file " << fileToLoad << std::endl;
-      RooCustomizer make_model_s(*mc->GetPdf(), "_model_bonly_");
-
-      if (g_defineBackgroundOnlyModelParameterExpression != "") {
-        std::cerr << "Will make one from the signal ModelConfig " << modelConfigName_ << " setting " << std::endl;
-        vector<string> SetParameterExpressionList;
-        boost::split(SetParameterExpressionList, g_defineBackgroundOnlyModelParameterExpression, boost::is_any_of(","));
-        for (UInt_t p = 0; p < SetParameterExpressionList.size(); ++p) {
-          vector<string> SetParameterExpression;
-          boost::split(SetParameterExpression, SetParameterExpressionList[p], boost::is_any_of("="));
-          if (SetParameterExpression.size() != 2) {
-            std::cout << "Error parsing background model parameter expression : " << SetParameterExpressionList[p]
-                      << endl;
-          } else {
-            std::string expr = SetParameterExpression[0];
-            double expval = atof(SetParameterExpression[1].c_str());
-            w->factory(Form("_%s_background_only_[%g]", expr.c_str(), expval));
-
-            make_model_s.replaceArg(*POI->selectByName(expr.c_str())->first(),
-                                    *w->var(Form("_%s_background_only_", expr.c_str())));
-            std::cerr << "   " << expr << " to " << expval << std::endl;
-          }
-        }
-      } else {
-        std::cerr << "Will make one from the signal ModelConfig '" << modelConfigName_ << "' setting signal strenth '"
-                  << POI->first()->GetName() << "' to zero" << std::endl;
-        w->factory("_zero_[0]");
-        make_model_s.replaceArg(*POI->first(), *w->var("_zero_"));
-      }
-
-      RooAbsPdf *model_b = dynamic_cast<RooAbsPdf *>(make_model_s.build());
-      model_b->SetName("_model_bonly_");
-      w->import(*model_b);
-      mc_bonly = new RooStats::ModelConfig(*mc);
-      mc_bonly->SetPdf(*model_b);
-    }
-
-    // Specific settings should be executed before user specified ranges!
-    RooRealVar *r = (RooRealVar *)POI->first();
-    if (!isnan(rMin_))
-      r->setMin(rMin_);
-    if (!isnan(rMax_))
-      r->setMax(rMax_);
-    if (!isnan(rMin_) || !isnan(rMax_)) {
-      r->setVal(0.5 * (r->getMin() + r->getMax()));
-    }
-
-    if (snapshotName_ != "") {
-      bool loaded = w->loadSnapshot(snapshotName_.c_str());
-      assert(loaded);
-      if (MH) {
-        //make sure mass value used is really the one from the loaded snapshot unless explicitly requested to override it
-        if (overrideSnapshotMass_) {
-          MH->setVal(g_mass);
-        } else {
-          g_mass = MH->getVal();
-        }
-      }
-    }
-
-    if (g_setPhysicsModelParameterRangeExpression != "") {
-      utils::setModelParameterRanges(g_setPhysicsModelParameterRangeExpression, w->allVars());
-    }
-    //*********************************************
-    //set physics model parameters    after loading the snapshot
-    //*********************************************
-    if (g_setPhysicsModelParameterExpression != "") {
-      RooArgSet allParams(w->allVars());
-      //if (w->genobj("discreteParams")) allParams.add(*(RooArgSet*)w->genobj("discreteParams"));
-      allParams.add(w->allCats());
-      utils::setModelParameters(g_setPhysicsModelParameterExpression, allParams);
-      // also allow for "discrete" parameters to be set
-      // Possible that MH value was re-set above, so make sure mass is set to the correct value and not over-ridden later.
-      if (w->var("MH"))
-        g_mass = w->var("MH")->getVal();
-    }
-
-  } else {
-    std::cerr << "HLF not validated" << std::endl;
-    assert(0);
-
-    hlf.reset(new RooStats::HLFactory("factory", fileToLoad));
-    w = hlf->GetWs();
-    if (w == 0) {
-      std::cerr << "Could not read HLF from file " << (hlfFile[0] == '/' ? hlfFile : pwd + "/" + hlfFile) << std::endl;
-      return;
-    }
-    RooRealVar *MH = w->var("MH");
-    if (MH == 0) {
-      std::cerr << "Could not find MH var in workspace '" << workspaceName_ << "' in file " << fileToLoad << std::endl;
-      throw std::invalid_argument("Missing MH");
-    }
+  if (g_verbose > 3) {
+    std::cout << "Input workspace '" << workspaceName_ << "': \n";
+    w->Print("V");
+  }
+  RooRealVar *MH = w->var("MH");
+  if (MH != 0) {
+    if (g_verbose > 2)
+      std::cerr << "Setting variable 'MH' in workspace to the higgs mass " << g_mass << std::endl;
     MH->setVal(g_mass);
-    if (w->set("observables") == 0)
-      throw std::invalid_argument("The model must define a RooArgSet 'observables'");
-    if (w->set("POI") == 0)
-      throw std::invalid_argument("The model must define a RooArgSet 'POI' for the parameters of interest");
-    if (w->pdf("model_b") == 0)
-      throw std::invalid_argument("The model must define a RooAbsPdf 'model_b'");
-    if (w->pdf("model_s") == 0)
-      throw std::invalid_argument("The model must define a RooAbsPdf 'model_s'");
+  }
+  mc = dynamic_cast<RooStats::ModelConfig *>(w->genobj(modelConfigName_.c_str()));
+  mc_bonly = dynamic_cast<RooStats::ModelConfig *>(w->genobj(modelConfigNameB_.c_str()));
 
-    // create ModelConfig
-    mc = new RooStats::ModelConfig(modelConfigName_.c_str(), "signal", w);
-    mc->SetPdf(*w->pdf("model_s"));
-    mc->SetObservables(*w->set("observables"));
-    mc->SetParametersOfInterest(*w->set("POI"));
-    if (w->set("nuisances"))
-      mc->SetNuisanceParameters(*w->set("nuisances"));
-    if (w->set("globalObservables"))
-      mc->SetGlobalObservables(*w->set("globalObservables"));
-    if (w->pdf("prior"))
-      mc->SetNuisanceParameters(*w->pdf("prior"));
-    w->import(*mc, modelConfigName_.c_str());
+  if (mc == 0) {
+    std::cerr << "Could not find ModelConfig '" << modelConfigName_ << "' in workspace '" << workspaceName_
+              << "' in file " << fileToLoad << std::endl;
+    throw std::invalid_argument("Missing ModelConfig");
+  } else if (g_verbose > 3) {
+    std::cout << "Workspace has a ModelConfig for signal called '" << modelConfigName_ << "', with contents:\n";
+    mc->Print("V");
+  }
+  if (g_verbose > 3) {
+    std::cout << "Input ModelConfig '" << modelConfigName_ << "': \n";
+    mc->Print("V");
+  }
+  const RooArgSet *POI = mc->GetParametersOfInterest();
+  if (POI == 0 || POI->getSize() == 0)
+    throw std::invalid_argument("ModelConfig '" + modelConfigName_ + "' does not define parameters of interest.");
+  if (POI->getSize() > 1)
+    std::cerr << "ModelConfig '" << modelConfigName_
+              << "' defines more than one parameter of interest. This is not supported in some statistical methods."
+              << std::endl;
+  if (mc->GetObservables() == 0)
+    throw std::invalid_argument("ModelConfig '" + modelConfigName_ + "' does not define observables.");
+  if (mc->GetPdf() == 0)
+    throw std::invalid_argument("ModelConfig '" + modelConfigName_ + "' does not define a pdf.");
+  if (rebuildSimPdf_ && typeid(*mc->GetPdf()) == typeid(RooSimultaneous)) {
+    RooSimultaneous *newpdf =
+        utils::rebuildSimPdf(*mc->GetObservables(), dynamic_cast<RooSimultaneous *>(mc->GetPdf()));
+    w->import(*newpdf);
+    mc->SetPdf(*newpdf);
+  }
+  if (optSimPdf_ && typeid(*mc->GetPdf()) == typeid(RooSimultaneous)) {
+    RooSimultaneousOpt *optpdf = new RooSimultaneousOpt(static_cast<RooSimultaneous &>(*mc->GetPdf()),
+                                                        TString(mc->GetPdf()->GetName()) + "_opt");
+    w->import(*optpdf);
+    mc->SetPdf(*optpdf);
+  }
+  if (mc_bonly == 0 && !noMCbonly_) {
+    std::cerr << "Missing background ModelConfig '" << modelConfigNameB_ << "' in workspace '" << workspaceName_
+              << "' in file " << fileToLoad << std::endl;
+    RooCustomizer make_model_s(*mc->GetPdf(), "_model_bonly_");
 
-    mc_bonly = new RooStats::ModelConfig(modelConfigNameB_.c_str(), "background", w);
-    mc_bonly->SetPdf(*w->pdf("model_b"));
-    mc_bonly->SetObservables(*w->set("observables"));
-    mc_bonly->SetParametersOfInterest(*w->set("POI"));
-    if (w->set("nuisances"))
-      mc_bonly->SetNuisanceParameters(*w->set("nuisances"));
-    if (w->set("globalObservables"))
-      mc_bonly->SetGlobalObservables(*w->set("globalObservables"));
-    if (w->pdf("prior"))
-      mc_bonly->SetNuisanceParameters(*w->pdf("prior"));
-    w->import(*mc_bonly, modelConfigNameB_.c_str());
-    if (g_setPhysicsModelParameterExpression != "") {
-      utils::setModelParameters(g_setPhysicsModelParameterExpression, w->allVars());
+    if (g_defineBackgroundOnlyModelParameterExpression != "") {
+      std::cerr << "Will make one from the signal ModelConfig " << modelConfigName_ << " setting " << std::endl;
+      vector<string> SetParameterExpressionList;
+      boost::split(SetParameterExpressionList, g_defineBackgroundOnlyModelParameterExpression, boost::is_any_of(","));
+      for (UInt_t p = 0; p < SetParameterExpressionList.size(); ++p) {
+        vector<string> SetParameterExpression;
+        boost::split(SetParameterExpression, SetParameterExpressionList[p], boost::is_any_of("="));
+        if (SetParameterExpression.size() != 2) {
+          std::cout << "Error parsing background model parameter expression : " << SetParameterExpressionList[p]
+                    << endl;
+        } else {
+          std::string expr = SetParameterExpression[0];
+          double expval = atof(SetParameterExpression[1].c_str());
+          w->factory(Form("_%s_background_only_[%g]", expr.c_str(), expval));
+
+          make_model_s.replaceArg(*POI->selectByName(expr.c_str())->first(),
+                                  *w->var(Form("_%s_background_only_", expr.c_str())));
+          std::cerr << "   " << expr << " to " << expval << std::endl;
+        }
+      }
+    } else {
+      std::cerr << "Will make one from the signal ModelConfig '" << modelConfigName_ << "' setting signal strenth '"
+                << POI->first()->GetName() << "' to zero" << std::endl;
+      w->factory("_zero_[0]");
+      make_model_s.replaceArg(*POI->first(), *w->var("_zero_"));
+    }
+
+    RooAbsPdf *model_b = dynamic_cast<RooAbsPdf *>(make_model_s.build());
+    model_b->SetName("_model_bonly_");
+    w->import(*model_b);
+    mc_bonly = new RooStats::ModelConfig(*mc);
+    mc_bonly->SetPdf(*model_b);
+  }
+
+  // Specific settings should be executed before user specified ranges!
+  RooRealVar *r = (RooRealVar *)POI->first();
+  if (!isnan(rMin_))
+    r->setMin(rMin_);
+  if (!isnan(rMax_))
+    r->setMax(rMax_);
+  if (!isnan(rMin_) || !isnan(rMax_)) {
+    r->setVal(0.5 * (r->getMin() + r->getMax()));
+  }
+
+  if (snapshotName_ != "") {
+    bool loaded = w->loadSnapshot(snapshotName_.c_str());
+    assert(loaded);
+    if (MH) {
+      //make sure mass value used is really the one from the loaded snapshot unless explicitly requested to override it
+      if (overrideSnapshotMass_) {
+        MH->setVal(g_mass);
+      } else {
+        g_mass = MH->getVal();
+      }
     }
   }
+
+  if (g_setPhysicsModelParameterRangeExpression != "") {
+    utils::setModelParameterRanges(g_setPhysicsModelParameterRangeExpression, w->allVars());
+  }
+  //*********************************************
+  //set physics model parameters    after loading the snapshot
+  //*********************************************
+  if (g_setPhysicsModelParameterExpression != "") {
+    RooArgSet allParams(w->allVars());
+    //if (w->genobj("discreteParams")) allParams.add(*(RooArgSet*)w->genobj("discreteParams"));
+    allParams.add(w->allCats());
+    utils::setModelParameters(g_setPhysicsModelParameterExpression, allParams);
+    // also allow for "discrete" parameters to be set
+    // Possible that MH value was re-set above, so make sure mass is set to the correct value and not over-ridden later.
+    if (w->var("MH"))
+      g_mass = w->var("MH")->getVal();
+  }
+
+
   gSystem->cd(pwd);
 
   if (g_verbose <= 2)
     RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
 
   const RooArgSet *observables = mc->GetObservables();       // not null
-  const RooArgSet *POI = mc->GetParametersOfInterest();      // not null
+  POI = mc->GetParametersOfInterest();      // not null
   const RooArgSet *nuisances = mc->GetNuisanceParameters();  // note: may be null
   if (dynamic_cast<RooRealVar *>(POI->first()) == 0)
     throw std::invalid_argument("First parameter of interest is not a RooRealVar");
@@ -930,7 +868,7 @@ void Combine::run(
   }
 
   bool isExtended = mc->GetPdf()->canBeExtended();
-  RooRealVar *MH = w->var("MH");
+  MH = w->var("MH");
   RooAbsData *dobs = w->data(dataset.c_str());
   // Generate with signal model if r or other physics model parameters are defined
   RooAbsPdf *genPdf = (expectSignal_ > 0 || g_setPhysicsModelParameterExpression != "" || !mc_bonly)
@@ -1170,7 +1108,7 @@ void Combine::run(
         if (POI->find("r")) {
           if (expectSignal_) ((RooRealVar*)POI->find("r"))->setVal(expectSignal_);
         }
-	*/
+        */
         std::cout << "Generate toy " << iToy << "/" << nToys << std::endl;
         if (g_verbose > 2) {
           Logger::instance().log(
