@@ -240,10 +240,6 @@ void Combine::applyOptions(std::string const &method, const boost::program_optio
   if (!vm["prior"].defaulted())
     noDefaultPrior_ = 0;
 
-  if (vm.count("LoadLibrary")) {
-    librariesToLoad_ = vm["LoadLibrary"].as<std::vector<std::string> >();
-  }
-
   if (vm.count("keyword-value")) {
     modelPoints_ = vm["keyword-value"].as<std::vector<std::string> >();
   }
@@ -311,33 +307,6 @@ void Combine::run(
   TString fileToLoad = (workspaceFile[0] == '/' ? workspaceFile : pwd + "/" + workspaceFile);
   if (!boost::filesystem::exists(fileToLoad.Data()))
     throw std::invalid_argument(("File " + fileToLoad + " does not exist").Data());
-  if (!workspaceFile.EndsWith(".root")) {
-    TString txtFile = fileToLoad.Data();
-    TString options = TString::Format(" -m %f -D %s", g_mass, dataset.c_str());
-    if (!g_withSystematics)
-      options += " --stat ";
-    if (compiledExpr_)
-      options += " --compiled ";
-    if (g_verbose > 1)
-      options += TString::Format(" --verbose %d", g_verbose - 1);
-    if (algo->name() == "FitDiagnostics" || algo->name() == "MultiDimFit")
-      options += " --for-fits";
-    for (auto lib2l : librariesToLoad_) {
-      options += TString::Format(" --LoadLibrary %s", lib2l.c_str());
-    }
-    for (auto mp : modelPoints_) {
-      options += TString::Format(" --keyword-value %s", mp.c_str());
-    }
-    int status = gSystem->Exec("text2workspace.py " + options + " '" + txtFile + "' -b -o " + tmpFile + ".root " +
-                               textToWorkspaceString_);
-    fileToLoad = tmpFile + ".root";
-    if (status != 0 || !boost::filesystem::exists(fileToLoad.Data())) {
-      throw std::invalid_argument(
-          "Failed to convert the input datacard from LandS to RooStats format. The lines above probably contain more "
-          "information about the error.");
-    }
-    garbageCollect.file = fileToLoad;
-  }
 
   if (getenv("CMSSW_BASE")) {
     gSystem->AddIncludePath(TString::Format(" -I%s/src ", getenv("CMSSW_BASE")));
