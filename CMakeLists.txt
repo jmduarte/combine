@@ -8,11 +8,18 @@ if(NOT COMBINE_HEADERS_DIR)
     set(COMBINE_HEADERS_DIR ${PROJECT_SOURCE_DIR}/include)
 endif()
 
+if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+endif()
+
+if(NOT CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib)
+endif()
+
 include_directories(${COMBINE_HEADERS_DIR})
 
 include_directories($ENV{ROOTSYS}/include/root)
 
 add_subdirectory(src)
-#add_subdirectory(bin)
 
 unset(COMBINE_HEADERS_DIR CACHE)

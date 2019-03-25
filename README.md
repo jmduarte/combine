@@ -26,9 +26,9 @@ Combine consists of both Python and C++ code, which can be installed together as
    ```
 2) Set the location of the header files at install time:
    ```bash
-   export COMBINE_INCLUDE_PATH=$PWD/include
+   export COMBINE_INCLUDE_DIR=$PWD/include
    ```
-   Please copy the headerfiles somewhere else before and set the `COMBINE_INCLUDE_PATH` accordingly if you plan to delete or move the repository after the installation.
+   Please copy the headerfiles somewhere else before and set the `COMBINE_INCLUDE_DIR` accordingly if you plan to delete or move the repository after the installation.
 3) Installation of the package:
    ```bash
    pip install --user .
@@ -49,6 +49,26 @@ For Arch Linux, these requirements are provided by the official repositories in 
 After installing the combine tool, you can test it by running the [Brazilian plot example](examples/brazilian_plots.py) to reproduce the plot at the top of this readme file. So far, this is the only supported example.
 
 ## For Developers
+
+For development, one does not want to do the full installation because it would take too long to recompile and install everything with setuptools. Instead, it makes more sense to use cmake directly for the C++ code:
+
+```bash
+git clone --recursive git@github.com:guitargeek/combine.git
+cd combine
+
+mkdir build
+cd build
+
+cmake ..
+make -j8
+
+export COMBINE_LIB_DIR=$PWD/lib
+export PYTHONPATH=$PYTHONDIR:$COMBINE_LIB_DIR
+```
+
+When the `COMBINE_LIB_DIR` is set, the Python package is now separated from the C++ library. The C++ code is now not always recompiled if you install the python package.
+
+Note that this time you don't need to set the `COMBINE_INCLUDE_DIR` variable. When you use cmake directly, it will just use the headers from the include directory in the repository.
 
 ### Code formatting
 

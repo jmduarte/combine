@@ -8,9 +8,11 @@ from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
-includepath = os.getenv("COMBINE_INCLUDE_PATH")
+nocpp = False
 
-if includepath is None:
+includepath = os.getenv("COMBINE_INCLUDE_DIR")
+
+if os.getenv("COMBINE_LIB_DIR") is None and includepath is None:
     raise ValueError("Environment variable COMBINE_INCLUDE_PATH not set! Please set it to the permanent location of the combine header files.")
 
 class CMakeExtension(Extension):
@@ -59,6 +61,10 @@ class CMakeBuild(build_ext):
         subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=self.build_temp)
 
+ext_modules = [CMakeExtension("_combine")]
+
+if not os.getenv("COMBINE_LIB_DIR") is None:
+    ext_modules.pop(0)
 
 setup(
     name="combine",
@@ -69,7 +75,7 @@ setup(
     author="The CMS collaboration",
     packages=find_packages(),
     include_package_data=True,
-    ext_modules=[CMakeExtension("ccombine")],
+    ext_modules=ext_modules,
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     install_requires=[],
