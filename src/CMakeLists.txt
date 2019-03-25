@@ -108,8 +108,8 @@ set(SOURCE_FILES
     VectorizedCB.cc
 )
 
-find_package(ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad ROOTVecOps Tree TreePlayer Rint Postscript
-                                      Matrix Physics MathCore Thread MultiProc ROOTDataFrame MathMore RooFit RooFitCore
+find_package(ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad Tree TreePlayer Rint Postscript
+                                      Matrix Physics MathCore Thread MultiProc MathMore RooFit RooFitCore
                                       RooStats Minuit Foam HistFactory)
 include(${ROOT_USE_FILE})
 
