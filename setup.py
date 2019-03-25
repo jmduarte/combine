@@ -8,8 +8,10 @@ from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
-includepath = os.path.expanduser("~/.local/include")
+includepath = os.getenv("COMBINE_INCLUDE_PATH")
 
+if includepath is None:
+    raise ValueError("Environment variable COMBINE_INCLUDE_PATH not set! Please set it to the permanent location of the combine header files.")
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=""):

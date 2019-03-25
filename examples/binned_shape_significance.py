@@ -14,4 +14,6 @@ b = np.random.uniform(0, 10, size=1000)
 
 processes = dict(signal=a, background=b)
 
-print(binned_shape_significance(processes, "signal", 0, 10, 10))
+integrals = dict(signal=10., background=100.)
+
+print(binned_shape_significance(processes, "signal", 0, 10, 10, integrals=integrals))

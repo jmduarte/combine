@@ -14,7 +14,7 @@ import tempfile
 import os
 
 
-def binned_shape_significance(processes, signal_process, low, up, nbins):
+def binned_shape_significance(processes, signal_process, low, up, nbins, integrals=dict()):
     """Calculate the significance of a binned shape analysis without any systematics.
 
     The equivalent combine command would be:
@@ -36,15 +36,24 @@ def binned_shape_significance(processes, signal_process, low, up, nbins):
 
     hists = dict()
     hists["data_obs"] = ROOT.TH1F("data_obs", "data_obs", nbins, low, up)
-    integrals = {}
+
+    weights = {k : float(v)/len(processes[k]) for k, v in integrals.items()}
 
     for k, v in processes.items():
         hists[k] = ROOT.TH1F(k, k, nbins, low, up)
 
     for k, v in processes.items():
-        for x in v:
-            hists[k].Fill(x)
-            hists["data_obs"].Fill(x)
+        if k in weights:
+            w = weights[k]
+            for x in v:
+                hists[k].Fill(x, w)
+                hists["data_obs"].Fill(x, w)
+        else:
+            for x in v:
+                hists[k].Fill(x)
+                hists["data_obs"].Fill(x)
+
+    integrals = {}
 
     myfile = ROOT.TFile(hist_file_name, "RECREATE")
     for k, v in hists.items():
