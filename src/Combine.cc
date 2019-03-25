@@ -308,7 +308,6 @@ void Combine::run(
     unlink(tmpFile);  // this is to be deleted, since we'll use tmpFile+".root"
   }
 
-  bool isTextDatacard = false;
   TString fileToLoad = (workspaceFile[0] == '/' ? workspaceFile : pwd + "/" + workspaceFile);
   if (!boost::filesystem::exists(fileToLoad.Data()))
     throw std::invalid_argument(("File " + fileToLoad + " does not exist").Data());
@@ -571,20 +570,14 @@ void Combine::run(
     pwd->cd();
   }
   if (w->data(dataset.c_str()) == 0) {
-    if (isTextDatacard) {  // that's ok: the observables are pre-set to the observed values
-      RooDataSet *data_obs = new RooDataSet(dataset.c_str(), dataset.c_str(), *observables);
-      data_obs->add(*observables);
+    TFile *fIn = TFile::Open(fileToLoad);
+    garbageCollect.tfile = fIn;  // request that we close this file when done
+    RooDataSet *data_obs = dynamic_cast<RooDataSet *>(fIn->Get(dataset.c_str()));
+    if (data_obs) {
+      data_obs->SetName(dataset.c_str());
       w->import(*data_obs);
     } else {
-      TFile *fIn = TFile::Open(fileToLoad);
-      garbageCollect.tfile = fIn;  // request that we close this file when done
-      RooDataSet *data_obs = dynamic_cast<RooDataSet *>(fIn->Get(dataset.c_str()));
-      if (data_obs) {
-        data_obs->SetName(dataset.c_str());
-        w->import(*data_obs);
-      } else {
-        std::cout << "Dataset " << dataset.c_str() << " not found." << std::endl;
-      }
+      std::cout << "Dataset " << dataset.c_str() << " not found." << std::endl;
     }
   }
 
