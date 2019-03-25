@@ -4,9 +4,10 @@ import ROOT
 from ROOT import TFile, TTree, TCanvas, TGraph, TMultiGraph, TGraphErrors, TLegend
 import cms_lumi
 import tdrstyle
-import subprocess  # to execute shell command
 from six.moves import range
 from six.moves import zip
+
+import combine
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
@@ -58,14 +59,7 @@ def executeDataCards(labels):
 
     for label in labels:
         file_name = "datacard_" + label + ".txt"
-        combine_command = "combine -M Asymptotic -m 125 -n %s %s" % (label, file_name)
-        print("")
-        print(">>> " + combine_command)
-        p = subprocess.Popen(combine_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        for line in p.stdout.readlines():
-            print(str(line).rstrip("\n"))
-        print(">>>   higgsCombine" + label + ".Asymptotic.mH125.root created")
-        retval = p.wait()
+        combine.combine(file_name, mass=125, name=label)
 
 
 # GET limits from root file
@@ -93,7 +87,7 @@ def plotUpperLimits(labels, values):
 
     up2s = []
     for i in range(N):
-        file_name = "higgsCombine" + labels[i] + ".Asymptotic.mH125.root"
+        file_name = "higgsCombine" + labels[i] + ".AsymptoticLimits.mH125.root"
         limit = getLimits(file_name)
         up2s.append(limit[4])
         yellow.SetPoint(i, values[i], limit[4])  # + 2 sigma
