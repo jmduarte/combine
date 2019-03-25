@@ -16,11 +16,11 @@ class PhysicsModelBase(six.with_metaclass(ABCMeta, object)):
     def __init__(self):
         pass
 
-    def setModelBuilder(self, modelBuilder):
+    def setModelBuilder(self, modelBuilder, mass):
         "Connect to the ModelBuilder to get workspace, datacard and options. Should not be overloaded."
         self.modelBuilder = modelBuilder
         self.DC = modelBuilder.DC
-        self.options = modelBuilder.options
+        self.mass = mass
 
     def setPhysicsOptions(self, physOptions):
         "Receive a list of strings with the physics options from command line"
@@ -102,12 +102,12 @@ class PhysicsModel(PhysicsModelBase):
         self.modelBuilder.doVar("r[1,0,20]")
         self.modelBuilder.doSet("POI", "r")
         # --- Higgs Mass as other parameter ----
-        if self.options.mass != 0:
+        if self.mass != 0:
             if self.modelBuilder.out.var("MH"):
                 self.modelBuilder.out.var("MH").removeRange()
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
             else:
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
 
 
 class MultiSignalModelBase(PhysicsModelBase_NiceSubclasses):
@@ -250,17 +250,17 @@ class HiggsMassRangeModel(PhysicsModelBase_NiceSubclasses):
                 self.modelBuilder.out.var("MH").setConstant(False)
                 poiNames += ["MH"]
             else:
-                print("MH will be assumed to be", self.options.mass)
+                print("MH will be assumed to be", self.mass)
                 self.modelBuilder.out.var("MH").removeRange()
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
         else:
             if len(self.mHRange):
                 print("MH will be left floating within", self.mHRange[0], "and", self.mHRange[1])
                 self.modelBuilder.doVar("MH[%s,%s]" % (self.mHRange[0], self.mHRange[1]))
                 poiNames += ["MH"]
             else:
-                print("MH (not there before) will be assumed to be", self.options.mass)
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                print("MH (not there before) will be assumed to be", self.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
         return poiNames
 
 
@@ -499,17 +499,17 @@ class FloatingXSHiggs(SMLikeHiggsModel):
                 self.modelBuilder.out.var("MH").setConstant(False)
                 poi += ",MH"
             else:
-                print("MH will be assumed to be", self.options.mass)
+                print("MH will be assumed to be", self.mass)
                 self.modelBuilder.out.var("MH").removeRange()
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
         else:
             if len(self.mHRange):
                 print("MH will be left floating within", self.mHRange[0], "and", self.mHRange[1])
                 self.modelBuilder.doVar("MH[%s,%s]" % (self.mHRange[0], self.mHRange[1]))
                 poi += ",MH"
             else:
-                print("MH (not there before) will be assumed to be", self.options.mass)
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                print("MH (not there before) will be assumed to be", self.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
         self.modelBuilder.doSet("POI", poi)
 
     def getHiggsSignalYieldScale(self, production, decay, energy):
@@ -558,10 +558,10 @@ class RvRfXSHiggs(SMLikeHiggsModel):
             self.modelBuilder.doSet("POI", "RV,RF,MH")
         else:
             if self.modelBuilder.out.var("MH"):
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
                 self.modelBuilder.out.var("MH").setConstant(True)
             else:
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
             self.modelBuilder.doSet("POI", "RV,RF")
 
     def getHiggsSignalYieldScale(self, production, decay, energy):
@@ -611,17 +611,17 @@ class FloatingBRHiggs(SMLikeHiggsModel):
                 self.modelBuilder.out.var("MH").setConstant(False)
                 poi += ",MH"
             else:
-                print("MH will be assumed to be", self.options.mass)
+                print("MH will be assumed to be", self.mass)
                 self.modelBuilder.out.var("MH").removeRange()
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
         else:
             if len(self.mHRange):
                 print("MH will be left floating within", self.mHRange[0], "and", self.mHRange[1])
                 self.modelBuilder.doVar("MH[%s,%s]" % (self.mHRange[0], self.mHRange[1]))
                 poi += ",MH"
             else:
-                print("MH (not there before) will be assumed to be", self.options.mass)
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                print("MH (not there before) will be assumed to be", self.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
         self.modelBuilder.doSet("POI", poi)
 
     def getHiggsSignalYieldScale(self, production, decay, energy):
@@ -676,10 +676,10 @@ class RvfBRHiggs(SMLikeHiggsModel):
             self.modelBuilder.doSet("POI", poi + ",MH")
         else:
             if self.modelBuilder.out.var("MH"):
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
                 self.modelBuilder.out.var("MH").setConstant(True)
             else:
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
             self.modelBuilder.doSet("POI", poi)
 
     def getHiggsSignalYieldScale(self, production, decay, energy):
@@ -733,10 +733,10 @@ class ThetaVFBRHiggs(SMLikeHiggsModel):
             self.modelBuilder.doSet("POI", poi + ",MH")
         else:
             if self.modelBuilder.out.var("MH"):
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
                 self.modelBuilder.out.var("MH").setConstant(True)
             else:
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
             self.modelBuilder.doSet("POI", poi)
 
     def getHiggsSignalYieldScale(self, production, decay, energy):
@@ -776,17 +776,17 @@ class FloatingXSBRHiggs(SMLikeHiggsModel):
                 self.modelBuilder.out.var("MH").setConstant(False)
                 self.poiNames += ["MH"]
             else:
-                print("MH will be assumed to be", self.options.mass)
+                print("MH will be assumed to be", self.mass)
                 self.modelBuilder.out.var("MH").removeRange()
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
         else:
             if len(self.mHRange):
                 print("MH will be left floating within", self.mHRange[0], "and", self.mHRange[1])
                 self.modelBuilder.doVar("MH[%s,%s]" % (self.mHRange[0], self.mHRange[1]))
                 self.poiNames += ["MH"]
             else:
-                print("MH (not there before) will be assumed to be", self.options.mass)
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                print("MH (not there before) will be assumed to be", self.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
 
     def getHiggsSignalYieldScale(self, production, decay, energy):
         prod = "VH" if production in ["VH", "WH", "WPlusH", "WMinusH", "ZH", "ggZH"] else production
@@ -844,10 +844,10 @@ class DoubleRatioHiggs(SMLikeHiggsModel):
             self.modelBuilder.doSet("POI", poi + ",MH")
         else:
             if self.modelBuilder.out.var("MH"):
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
                 self.modelBuilder.out.var("MH").setConstant(True)
             else:
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
             self.modelBuilder.doSet("POI", poi)
 
     def getHiggsSignalYieldScale(self, production, decay, energy):
@@ -916,10 +916,10 @@ class RatioBRSMHiggs(SMLikeHiggsModel):
             self.modelBuilder.doSet("POI", poi + ",MH")
         else:
             if self.modelBuilder.out.var("MH"):
-                self.modelBuilder.out.var("MH").setVal(self.options.mass)
+                self.modelBuilder.out.var("MH").setVal(self.mass)
                 self.modelBuilder.out.var("MH").setConstant(True)
             else:
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.mass)
             self.modelBuilder.doSet("POI", poi)
 
     def getHiggsSignalYieldScale(self, production, decay, energy):

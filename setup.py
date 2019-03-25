@@ -13,7 +13,10 @@ nocpp = False
 includepath = os.getenv("COMBINE_INCLUDE_DIR")
 
 if os.getenv("COMBINE_LIB_DIR") is None and includepath is None:
-    raise ValueError("Environment variable COMBINE_INCLUDE_DIR not set! Please set it to the permanent location of the combine header files.")
+    raise ValueError(
+        "Environment variable COMBINE_INCLUDE_DIR not set! Please set it to the permanent location of the combine header files."
+    )
+
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=""):
@@ -60,6 +63,7 @@ class CMakeBuild(build_ext):
             os.makedirs(self.build_temp)
         subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(["cmake", "--build", "."] + build_args, cwd=self.build_temp)
+
 
 ext_modules = [CMakeExtension("_combine")]
 

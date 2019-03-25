@@ -9,233 +9,6 @@ globalNuisances = re.compile(
 )
 
 
-def addDatacardParserOptions(parser):
-    parser.add_option(
-        "-s",
-        "--stat",
-        dest="stat",
-        default=False,
-        action="store_true",
-        help="keep only statistical uncertainties, no systematics",
-    )
-    parser.add_option(
-        "-f",
-        "--fix-pars",
-        dest="fixpars",
-        default=False,
-        action="store_true",
-        help="fix all floating parameters of the pdfs except for the POI",
-    )
-    parser.add_option(
-        "-c",
-        "--compiled",
-        dest="cexpr",
-        default=False,
-        action="store_true",
-        help="use compiled expressions (not suggested)",
-    )
-    parser.add_option(
-        "-a",
-        "--ascii",
-        dest="bin",
-        default=True,
-        action="store_false",
-        help="produce a Workspace in a rootfile in an HLF file (legacy, unsupported)",
-    )
-    parser.add_option(
-        "-b",
-        "--binary",
-        dest="bin",
-        default=True,
-        action="store_true",
-        help="produce a Workspace in a rootfile (default)",
-    )
-    parser.add_option(
-        "-o",
-        "--out",
-        dest="out",
-        default=None,
-        type="string",
-        help="output file (if none, it will print to stdout). Required for binary mode.",
-    )
-    parser.add_option(
-        "-v",
-        "--verbose",
-        dest="verbose",
-        default=0,
-        type="int",
-        help="Verbosity level (0 = quiet, 1 = verbose, 2+ = more)",
-    )
-    parser.add_option(
-        "-m",
-        "--mass",
-        dest="mass",
-        default=0,
-        type="float",
-        help="Higgs mass to use. Will also be written in the Workspace as RooRealVar 'MH'.",
-    )
-    parser.add_option(
-        "-D", "--dataset", dest="dataname", default="data_obs", type="string", help="Name of the observed dataset"
-    )
-    parser.add_option("-L", "--LoadLibrary", dest="libs", type="string", action="append", help="Load these libraries")
-    parser.add_option(
-        "--keyword-value",
-        dest="modelparams",
-        default=[],
-        nargs=1,
-        type="string",
-        action="append",
-        help="Set keyword values with 'WORD=VALUE', will replace $WORD with VALUE in datacards. Filename will also be extended with 'WORDVALUE' ",
-    )
-    parser.add_option(
-        "--poisson",
-        dest="poisson",
-        default=0,
-        type="int",
-        help="If set to a positive number, binned datasets wih more than this number of entries will be generated using poissonians",
-    )
-    parser.add_option(
-        "--default-morphing",
-        dest="defMorph",
-        type="string",
-        default="shape",
-        help="Default template morphing algorithm (to be used when the datacard has just 'shape')",
-    )
-    parser.add_option(
-        "--no-b-only",
-        "--for-fits",
-        dest="noBOnly",
-        default=False,
-        action="store_true",
-        help="Do not save the background-only pdf (saves time)",
-    )
-    parser.add_option(
-        "--no-wrappers",
-        dest="noHistFuncWrappers",
-        default=False,
-        action="store_true",
-        help="Do not create and save the CMSHistFuncWrapper objects for autoMCStats-based models (saves time)",
-    )
-    parser.add_option(
-        "--no-optimize-pdfs",
-        dest="noOptimizePdf",
-        default=False,
-        action="store_true",
-        help="Do not save the RooSimultaneous as RooSimultaneousOpt and Gaussian constraints as SimpleGaussianConstraint",
-    )
-    parser.add_option(
-        "--optimize-simpdf-constraints",
-        dest="moreOptimizeSimPdf",
-        default="none",
-        type="string",
-        help="Handling of constraints in simultaneous pdf: 'none' = add all constraints on all channels (default); 'lhchcg' = add constraints on only the first channel; 'cms' = add constraints to the RooSimultaneousOpt.",
-    )
-    # parser.add_option("--use-HistPdf",  dest="useHistPdf", type="string", default="always", help="Use RooHistPdf for TH1s: 'always' (default), 'never', 'when-constant' (i.e. not when doing template morphing)")
-    parser.add_option(
-        "--channel-masks", dest="doMasks", default=False, action="store_true", help="Create channel-masking RooRealVars"
-    )
-    parser.add_option(
-        "--use-HistPdf",
-        dest="useHistPdf",
-        type="string",
-        default="never",
-        help="Use RooHistPdf for TH1s: 'always', 'never' (default), 'when-constant' (i.e. not when doing template morphing)",
-    )
-    parser.add_option(
-        "--X-exclude-nuisance",
-        dest="nuisancesToExclude",
-        type="string",
-        action="append",
-        default=[],
-        help="Exclude nuisances that match these regular expressions.",
-    )
-    parser.add_option(
-        "--X-rescale-nuisance",
-        dest="nuisancesToRescale",
-        type="string",
-        action="append",
-        nargs=2,
-        default=[],
-        help="Rescale by this factor the nuisances that match these regular expressions (the rescaling is applied to the sigma of the gaussian constraint term).",
-    )
-    parser.add_option(
-        "--X-nuisance-function",
-        dest="nuisanceFunctions",
-        type="string",
-        action="append",
-        nargs=2,
-        default=[],
-        help="Set the sigma of the gaussian to be a function for the nuisances that match the regular expression",
-    )
-    parser.add_option(
-        "--X-nuisance-group-function",
-        dest="nuisanceGroupFunctions",
-        type="string",
-        action="append",
-        nargs=2,
-        default=[],
-        help="Set the sigma of the gaussian to be a function for the nuisances in the given group",
-    )
-    parser.add_option(
-        "--X-force-no-simpdf",
-        dest="forceNonSimPdf",
-        default=False,
-        action="store_true",
-        help="FOR DEBUG ONLY: Do not produce a RooSimultaneous if there is just one channel (note: can affect performance)",
-    )
-    parser.add_option(
-        "--X-no-check-norm",
-        dest="noCheckNorm",
-        default=False,
-        action="store_true",
-        help="FOR DEBUG ONLY: Turn off the consistency check between datacard norms and shape norms. Will give you nonsensical results if you have shape uncertainties.",
-    )
-    parser.add_option(
-        "--X-no-jmax",
-        dest="noJMax",
-        default=False,
-        action="store_true",
-        help="FOR DEBUG ONLY: Turn off the consistency check between jmax and number of processes.",
-    )
-    parser.add_option(
-        "--X-allow-no-signal",
-        dest="allowNoSignal",
-        default=False,
-        action="store_true",
-        help="Allow parsing datacards that contain only backgrounds",
-    )
-    parser.add_option(
-        "--X-allow-no-background",
-        dest="allowNoBackground",
-        default=False,
-        action="store_true",
-        help="Allow parsing datacards that contain only signal",
-    )
-    # parser.add_option("--X-optimize-templates",  dest="optimizeExistingTemplates", default=False, action="store_true", help="Optimize templates on the fly (relevant for HZZ)")
-    # parser.add_option("--X-optimize-bound-nusances",  dest="optimizeBoundNuisances", default=False, action="store_true", help="Flag nuisances to have a different implementation of bounds")
-    parser.add_option(
-        "--X-no-optimize-templates",
-        dest="optimizeExistingTemplates",
-        default=True,
-        action="store_false",
-        help="Don't optimize templates on the fly (relevant for HZZ)",
-    )
-    parser.add_option(
-        "--X-no-optimize-bound-nusances",
-        dest="optimizeBoundNuisances",
-        default=True,
-        action="store_false",
-        help="Don't flag nuisances to have a different implementation of bounds",
-    )
-    parser.add_option(
-        "--X-no-optimize-bins",
-        dest="optimizeTemplateBins",
-        default=True,
-        action="store_false",
-        help="Don't optimize template bins (removes padding from TH1s)",
-    )
-
-
 from combine.Datacard import Datacard
 from combine.NuisanceModifier import doEditNuisance
 
@@ -287,7 +60,7 @@ def addRateParam(lsyst, f, ret):
     ret.rateParamsOrder.add(lsyst)
 
 
-def parseCard(file, options):
+def parseCard(file, bin, noJMax, allowNoSignal, allowNoBackground, evaluateEdits, nuisancesToExclude, stat, verbose):
     if type(file) == type("str"):
         raise RuntimeError(
             "You should pass as argument to parseCards a file object, stream or a list of lines, not a string"
@@ -309,11 +82,6 @@ def parseCard(file, options):
     lineNumber = None
 
     try:
-        getattr(options, "evaluateEdits")
-    except:
-        setattr(options, "evaluateEdits", True)
-
-    try:
         for lineNumber, l in enumerate(file):
             f = l.split()
             if len(f) < 1:
@@ -325,7 +93,7 @@ def parseCard(file, options):
             if f[0] == "kmax":
                 nuisances = int(f[1]) if f[1] != "*" else -1
             if f[0] == "shapes":
-                if not options.bin:
+                if not bin:
                     raise RuntimeError("Can use shapes only with binary output mode")
                 if len(f) < 4:
                     raise RuntimeError("Malformed shapes line")
@@ -386,7 +154,7 @@ def parseCard(file, options):
                     nprocesses = len(ret.processes)
                 if nbins == -1:
                     nbins = len(ret.bins)
-                if not options.noJMax:
+                if not noJMax:
                     if nprocesses != len(ret.processes):
                         raise RuntimeError(
                             "Found %d processes (%s), declared jmax = %d"
@@ -406,7 +174,7 @@ def parseCard(file, options):
                             "Process %s is declared as signal in some bin and as background in some other bin" % p
                         )
                 ret.signals = [p for p, s in ret.isSignal.items() if s == True]
-                if len(ret.signals) == 0 and not options.allowNoSignal:
+                if len(ret.signals) == 0 and not allowNoSignal:
                     raise RuntimeError("You must have at least one signal process (id <= 0)")
             if f[0] == "rate":
                 if processline == []:
@@ -438,11 +206,10 @@ def parseCard(file, options):
             if lsyst.endswith("[nofloat]"):
                 lsyst = lsyst.replace("[nofloat]", "")
                 nofloat = True
-            if options.nuisancesToExclude and isVetoed(lsyst, options.nuisancesToExclude):
-                if options.verbose > 0:
+            if nuisancesToExclude and isVetoed(lsyst, nuisancesToExclude):
+                if verbose > 0:
                     stderr.write(
-                        "Excluding nuisance %s selected by a veto pattern among %s\n"
-                        % (lsyst, options.nuisancesToExclude)
+                        "Excluding nuisance %s selected by a veto pattern among %s\n" % (lsyst, nuisancesToExclude)
                     )
                 if nuisances != -1:
                     nuisances -= 1
@@ -500,13 +267,13 @@ def parseCard(file, options):
             elif pdf == "edit":
                 if nuisances != -1:
                     nuisances = -1
-                if options.evaluateEdits:
-                    if options.verbose > 1:
+                if evaluateEdits:
+                    if verbose > 1:
                         print("Before edit: \n\t%s\n" % ("\n\t".join([str(x) for x in ret.systs])))
-                    if options.verbose > 1:
+                    if verbose > 1:
                         print("Edit command: %s\n" % numbers)
                     doEditNuisance(ret, numbers[0], numbers[1:])
-                    if options.verbose > 1:
+                    if verbose > 1:
                         print("After edit: \n\t%s\n" % ("\n\t".join([str(x) for x in ret.systs])))
                 else:
                     if numbers[0] in ["changepdf", "freeze"]:
@@ -614,9 +381,9 @@ def parseCard(file, options):
         nb_bin = sum([(ret.exp[b][p] != 0) for (b1, p, s) in ret.keyline if b1 == b and s != True])
         if np_bin == 0:
             raise RuntimeError("Bin %s has no processes contributing to it" % b)
-        if ns_bin == 0 and not options.allowNoSignal:
+        if ns_bin == 0 and not allowNoSignal:
             stderr.write("Warning: Bin %s has no signal processes contributing to it\n" % b)
-        if nb_bin == 0 and not options.allowNoBackground:
+        if nb_bin == 0 and not allowNoBackground:
             raise RuntimeError("Bin %s has no background processes contributing to it" % b)
     # cleanup systematics that have no effect to avoid zero derivatives
     syst2 = []
@@ -636,7 +403,7 @@ def parseCard(file, options):
             nuisances -= 1  # remove from count of nuisances, since qe skipped it
     ret.systs = syst2
     # remove them if options.stat asks so
-    if options.stat:
+    if stat:
         nuisances = 0
         ret.systs = []
     # check number of nuisances

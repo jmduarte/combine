@@ -49,9 +49,13 @@ def combine(
 
     return out
 
+
 def significance(datacard, pvalue=False):
     import scipy.stats
-    significance = combine(datacard, method="Significance", mass=125, toys=-1, expect_signal=1, significance=True).getLimit()[-1]
+
+    significance = combine(
+        datacard, method="Significance", mass=125, toys=-1, expect_signal=1, significance=True
+    ).getLimit()[-1]
 
     if pvalue:
         return scipy.stats.norm.sf(significance)

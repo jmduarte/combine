@@ -37,7 +37,7 @@ def binned_shape_significance(processes, signal_process, low, up, nbins, integra
     hists = dict()
     hists["data_obs"] = ROOT.TH1F("data_obs", "data_obs", nbins, low, up)
 
-    weights = {k : float(v)/len(processes[k]) for k, v in integrals.items()}
+    weights = {k: float(v) / len(processes[k]) for k, v in integrals.items()}
 
     for k, v in processes.items():
         hists[k] = ROOT.TH1F(k, k, nbins, low, up)

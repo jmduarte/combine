@@ -264,8 +264,6 @@ CombineOutput combine(std::string const &datacard,
 
   CombineOutput output;
 
-  tree->Scan();
-
   for(int i=0; i<tree->GetEntries(); i++) {
       tree->GetEntry(i);
       output.limit.push_back(limit.value);

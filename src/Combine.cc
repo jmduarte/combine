@@ -319,7 +319,7 @@ void Combine::run(
     if (compiledExpr_)
       options += " --compiled ";
     if (g_verbose > 1)
-      options += TString::Format(" --g_verbose %d", g_verbose - 1);
+      options += TString::Format(" --verbose %d", g_verbose - 1);
     if (algo->name() == "FitDiagnostics" || algo->name() == "MultiDimFit")
       options += " --for-fits";
     for (auto lib2l : librariesToLoad_) {

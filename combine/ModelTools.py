@@ -37,14 +37,36 @@ class SafeWorkspaceImporter:
 class ModelBuilderBase:
     """This class defines the basic stuff for a model builder, and it's an interface on top of RooWorkspace::factory or HLF files"""
 
-    def __init__(self, options):
-        self.options = options
+    def __init__(
+        self,
+        fileName,
+        bin,
+        out,
+        verbose,
+        cexpr,
+        dataname,
+        nuisanceFunctions,
+        nuisanceGroupFunctions,
+        nuisancesToRescale,
+        noOptimizePdf,
+        optimizeBoundNuisances,
+        noBOnly,
+    ):
+        self.bin = bin
         self.out = stdout
         self.discrete_param_set = []
-        if options.bin:
-            if options.out == None:
-                options.out = re.sub(".txt$", "", options.fileName) + ".root"
-            options.baseDir = os.path.dirname(options.fileName)
+        self.verbose = verbose
+        self.dataname = dataname
+        self.nuisanceFunctions = nuisanceFunctions
+        self.nuisanceGroupFunctions = nuisanceGroupFunctions
+        self.nuisancesToRescale = nuisancesToRescale
+        self.noOptimizePdf = noOptimizePdf
+        self.optimizeBoundNuisances = optimizeBoundNuisances
+        self.noBOnly = noBOnly
+        if bin:
+            if out == None:
+                out = re.sub(".txt$", "", fileName) + ".root"
+            self.baseDir = os.path.dirname(fileName)
             ROOT.gSystem.Load("libCombine")
             ROOT.TH1.AddDirectory(False)
             self.out = ROOT.RooWorkspace("w", "w")
@@ -52,22 +74,24 @@ class ModelBuilderBase:
             self.out._import = SafeWorkspaceImporter(self.out)
             self.objstore = {}
             self.out.dont_delete = []
-            if options.verbose == 0:
+            if verbose == 0:
                 ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
-            elif options.verbose < 3:
+            elif verbose < 3:
                 ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.WARNING)
             if "ROOFITSYS" in os.environ:
                 ROOT.gSystem.AddIncludePath(" -I%s/include " % os.environ["ROOFITSYS"])
-        elif options.out != None:
-            # stderr.write("Will save workspace to HLF file %s" % options.out)
-            self.out = open(options.out, "w")
-        if not options.bin:
+        elif out != None:
+            # stderr.write("Will save workspace to HLF file %s" % out)
+            self.out = open(out, "w")
+        if not bin:
             stderr.write(
                 "\nWARNING: You're not using binary mode. This is is DEPRECATED and NOT SUPPORTED anymore, and can give WRONG results.\n\n"
             )
-        if options.cexpr:
+        if cexpr:
             global ROOFIT_EXPR
             ROOFIT_EXPR = "cexpr"
+
+        self.outout = out
 
     def addObj(self, classtype, name, *args):
         if name not in self.objstore:
@@ -86,13 +110,13 @@ class ModelBuilderBase:
         self.objstore[newName] = self.objstore.pop(currName)
 
     def factory_(self, X):
-        if self.options.verbose >= 7:
+        if self.verbose >= 7:
             print("RooWorkspace::factory('%s')" % X)
         if len(X) > 1000:
             print("Executing factory with a string of length ", len(X), " > 1000, could trigger a bug: ", X)
         ret = self.out.factory(X)
         if ret:
-            if self.options.verbose >= 7:
+            if self.verbose >= 7:
                 print(" ---> ", ret)
             self.out.dont_delete.append(ret)
             return ret
@@ -102,23 +126,23 @@ class ModelBuilderBase:
             raise RuntimeError("Error in factory statement")
 
     def doComment(self, X):
-        if not self.options.bin:
+        if not self.bin:
             self.out.write("// " + X + "\n")
 
     def doVar(self, vardef):
-        if self.options.bin:
+        if self.bin:
             self.factory_(vardef)
         else:
             self.out.write(vardef + ";\n")
 
     def doExp(self, name, expression, vars):
-        if self.options.bin:
+        if self.bin:
             self.factory_('expr::%s("%s",%s)' % (name, expression, vars))
         else:
             self.out.write('%s = expr::%s("%s",%s)' % (name, name, expression, vars) + ";\n")
 
     def doSet(self, name, vars):
-        if self.options.bin:
+        if self.bin:
             self.out.defineSet(name, vars)
         else:
             self.out.write("%s = set(%s);\n" % (name, vars))
@@ -126,7 +150,7 @@ class ModelBuilderBase:
     def doObj(self, name, type, X, ignoreExisting=False):
         if self.out.obj(name) and ignoreExisting:
             return 1  # Still complain if not explicitly told to ignore the existing object
-        if self.options.bin:
+        if self.bin:
             return self.factory_("%s::%s(%s)" % (type, name, X))
         else:
             self.out.write("%s = %s(%s);\n" % (name, type, X))
@@ -138,17 +162,18 @@ class ModelBuilderBase:
 class ModelBuilder(ModelBuilderBase):
     """This class defines the actual methods to build a model"""
 
-    def __init__(self, datacard, options):
-        ModelBuilderBase.__init__(self, options)
+    def __init__(self, datacard, mass, *args):
+        ModelBuilderBase.__init__(self, *args)
         self.DC = datacard
         self.doModelBOnly = True
         self.selfNormBins = []
         self.extraNuisances = []
         self.extraGlobalObservables = []
+        self.mass = mass
 
     def setPhysics(self, physicsModel):
         self.physics = physicsModel
-        self.physics.setModelBuilder(self)
+        self.physics.setModelBuilder(self, self.mass)
 
     def doModel(self):
         self.doObservables()
@@ -171,13 +196,13 @@ class ModelBuilder(ModelBuilderBase):
         self.doCombination()
         self.runPostProcesses()
         self.physics.done()
-        if self.options.bin:
+        if self.bin:
             self.doModelConfigs()
-            if self.options.verbose > 1:
+            if self.verbose > 1:
                 self.out.Print("tv")
-            if self.options.verbose > 2:
-                self.out.pdf("model_s").graphVizTree(self.options.out + ".dot", "\\n")
-                print("Wrote GraphVizTree of model_s to ", self.options.out + ".dot")
+            if self.verbose > 2:
+                self.out.pdf("model_s").graphVizTree(self.outout + ".dot", "\\n")
+                print("Wrote GraphVizTree of model_s to ", self.outout + ".dot")
 
     def runPostProcesses(self):
         for n in self.DC.frozenNuisances:
@@ -349,22 +374,22 @@ class ModelBuilder(ModelBuilderBase):
         for (n, nofloat, pdf, args, errline) in self.DC.systs:
             is_func_scaled = False
             func_scaler = None
-            for pn, pf in self.options.nuisanceFunctions:
+            for pn, pf in self.nuisanceFunctions:
                 if re.match(pn, n):
                     is_func_scaled = True
                     func_scaler = pf
-                    if self.options.verbose > 1:
+                    if self.verbose > 1:
                         print("Rescaling %s constraint as %s" % (n, pf))
-            for pn, pf in self.options.nuisanceGroupFunctions:
+            for pn, pf in self.nuisanceGroupFunctions:
                 if pn in self.DC.groups and n in self.DC.groups[pn]:
                     is_func_scaled = True
                     func_scaler = pf
-                    if self.options.verbose > 1:
+                    if self.verbose > 1:
                         print("Rescaling %s constraint (in group %s) as %s" % (n, pn, pf))
             if pdf == "lnN" or (pdf.startswith("shape") and pdf != "shapeU"):
                 r = "-4,4" if pdf == "shape" else "-7,7"
                 sig = 1.0
-                for pn, pf in self.options.nuisancesToRescale:
+                for pn, pf in self.nuisancesToRescale:
                     if re.match(pn, n):
                         sig = float(pf)
                         sigscale = sig * (4 if pdf == "shape" else 7)
@@ -375,7 +400,7 @@ class ModelBuilder(ModelBuilderBase):
                 r_exp = (
                     "" if self.out.var(n) else "[%s]" % r
                 )  # Specify range to invoke factory to produce a RooRealVar only if it doesn't already exist
-                if self.options.noOptimizePdf or is_func_scaled:
+                if self.noOptimizePdf or is_func_scaled:
                     self.doObj("%s_Pdf" % n, "Gaussian", "%s%s, %s_In[0,%s], %s" % (n, r_exp, n, r, sig), True)
                     # Use existing constraint since it could be a param
                     if is_func_scaled:
@@ -390,9 +415,9 @@ class ModelBuilder(ModelBuilderBase):
                 self.out.var(n).setVal(0)
                 self.out.var(n).setError(1)
                 globalobs.append("%s_In" % n)
-                if self.options.bin:
+                if self.bin:
                     self.out.var("%s_In" % n).setConstant(True)
-                if self.options.optimizeBoundNuisances and not is_func_scaled:
+                if self.optimizeBoundNuisances and not is_func_scaled:
                     self.out.var(n).setAttribute("optimizeBounds")
             elif pdf == "gmM":
                 val = 0
@@ -416,7 +441,7 @@ class ModelBuilder(ModelBuilderBase):
                     % (n, max(0.01, 1 - 5 * val), 1 + 5 * val, n, kappa, 1, 2 * kappa + 4, n, theta),
                 )
                 globalobs.append("%s_In" % n)
-                if self.options.bin:
+                if self.bin:
                     self.out.var("%s_In" % n).setConstant(True)
             elif pdf == "gmN":
                 if False:
@@ -452,7 +477,7 @@ class ModelBuilder(ModelBuilderBase):
                         % (n, args[0], minObs, maxObs, n, args[0] + 1, minExp, maxExp),
                     )
                 globalobs.append("%s_In" % n)
-                if self.options.bin:
+                if self.bin:
                     self.out.var("%s_In" % n).setConstant(True)
             elif pdf == "trG":
                 trG_min = -7
@@ -466,7 +491,7 @@ class ModelBuilder(ModelBuilderBase):
                 r = "%f,%f" % (trG_min, trG_max)
                 self.doObj("%s_Pdf" % n, "Gaussian", "%s[0,%s], %s_In[0,%s], 1" % (n, r, n, r))
                 globalobs.append("%s_In" % n)
-                if self.options.bin:
+                if self.bin:
                     self.out.var("%s_In" % n).setConstant(True)
             elif pdf == "lnU" or pdf == "shapeU":
                 self.doObj("%s_Pdf" % n, "Uniform", "%s[-1,1]" % n)
@@ -499,7 +524,7 @@ class ModelBuilder(ModelBuilderBase):
                         % (args[0], args[0], n, r, n, r),
                     )
                 globalobs.append("%s_In" % n)
-                if self.options.bin:
+                if self.bin:
                     self.out.var("%s_In" % n).setConstant(True)
             elif pdf == "param":
                 mean = float(args[0])
@@ -580,7 +605,7 @@ class ModelBuilder(ModelBuilderBase):
                     if is_func_scaled:
                         sigmaStr = "%s_WidthScaled" % n
                         self.doObj(sigmaStr, "prod", "%g, %s" % (float(args[1]), func_scaler))
-                    if self.options.noOptimizePdf or is_func_scaled:
+                    if self.noOptimizePdf or is_func_scaled:
                         self.doObj(
                             "%s_Pdf" % n,
                             "Gaussian",
@@ -608,7 +633,7 @@ class ModelBuilder(ModelBuilderBase):
                             self.out.function("%s_BoundLo" % n), self.out.function("%s_BoundHi" % n)
                         )
                 globalobs.append("%s_In" % n)
-                # if self.options.optimizeBoundNuisances: self.out.var(n).setAttribute("optimizeBounds")
+                # if self.optimizeBoundNuisances: self.out.var(n).setAttribute("optimizeBounds")
             elif pdf == "extArg":
                 continue
 
@@ -619,7 +644,7 @@ class ModelBuilder(ModelBuilderBase):
             # self.out.var(n).Print('V')
             if n in self.DC.frozenNuisances:
                 self.out.var(n).setConstant(True)
-        if self.options.bin:
+        if self.bin:
             nuisPdfs = ROOT.RooArgList()
             nuisVars = ROOT.RooArgSet()
             for (n, nf, p, a, e) in self.DC.systs:
@@ -661,7 +686,7 @@ class ModelBuilder(ModelBuilderBase):
             # set an attribute related to the group(s) this nuisance belongs to
             if n in groupsFor:
                 groupNames = groupsFor[n]
-                if self.options.verbose > 1:
+                if self.verbose > 1:
                     print('Nuisance "%(n)s" is assigned to the following nuisance groups: %(groupNames)s' % locals())
                 for groupName in groupNames:
                     try:
@@ -797,9 +822,9 @@ class ModelBuilder(ModelBuilderBase):
         raise RuntimeError("Not implemented in ModelBuilder")
 
     def doModelConfigs(self):
-        if not self.options.bin:
+        if not self.bin:
             raise RuntimeException
-        if self.options.out == None:
+        if self.outout == None:
             raise RuntimeException
         for nuis, warn in six.iteritems(self.DC.flatParamNuisances):
             if self.out.var(nuis):
@@ -830,17 +855,17 @@ class ModelBuilder(ModelBuilderBase):
                 gObsSet.add(gobs)
             if gObsSet.getSize():
                 mc.SetGlobalObservables(gObsSet)
-            if self.options.verbose > 2:
+            if self.verbose > 2:
                 mc.Print("V")
             self.out._import(mc, mc.GetName())
-            if self.options.noBOnly:
+            if self.noBOnly:
                 break
         discparams = ROOT.RooArgSet("discreteParams")
         for cpar in self.discrete_param_set:
             roocpar = self.out.cat(cpar)
             discparams.add(self.out.cat(cpar))
         self.out._import(discparams, discparams.GetName())
-        self.out.writeToFile(self.options.out)
+        self.out.writeToFile(self.outout)
 
     def isShapeSystematic(self, channel, process, syst):
         return False
@@ -849,8 +874,8 @@ class ModelBuilder(ModelBuilderBase):
 class CountingModelBuilder(ModelBuilder):
     """ModelBuilder to make a counting experiment"""
 
-    def __init__(self, datacard, options):
-        ModelBuilder.__init__(self, datacard, options)
+    def __init__(self, datacard, mass, *args):
+        ModelBuilder.__init__(self, datacard, mass, *args)
         if datacard.hasShapes:
             raise RuntimeError("You're using a CountingModelBuilder for a model that has shapes")
 
@@ -868,8 +893,8 @@ class CountingModelBuilder(ModelBuilder):
 
         self.doSet("observables", ",".join(["n_obs_bin%s" % b for b in self.DC.bins]))
         if len(self.DC.obs):
-            if self.options.bin:
-                self.out.data_obs = ROOT.RooDataSet(self.options.dataname, "observed data", self.out.set("observables"))
+            if self.bin:
+                self.out.data_obs = ROOT.RooDataSet(self.dataname, "observed data", self.out.set("observables"))
                 self.out.data_obs.add(self.out.set("observables"))
                 self.out._import(self.out.data_obs)
 
