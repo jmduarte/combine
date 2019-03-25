@@ -135,10 +135,11 @@ bool BayesianToyMC::run(RooWorkspace *w,
       std::cout << "\n -- BayesianToyMC -- "
                 << "\n";
       if (limitErr > 0) {
-        std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << g_confidenceLevel * 100 << "% CL"
-                  << std::endl;
+        std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ "
+                  << g_confidenceLevel * 100 << "% CL" << std::endl;
       } else {
-        std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL" << std::endl;
+        std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL"
+                  << std::endl;
       }
     }
     break;

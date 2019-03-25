@@ -539,8 +539,8 @@ std::vector<std::pair<float, float> > AsymptoticLimits::runLimitExpected(RooWork
       mc_s->GetPdf()->createNLL(*asimov, RooFit::Constrain(*mc_s->GetNuisanceParameters())));
   CascadeMinimizer minim(*nll, CascadeMinimizer::Unconstrained, r);
   //minim.setStrategy(minimizerStrategy_);
-  minim.setErrorLevel(
-      0.5 * pow(ROOT::Math::normal_quantile(1 - 0.5 * (1 - g_confidenceLevel), 1.0), 2));  // the 0.5 is because qmu is -2*NLL
+  minim.setErrorLevel(0.5 * pow(ROOT::Math::normal_quantile(1 - 0.5 * (1 - g_confidenceLevel), 1.0),
+                                2));  // the 0.5 is because qmu is -2*NLL
   // eventually if g_confidenceLevel = 0.95 this is the usual 1.92!
   CloseCoutSentry sentry(g_verbose < 3);
   minim.minimize(g_verbose - 2);
@@ -636,7 +636,8 @@ float AsymptoticLimits::findExpectedLimitFromCrossing(
   // remember that qmu = 2*nll
 
   double N = ROOT::Math::normal_quantile(clb, 1.0);
-  double errorlevel = 0.5 * pow(N + ROOT::Math::normal_quantile_c((doCLs_ ? clb : 1.) * (1 - g_confidenceLevel), 1.0), 2);
+  double errorlevel =
+      0.5 * pow(N + ROOT::Math::normal_quantile_c((doCLs_ ? clb : 1.) * (1 - g_confidenceLevel), 1.0), 2);
   int minosStat = -1;
   if (minosAlgo_ == "minos") {
     double rMax0 = r->getMax();

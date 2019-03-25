@@ -239,7 +239,8 @@ bool Significance::runLimit(
     if (useMinos_ || bruteForce_) {
       // try first with Minos, unless brute force requested
       if (!bruteForce_) {
-        limit = upperLimitWithMinos(*mc_s->GetPdf(), data, *r, mc_s->GetNuisanceParameters(), minimizerTolerance_, g_confidenceLevel);
+        limit = upperLimitWithMinos(
+            *mc_s->GetPdf(), data, *r, mc_s->GetNuisanceParameters(), minimizerTolerance_, g_confidenceLevel);
       }
       // if brute force forced, or minos failed, go with the next one
       if (std::isnan(limit) || bruteForce_) {
@@ -281,11 +282,11 @@ bool Significance::runLimit(
       std::cout << "\n -- Significance -- "
                 << "\n";
       if (limitErr) {
-        std::cout << "Limit: " << r->GetName() << (g_lowerLimit ? " > " : " < ") << limit << " +/- " << limitErr << " @ "
-                  << g_confidenceLevel * 100 << "% CL" << std::endl;
+        std::cout << "Limit: " << r->GetName() << (g_lowerLimit ? " > " : " < ") << limit << " +/- " << limitErr
+                  << " @ " << g_confidenceLevel * 100 << "% CL" << std::endl;
       } else {
-        std::cout << "Limit: " << r->GetName() << (g_lowerLimit ? " > " : " < ") << limit << " @ " << g_confidenceLevel * 100 << "% CL"
-                  << std::endl;
+        std::cout << "Limit: " << r->GetName() << (g_lowerLimit ? " > " : " < ") << limit << " @ "
+                  << g_confidenceLevel * 100 << "% CL" << std::endl;
       }
     }
   }
@@ -363,8 +364,12 @@ bool Significance::runSignificance(
   return true;
 }
 
-double Significance::upperLimitWithMinos(
-    RooAbsPdf &pdf, RooAbsData &data, RooRealVar &poi, const RooArgSet *nuisances, double tolerance, double confidenceLevel) const {
+double Significance::upperLimitWithMinos(RooAbsPdf &pdf,
+                                         RooAbsData &data,
+                                         RooRealVar &poi,
+                                         const RooArgSet *nuisances,
+                                         double tolerance,
+                                         double confidenceLevel) const {
   std::unique_ptr<RooAbsReal> nll(pdf.createNLL(data, RooFit::Constrain(*nuisances)));
   RooMinimizer minim(*nll);
   minim.setStrategy(0);
@@ -390,8 +395,12 @@ double Significance::upperLimitWithMinos(
   return limit;
 }
 
-std::pair<double, double> Significance::upperLimitBruteForce(
-    RooAbsPdf &pdf, RooAbsData &data, RooRealVar &poi, const RooArgSet *nuisances, double tolerance, double confidenceLevel) const {
+std::pair<double, double> Significance::upperLimitBruteForce(RooAbsPdf &pdf,
+                                                             RooAbsData &data,
+                                                             RooRealVar &poi,
+                                                             const RooArgSet *nuisances,
+                                                             double tolerance,
+                                                             double confidenceLevel) const {
   poi.setConstant(false);
   std::unique_ptr<RooAbsReal> nll(pdf.createNLL(data, RooFit::Constrain(*nuisances)));
   RooMinimizer minim0(*nll);

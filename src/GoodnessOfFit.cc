@@ -198,7 +198,8 @@ bool GoodnessOfFit::runSaturatedModel(RooWorkspace *w,
 
   CloseCoutSentry sentry(g_verbose < 2);
 
-  const RooCmdArg &constrainCmdArg = g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
+  const RooCmdArg &constrainCmdArg =
+      g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
   std::unique_ptr<RooAbsReal> nominal_nll(pdf_nominal->createNLL(data, constrainCmdArg));
   std::unique_ptr<RooAbsReal> saturated_nll(saturated->createNLL(data, constrainCmdArg));
 
@@ -278,7 +279,8 @@ bool GoodnessOfFit::runKSandAD(RooWorkspace *w,
   sentry.clear();
   */
 
-  const RooCmdArg &constrainCmdArg = g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
+  const RooCmdArg &constrainCmdArg =
+      g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
   std::unique_ptr<RooAbsReal> nll(pdf->createNLL(data, constrainCmdArg));
   CascadeMinimizer minim(*nll, CascadeMinimizer::Unconstrained);
   //minims.setStrategy(minimizerStrategy_);

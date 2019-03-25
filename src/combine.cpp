@@ -34,28 +34,26 @@
 #include "combine/GenerateOnly.h"
 #include "combine/Logger.h"
 
-template<class T>
-struct ValueWithError {
-    T value;
-    T error;
+template <class T> struct ValueWithError {
+  T value;
+  T error;
 };
 
 double combine(std::string const &datacard,
-            int argc,
-            char **argv,
-            std::string const &whichMethod,
-            int runToys,
-            float expectSignal) {
-
+               std::string const &name,
+               int argc,
+               char **argv,
+               std::string const &dataset,
+               std::string const &whichMethod,
+               std::string const &whichHintMethod,
+               std::string const &toysFile,
+               int runToys,
+               float expectSignal,
+               int seed,
+               bool perfCounters) {
   using namespace std;
   using namespace boost;
   namespace po = boost::program_options;
-
-  string name = "Test";
-  string dataset;
-  std::string whichHintMethod;
-  int seed;
-  string toysFile;
 
   vector<string> runtimeDefines;
   vector<string> modelPoints;
@@ -100,18 +98,7 @@ double combine(std::string const &datacard,
   }
 
   po::options_description desc("Main options");
-  desc.add_options()(
-      "seed,s", po::value<int>(&seed)->default_value(123456), "Toy MC random seed")(
-      "hintMethod,H",
-      po::value<string>(&whichHintMethod)->default_value(""),
-      "Run first this method to provide a hint on the result");
-  combiner.ioOptions().add_options()(
-      "dataset,D", po::value<string>(&dataset)->default_value("data_obs"), "Name of the dataset for observed limit")(
-      "toysFile",
-      po::value<string>(&toysFile)->default_value(""),
-      "Read toy mc or other intermediate results from this file");
-  combiner.miscOptions().add_options()("igpMem", "Setup support for memory profiling using IgProf")(
-      "perfCounters", "Dump performance counters at end of job")(
+  combiner.miscOptions().add_options()(
       "keyword-value",
       po::value<vector<string> >(&modelPoints),
       "Set keyword values with 'WORD=VALUE', will replace $WORD with VALUE in datacards. Filename will also be "
@@ -148,8 +135,7 @@ double combine(std::string const &datacard,
   cout << ">>> method used is " << whichMethod << endl;
 
   if (!whichHintMethod.empty()) {
-    map<string, LimitAlgo *>::const_iterator it_hint = methods.find(whichHintMethod);
-    g_hintAlgo = it_hint->second;
+    g_hintAlgo = methods.at(whichHintMethod);
     g_hintAlgo->applyDefaultOptions();
     cout << ">>> method used to hint where the upper limit is " << whichHintMethod << endl;
   }
@@ -194,13 +180,12 @@ double combine(std::string const &datacard,
   TFile *test = new TFile(fileName, "RECREATE");
   g_outputFile = test;
   TTree *t = new TTree("limit", "limit");
-  int syst, iToy, iSeed, iChannel;
+  int syst, iToy, iChannel;
   ValueWithError<double> limit;
   t->Branch("limit", &limit.value, "limit/D");
   t->Branch("limitErr", &limit.error, "limitErr/D");
   t->Branch("syst", &syst, "syst/I");
   t->Branch("iToy", &iToy, "iToy/I");
-  t->Branch("iSeed", &iSeed, "iSeed/I");
   t->Branch("iChannel", &iChannel, "iChannel/I");
   t->Branch("quantileExpected", &g_quantileExpected, "quantileExpected/F");
   for (unsigned int mpi = 0; mpi < modelParamNameVector_.size(); ++mpi) {
@@ -213,7 +198,6 @@ double combine(std::string const &datacard,
     g_readToysFromHere = TFile::Open(toysFile.c_str());
 
   syst = g_withSystematics;
-  iSeed = seed;
   iChannel = 0;
 
   if (vm.count("igpMem"))
@@ -271,38 +255,54 @@ double combine(std::string const &datacard,
   test->WriteTObject(t);
   test->Close();
 
-  for (map<string, LimitAlgo *>::const_iterator i = methods.begin(); i != methods.end(); ++i)
+  for (auto i = methods.begin(); i != methods.end(); ++i)
     delete i->second;
 
-  if (vm.count("perfCounters"))
+  if (perfCounters)
     PerfCounter::printAll();
 
   return limit.value;
 }
 
 double _combine(std::string const &datacard,
-             std::vector<std::string> const &argsVector,
-             std::string const &method,
-             int verbose,
-             bool significance,
-             float mass,
-             bool withSystematics,
-             int toys,
-             float expectSignal) {
+                std::string const &name,
+                std::string const &dataset,
+                std::string const &method,
+                std::string const &hintMethod,
+                std::string const &toysFile,
+                int verbose,
+                bool significance,
+                float mass,
+                bool withSystematics,
+                int toys,
+                float expectSignal,
+                int seed,
+                bool lowerLimit,
+                bool bypassFrequentistFit,
+                bool perfCounters) {
   std::vector<char *> args;
-  args.reserve(argsVector.size() + 1);
 
   args.push_back(const_cast<char *>("combine"));
-
-  for (size_t i = 0; i < argsVector.size(); ++i)
-    args.push_back(const_cast<char *>(argsVector[i].c_str()));
 
   g_verbose = verbose;
   g_mass = mass;
   g_withSystematics = withSystematics;
   g_doSignificance = significance;
+  g_lowerLimit = lowerLimit;
+  g_bypassFrequentistFit = bypassFrequentistFit;
 
-  return combine(datacard, args.size(), &args[0], method, toys, expectSignal);
+  return combine(datacard,
+                 name,
+                 args.size(),
+                 &args[0],
+                 dataset,
+                 method,
+                 hintMethod,
+                 toysFile,
+                 toys,
+                 expectSignal,
+                 seed,
+                 perfCounters);
 }
 
 PYBIND11_MODULE(_combine, m) {

@@ -101,8 +101,7 @@ Combine::Combine(float expectSignal)
       rMax_(std::numeric_limits<float>::quiet_NaN()),
       expectSignal_(expectSignal) {
   namespace po = boost::program_options;
-  statOptions_.add_options()(
-      "cl,C", po::value<float>(&g_confidenceLevel)->default_value(0.95), "Confidence Level")(
+  statOptions_.add_options()("cl,C", po::value<float>(&g_confidenceLevel)->default_value(0.95), "Confidence Level")(
       "rMin", po::value<float>(&rMin_), "Override minimum value for signal strength (default is 0)")(
       "rMax", po::value<float>(&rMax_), "Override maximum value for signal strength (default is 20)")(
       "prior",
@@ -153,10 +152,7 @@ Combine::Combine(float expectSignal)
       "Name of the ModelConfig for b-only hypothesis.\n"
       "If not present, it will be made from the singal model taking zero signal strength.\n"
       "A '%s' in the name will be replaced with the modelConfigName.")(
-      "bypassFrequentistFit",
-      "Skip actual minimization for constructing frequentist toys (eg because loaded snapshot already corresponds to "
-      "desired postfit)")("overrideSnapshotMass",
-                          "Override MH loaded from a snapshot with the one passed on the command line")
+      "overrideSnapshotMass", "Override MH loaded from a snapshot with the one passed on the command line")
 
       ("validateModel,V", "Perform some sanity checks on the model and abort if they fail.")(
           "saveToys", "Save results of toy MC in output file")(
@@ -199,8 +195,7 @@ Combine::Combine(float expectSignal)
       "Keep track of parameters in workspace, also accepts regexp with syntax 'rgx{<my regexp>}' (default = none)");
 }
 
-void Combine::applyOptions(std::string const &method,
-                           const boost::program_options::variables_map &vm) {
+void Combine::applyOptions(std::string const &method, const boost::program_options::variables_map &vm) {
   if (g_withSystematics) {
     std::cout << ">>> including systematics" << std::endl;
   } else {
@@ -214,7 +209,6 @@ void Combine::applyOptions(std::string const &method,
   compiledExpr_ = vm.count("compile");
   if (compiledExpr_)
     makeTempDir_ = true;
-  g_lowerLimit = vm.count("lowerLimit");
   hintUsesStatOnly_ = vm.count("hintStatOnly");
   saveWorkspace_ = vm.count("saveWorkspace");
   toysNoSystematics_ = vm.count("toysNoSystematics");
@@ -228,7 +222,6 @@ void Combine::applyOptions(std::string const &method,
     sprintf(modelBName, modelConfigNameB_.c_str(), modelConfigName_.c_str());
     modelConfigNameB_ = modelBName;
   }
-  g_bypassFrequentistFit = vm.count("bypassFrequentistFit");
   overrideSnapshotMass_ = vm.count("overrideSnapshotMass");
   saveToys_ = vm.count("saveToys");
   validateModel_ = vm.count("validateModel");
@@ -1012,7 +1005,8 @@ void Combine::run(
           return;
         }
         if (toysFrequentist_ && mc->GetGlobalObservables()) {
-          RooAbsCollection *snap = dynamic_cast<RooAbsCollection *>(g_readToysFromHere->Get("toys/toy_asimov_snapshot"));
+          RooAbsCollection *snap =
+              dynamic_cast<RooAbsCollection *>(g_readToysFromHere->Get("toys/toy_asimov_snapshot"));
           if (!snap) {
             std::cerr << "Snapshot of global observables toy_asimov_snapshot not found in "
                       << g_readToysFromHere->GetName() << ". List follows:\n";
@@ -1260,17 +1254,18 @@ void Combine::run(
     }
     if (nLimits > 1) {
       rms = sqrt(rms / (nLimits - 1) / nLimits);
-      cout << "mean   expected limit: r < " << expLimit << " +/- " << rms << " @ " << g_confidenceLevel * 100 << "%CL (" << nLimits
-           << " toyMC)" << endl;
+      cout << "mean   expected limit: r < " << expLimit << " +/- " << rms << " @ " << g_confidenceLevel * 100 << "%CL ("
+           << nLimits << " toyMC)" << endl;
     } else {
-      cout << "mean   expected limit: r < " << expLimit << " @ " << g_confidenceLevel * 100 << "%CL (" << nLimits << " toyMC)" << endl;
+      cout << "mean   expected limit: r < " << expLimit << " @ " << g_confidenceLevel * 100 << "%CL (" << nLimits
+           << " toyMC)" << endl;
     }
     sort(limitHistory.begin(), limitHistory.end());
     if (nLimits > 0) {
       double medianLimit = (nLimits % 2 == 0 ? 0.5 * (limitHistory[nLimits / 2 - 1] + limitHistory[nLimits / 2])
                                              : limitHistory[nLimits / 2]);
-      cout << "median expected limit: r < " << medianLimit << " @ " << g_confidenceLevel * 100 << "%CL (" << nLimits << " toyMC)"
-           << endl;
+      cout << "median expected limit: r < " << medianLimit << " @ " << g_confidenceLevel * 100 << "%CL (" << nLimits
+           << " toyMC)" << endl;
       double hi68 = limitHistory[min<int>(nLimits - 1, ceil(0.84 * nLimits))];
       double lo68 = limitHistory[min<int>(nLimits - 1, floor(0.16 * nLimits))];
       double hi95 = limitHistory[min<int>(nLimits - 1, ceil(0.975 * nLimits))];

@@ -703,8 +703,8 @@ bool HybridNew::runLimit(RooWorkspace *w,
     if (doFC_) {
       points = findIntervalsFromSplines(limitPlot_.get(), clsTarget);  // re use CLS_t ?
       if (points.size() < 2) {
-        std::cout << " HybridNew -- Found no interval in which " << rule_.c_str() << " is less than target " << g_confidenceLevel
-                  << ", no crossings found " << std::endl;
+        std::cout << " HybridNew -- Found no interval in which " << rule_.c_str() << " is less than target "
+                  << g_confidenceLevel << ", no crossings found " << std::endl;
         if (g_verbose)
           Logger::instance().log(
               std::string(
@@ -715,12 +715,13 @@ bool HybridNew::runLimit(RooWorkspace *w,
               Logger::kLogLevelError,
               __func__);
       } else if (points.size() == 2) {
-        std::cout << "combine/HybridNew -- One-sided boundary found for  " << 100 * g_confidenceLevel << "%% confidence regions "
-                  << std::endl;
+        std::cout << "combine/HybridNew -- One-sided boundary found for  " << 100 * g_confidenceLevel
+                  << "%% confidence regions " << std::endl;
         if (g_verbose)
           Logger::instance().log(
-              std::string(
-                  Form("HybridNew.cc: %d One-sided boundary found for %g %% confidence regions", __LINE__, 100 * g_confidenceLevel)),
+              std::string(Form("HybridNew.cc: %d One-sided boundary found for %g %% confidence regions",
+                               __LINE__,
+                               100 * g_confidenceLevel)),
               Logger::kLogLevelInfo,
               __func__);
         int ib = 0;
@@ -871,7 +872,8 @@ bool HybridNew::runLimit(RooWorkspace *w,
   }
 
   std::cout << "\n -- Hybrid New -- \n";
-  std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << g_confidenceLevel * 100 << "% CL\n";
+  std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << g_confidenceLevel * 100
+            << "% CL\n";
   if (g_verbose > 1)
     std::cout << "Total toys: " << perf_totalToysRun_ << std::endl;
   return true;

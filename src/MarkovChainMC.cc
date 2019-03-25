@@ -218,12 +218,13 @@ bool MarkovChainMC::run(RooWorkspace *w,
               << "\n";
     RooRealVar *r = dynamic_cast<RooRealVar *>(mc_s->GetParametersOfInterest()->first());
     if (num > 1) {
-      std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ " << g_confidenceLevel * 100 << "% CL ("
-                << num << " tries)" << std::endl;
+      std::cout << "Limit: " << r->GetName() << " < " << limit << " +/- " << limitErr << " @ "
+                << g_confidenceLevel * 100 << "% CL (" << num << " tries)" << std::endl;
       if (g_verbose > 0 && !readChains_)
         std::cout << "Average chain acceptance: " << suma << std::endl;
     } else {
-      std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL" << std::endl;
+      std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL"
+                << std::endl;
     }
   }
   return true;

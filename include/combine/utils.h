@@ -88,7 +88,10 @@ namespace utils {
   void copyAttributes(const RooAbsArg &from, RooAbsArg &to);
 
   void guessChannelMode(RooSimultaneous &simPdf, RooAbsData &simData, bool g_verbose = false);
-  void setChannelGenModes(RooSimultaneous &simPdf, const std::string &binned, const std::string &unbinned, int g_verbose);
+  void setChannelGenModes(RooSimultaneous &simPdf,
+                          const std::string &binned,
+                          const std::string &unbinned,
+                          int g_verbose);
 
   /// set style for plots
   void tdrStyle();

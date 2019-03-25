@@ -221,7 +221,8 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
               << std::endl;
 
   // start with a best fit
-  const RooCmdArg &constrainCmdArg = g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
+  const RooCmdArg &constrainCmdArg =
+      g_withSystematics ? RooFit::Constrain(*mc_s->GetNuisanceParameters()) : RooCmdArg();
   std::unique_ptr<RooFitResult> res;
   if (g_verbose <= 3)
     RooAbsReal::setEvalErrorLoggingMode(RooAbsReal::CountErrors);
@@ -1125,7 +1126,8 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
   double y0 = poiVals_[1];
   float &y = poiVals_[1];
 
-  double threshold = nll.getVal() + 0.5 * ROOT::Math::chisquared_quantile_c(1 - g_confidenceLevel, 2 + nOtherFloatingPoi_);
+  double threshold =
+      nll.getVal() + 0.5 * ROOT::Math::chisquared_quantile_c(1 - g_confidenceLevel, 2 + nOtherFloatingPoi_);
   if (g_verbose > 0)
     std::cout << "Best fit point is for " << xv->GetName() << ", " << yv->GetName() << " =  " << x0 << ", " << y0
               << std::endl;
@@ -1176,8 +1178,8 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
       y = yv->getVal();
       Combine::commitPoint(true, /*quantile=*/1 - g_confidenceLevel);
       if (g_verbose > -1)
-        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName() << " = " << y
-                  << " is " << x << std::endl;
+        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName()
+                  << " = " << y << " is " << x << std::endl;
     }
 
     double xdn = findCrossing(minim, nll, *xv, threshold, xc, xMin);
@@ -1186,8 +1188,8 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
       y = yv->getVal();
       Combine::commitPoint(true, /*quantile=*/1 - g_confidenceLevel);
       if (g_verbose > -1)
-        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName() << " = " << y
-                  << " is " << x << std::endl;
+        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName()
+                  << " = " << y << " is " << x << std::endl;
     }
   }
 
@@ -1272,8 +1274,8 @@ void MultiDimFit::doBox(RooAbsReal &nll, double g_confidenceLevel, const char *n
     double xMin = findCrossing(minimX, nll, *xv, threshold, p0[i], xv->getMin());
     if (!std::isnan(xMin)) {
       if (g_verbose > -1)
-        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is " << xMin
-                  << std::endl;
+        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is "
+                  << xMin << std::endl;
       for (unsigned int j = 0; j < n; ++j)
         poiVals_[j] = poiVars_[j]->getVal();
       if (commitPoints)
@@ -1286,8 +1288,8 @@ void MultiDimFit::doBox(RooAbsReal &nll, double g_confidenceLevel, const char *n
       if (commitPoints)
         Combine::commitPoint(true, /*quantile=*/prob);
       if (g_verbose > -1)
-        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is " << xMin
-                  << " (on the boundary, p-val " << prob << ")" << std::endl;
+        std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is "
+                  << xMin << " (on the boundary, p-val " << prob << ")" << std::endl;
     }
 
     for (unsigned int j = 0; j < n; ++j)
@@ -1295,8 +1297,8 @@ void MultiDimFit::doBox(RooAbsReal &nll, double g_confidenceLevel, const char *n
     double xMax = findCrossing(minimX, nll, *xv, threshold, p0[i], xv->getMax());
     if (!std::isnan(xMax)) {
       if (g_verbose > -1)
-        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is " << xMax
-                  << std::endl;
+        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is "
+                  << xMax << std::endl;
       for (unsigned int j = 0; j < n; ++j)
         poiVals_[j] = poiVars_[j]->getVal();
       if (commitPoints)
@@ -1309,8 +1311,8 @@ void MultiDimFit::doBox(RooAbsReal &nll, double g_confidenceLevel, const char *n
       if (commitPoints)
         Combine::commitPoint(true, /*quantile=*/prob);
       if (g_verbose > -1)
-        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is " << xMax
-                  << " (on the boundary, p-val " << prob << ")" << std::endl;
+        std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for all others floating is "
+                  << xMax << " (on the boundary, p-val " << prob << ")" << std::endl;
     }
 
     xv->setRange(name, xMin, xMax);

@@ -79,7 +79,8 @@ bool BayesianFlatPrior::run(RooWorkspace *w,
     if (g_verbose > -1) {
       std::cout << "\n -- BayesianSimple -- "
                 << "\n";
-      std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL" << std::endl;
+      std::cout << "Limit: " << r->GetName() << " < " << limit << " @ " << g_confidenceLevel * 100 << "% CL"
+                << std::endl;
     }
     if (g_verbose > 200) {
       // FIXME!!!!!

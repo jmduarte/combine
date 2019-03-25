@@ -9,7 +9,25 @@ cdll.LoadLibrary(library_file)
 
 from _combine import _combine
 
-def combine(datacard, method="AsymptoticLimits", args=[], significance=False, verbose=0, mass=120, systematics=1, toys=0, expect_signal=0):
+
+def combine(
+    datacard,
+    name="Test",
+    method="AsymptoticLimits",
+    hint_method="",
+    dataset="data_obs",
+    toys_file="",
+    significance=False,
+    verbose=0,
+    mass=120,
+    systematics=1,
+    toys=0,
+    expect_signal=0,
+    seed=123456,
+    lower_limit=False,
+    bypass_frequentist_fit=False,
+    perf_counters=False,
+):
     """
     Common statistics options:
       -S [ --systematics ] arg (=1)         Include constrained systematic
@@ -715,4 +733,21 @@ def combine(datacard, method="AsymptoticLimits", args=[], significance=False, ve
                                             Tolerance for minimizer when doing 
                                             brute-force search
     """
-    return _combine(datacard, args, method, verbose, significance, mass, systematics, toys, expect_signal)
+    return _combine(
+        datacard,
+        name,
+        dataset,
+        method,
+        hint_method,
+        toys_file,
+        verbose,
+        significance,
+        mass,
+        systematics,
+        toys,
+        expect_signal,
+        seed,
+        lower_limit,
+        bypass_frequentist_fit,
+        perf_counters,
+    )
