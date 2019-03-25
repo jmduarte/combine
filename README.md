@@ -15,42 +15,34 @@ This fork was done on the 23. March 2019 from the `81x-root606` branch at the co
 
 With version 1.0 of this fork, the code differs from the original only by the points listed above plus the removal of non-essantial files from the repository. It will be decided in the future if compatibility with the original will be kept or if the functionality will diverge to ensure a modern workflow, flexibility and ease of use.
 
-
 ## Installation
 
-Combine consists of both Python and C++ code, which have to be installed independently.
+Combine consists of both Python and C++ code, which can be installed together as a python package. Please follow these steps for a clean installation:
+
+1) Clone the repository recursively and change directory:
+   ```bash
+   git clone --recursive git@github.com:guitargeek/combine.git
+   cd combine
+   ```
+2) Set the location of the header files at install time:
+   ```bash
+   export COMBINE_INCLUDE_PATH=$PWD/include
+   ```
+   Please copy the headerfiles somewhere else before and set the `COMBINE_INCLUDE_PATH` accordingly if you plan to delete or move the repository after the installation.
+3) Installation of the package:
+   ```bash
+   pip install --user .
+   ```
+
+### Testing
+
+### Requirements
 
 Two unusual build and runtime requirements, which are usually not installed in the usual linux system are:
 * The [ROOT framework](https://root.cern.ch/)
 * [CERN VDT](https://github.com/drbenmorgan/vdt) for fast math
 
 For Arch Linux, these requirements are provided by the official repositories in the [root](https://www.archlinux.org/packages/community/x86_64/root/) and [cern-vdt](https://www.archlinux.org/packages/community/x86_64/cern-vdt/) packages.
-
-### Python installation
-
-You can install the python library and scripts just by executing the following command from the repository:
-```
-pip install --user python/
-```
-
-### C++ installation
-
-The header files need to stay where they have been during the installation, so it's advised to copy the `libcombine` directory somewhere where you won't be bothered by it anymore:
-
-```
-cp -r libcombine $HOME/.local/combine
-```
-
-Now we can move to this directory and proceed with the build and installation:
-
-```
-cd $HOME/.local/combine
-cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local/ .
-make -j8
-make install
-```
-
-Lastly, make sure that your `LD_LIBRARY_PATH` contains `$HOME/.local/lib` and your `PATH` contains `$HOME/.local/bin` such that the binary and libraries can be found.
 
 ## Getting started
 
@@ -62,10 +54,11 @@ After installing the combine tool, you can test it by running the [Brazilian plo
 
 To format the whole C++ code:
 ```
-find libcombine -regex '.*\.\(cpp\|hpp\|cc\|cxx\|hh\|hxx\|h\)' -exec clang-format -style=file -i {} \;
+find include -regex '.*\.\(cpp\|hpp\|cc\|cxx\|hh\|hxx\|h\)' -exec clang-format -style=file -i {} \;
+find src -regex '.*\.\(cpp\|hpp\|cc\|cxx\|hh\|hxx\|h\)' -exec clang-format -style=file -i {} \;
 ```
 
 To format the whole Python code:
 ```
-black --line-length 120 python
+black --line-length 120 .
 ```
