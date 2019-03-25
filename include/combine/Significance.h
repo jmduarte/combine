@@ -66,8 +66,6 @@ protected:
   /// Try first a plain fit
   static bool preFit_;
 
-  /// Report p-value instead of significance
-  static bool reportPVal_;
   static bool uncapped_;
 
   static float signalForSignificance_;

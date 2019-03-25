@@ -39,13 +39,17 @@ template <class T> struct ValueWithError {
   T error;
 };
 
-struct Output {
+struct CombineOutput {
   std::vector<double> limit;
   std::vector<double> limitError;
   std::vector<float> quantileExpected;
+
+  auto const& getLimit() { return limit; }
+  auto const& getLimitError() { return limitError; }
+  auto const& getQuantileExpected() { return quantileExpected; }
 };
 
-double combine(std::string const &datacard,
+CombineOutput combine(std::string const &datacard,
                std::string const &name,
                int argc,
                char **argv,
@@ -258,6 +262,17 @@ double combine(std::string const &datacard,
     test->Close();
   }
 
+  CombineOutput output;
+
+  tree->Scan();
+
+  for(int i=0; i<tree->GetEntries(); i++) {
+      tree->GetEntry(i);
+      output.limit.push_back(limit.value);
+      output.limitError.push_back(limit.error);
+      output.quantileExpected.push_back(g_quantileExpected);
+  }
+
   test->WriteTObject(tree);
   test->Close();
 
@@ -267,15 +282,14 @@ double combine(std::string const &datacard,
   if (perfCounters)
     PerfCounter::printAll();
 
-  tree->Scan();
-
-  for(int i=0; i<tree->GetEntries(); i++) {
+  for(int i=0; i<output.limit.size(); i++) {
+      std::cout << output.limit[i] << " " << output.limitError[i] << " " << output.quantileExpected[i] << std::endl;
   }
 
-  return limit.value;
+  return output;
 }
 
-double _combine(std::string const &datacard,
+CombineOutput _combine(std::string const &datacard,
                 std::string const &name,
                 std::string const &dataset,
                 std::string const &method,
@@ -319,5 +333,9 @@ double _combine(std::string const &datacard,
 PYBIND11_MODULE(_combine, m) {
   m.doc() = "CMS Higgs Combination toolkit.";
 
+  pybind11::class_<CombineOutput>(m, "CombineOutput")
+        .def("getLimit", &CombineOutput::getLimit)
+        .def("getLimitError", &CombineOutput::getLimitError)
+        .def("getQuantileExpected", &CombineOutput::getQuantileExpected);
   m.def("_combine", &_combine, "CMS Higgs Combination toolkit.");
 }

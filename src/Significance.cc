@@ -40,7 +40,6 @@ bool Significance::preFit_ = false;
 bool Significance::useMinos_ = true;
 bool Significance::bruteForce_ = false;
 std::string Significance::bfAlgo_ = "scale";
-bool Significance::reportPVal_ = false;
 bool Significance::uncapped_ = false;
 float Significance::signalForSignificance_ = 0;
 std::string Significance::plot_ = "";
@@ -70,7 +69,6 @@ Significance::Significance() : LimitAlgo("Significance specific options") {
           "plot",
           boost::program_options::value<std::string>(&plot_)->default_value(plot_),
           "Save a plot of the negative log of the profiled likelihood into the specified file")(
-          "pvalue", "Report p-value instead of significance")(
           "uncapped",
           boost::program_options::value<bool>(&uncapped_)->default_value(uncapped_),
           "Report uncapped significances or p-value (i.e. negative in case of deficits)")(
@@ -99,7 +97,6 @@ void Significance::applyOptions(const boost::program_options::variables_map &vm)
   else
     useMinos_ = true;
   bruteForce_ = vm.count("bruteForce");
-  reportPVal_ = vm.count("pvalue");
 }
 
 Significance::MinimizerSentry::MinimizerSentry(const std::string &minimizerAlgo, double tolerance)
@@ -347,19 +344,6 @@ bool Significance::runSignificance(
     std::cerr << "The minimum of the likelihood is for r <= " << signalForSignificance_
               << ", so the significance is zero" << std::endl;
     limit = 0;
-  }
-  if (reportPVal_) {
-    limit = RooStats::SignificanceToPValue(limit);
-  }
-
-  if (g_verbose > 0) {
-    std::cout << "\n -- Significance -- "
-              << "\n";
-    std::cout << (reportPVal_ ? "p-value of background: " : "Significance: ") << limit << std::endl;
-    if (reportPVal_)
-      std::cout << "       (Significance = " << RooStats::PValueToSignificance(limit) << ")" << std::endl;
-    else
-      std::cout << "       (p-value = " << RooStats::SignificanceToPValue(limit) << ")" << std::endl;
   }
   return true;
 }
