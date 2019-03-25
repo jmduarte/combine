@@ -39,6 +39,12 @@ template <class T> struct ValueWithError {
   T error;
 };
 
+struct Output {
+  std::vector<double> limit;
+  std::vector<double> limitError;
+  std::vector<float> quantileExpected;
+};
+
 double combine(std::string const &datacard,
                std::string const &name,
                int argc,
@@ -179,18 +185,18 @@ double combine(std::string const &datacard,
   TString fileName = "higgsCombine" + name + "." + whichMethod + "." + massName + toyName + "root";
   TFile *test = new TFile(fileName, "RECREATE");
   g_outputFile = test;
-  TTree *t = new TTree("limit", "limit");
+  TTree *tree = new TTree("limit", "limit");
   int syst, iToy, iChannel;
   ValueWithError<double> limit;
-  t->Branch("limit", &limit.value, "limit/D");
-  t->Branch("limitErr", &limit.error, "limitErr/D");
-  t->Branch("syst", &syst, "syst/I");
-  t->Branch("iToy", &iToy, "iToy/I");
-  t->Branch("iChannel", &iChannel, "iChannel/I");
-  t->Branch("quantileExpected", &g_quantileExpected, "quantileExpected/F");
+  tree->Branch("limit", &limit.value, "limit/D");
+  tree->Branch("limitErr", &limit.error, "limitErr/D");
+  tree->Branch("syst", &syst, "syst/I");
+  tree->Branch("iToy", &iToy, "iToy/I");
+  tree->Branch("iChannel", &iChannel, "iChannel/I");
+  tree->Branch("quantileExpected", &g_quantileExpected, "quantileExpected/F");
   for (unsigned int mpi = 0; mpi < modelParamNameVector_.size(); ++mpi) {
     std::string name = modelParamNameVector_[mpi];
-    t->Branch(Form("%s", name.c_str()), &modelParamValVector_[mpi]);
+    tree->Branch(Form("%s", name.c_str()), &modelParamValVector_[mpi]);
   }
 
   g_writeToysHere = test->mkdir("toys", "toys");
@@ -244,7 +250,7 @@ double combine(std::string const &datacard,
   }
 
   try {
-    combiner.run(datacard, dataset, limit.value, limit.error, iToy, t, runToys);
+    combiner.run(datacard, dataset, limit.value, limit.error, iToy, tree, runToys);
     if (g_verbose > 0)
       Logger::instance().printLog();
   } catch (std::exception &ex) {
@@ -252,7 +258,7 @@ double combine(std::string const &datacard,
     test->Close();
   }
 
-  test->WriteTObject(t);
+  test->WriteTObject(tree);
   test->Close();
 
   for (auto i = methods.begin(); i != methods.end(); ++i)
@@ -260,6 +266,11 @@ double combine(std::string const &datacard,
 
   if (perfCounters)
     PerfCounter::printAll();
+
+  tree->Scan();
+
+  for(int i=0; i<tree->GetEntries(); i++) {
+  }
 
   return limit.value;
 }

@@ -1133,11 +1133,7 @@ Double_t RooParamKeysPdf::analyticalIntegral(Int_t code, const char* /*rangeName
 #include "RooCustomizer.h"
 #include "RooAddPdf.h"
 #include "RooAddition.h"
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5, 34, 19)
 #include "RooAbsMoment.h"
-#else
-#include "RooMoment.h"
-#endif
 #include "RooLinearVar.h"
 #include "RooChangeTracker.h"
 #include "RooNumIntConfig.h"
@@ -1168,11 +1164,7 @@ RooStarMomentMorph::RooStarMomentMorph(
     const std::vector<double>& nrefpoints,  // (-1,1,-1,1)
     const Setting& setting)
     : RooAbsPdf(name, title),
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5, 34, 19)
       _cacheMgr(this, 10, kTRUE, kTRUE),
-#else
-      _cacheMgr(this, 10, kFALSE),
-#endif
       _parList("parList", "List of fit parameters", this),
       _obsList("obsList", "List of variables", this),
       _pdfList("pdfList", "List of pdfs", this),
@@ -1377,18 +1369,12 @@ RooStarMomentMorph::CacheElem* RooStarMomentMorph::getCache(const RooArgSet* /*n
     RooArgList obsList(_obsList);
     for (Int_t i = 0; i < nPdf; ++i) {
       for (Int_t j = 0; j < nObs; ++j) {
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5, 34, 19)
         RooAbsMoment* mom = nObs == 1 ?
-#else
-        RooMoment* mom = nObs == 1 ?
-#endif
                                       ((RooAbsPdf*)_pdfList.at(i))->sigma((RooRealVar&)*obsList.at(j))
                                       : ((RooAbsPdf*)_pdfList.at(i))->sigma((RooRealVar&)*obsList.at(j), obsList);
 
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5, 34, 19)
         mom->setLocalNoDirtyInhibit(kTRUE);
         mom->mean()->setLocalNoDirtyInhibit(kTRUE);
-#endif
 
         sigmarv[sij(i, j)] = mom;
         meanrv[sij(i, j)] = mom->mean();

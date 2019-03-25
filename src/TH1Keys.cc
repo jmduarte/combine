@@ -119,11 +119,7 @@ void TH1Keys::FillN(Int_t ntimes, const Double_t *x, const Double_t *w, Int_t st
   }
 }
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(5, 34, 00)
-void TH1Keys::Add(const TH1 *h1, Double_t c1)
-#else
 Bool_t TH1Keys::Add(const TH1 *h1, Double_t c1)
-#endif
 {
   if (c1 != 1.0)
     dont("Add with constant != 1");
@@ -132,9 +128,7 @@ Bool_t TH1Keys::Add(const TH1 *h1, Double_t c1)
     dont("Add with a non TH1Keys");
   dataset_->append(const_cast<RooDataSet &>(*other->dataset_));
   isCacheGood_ = false;
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5, 34, 00)
   return true;
-#endif
 }
 
 void TH1Keys::Scale(Double_t c1, Option_t *option) {

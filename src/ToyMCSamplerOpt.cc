@@ -717,48 +717,8 @@ RooAbsData *ToyMCSamplerOpt::GenerateToyData(RooArgSet & /*nullPOI*/, double &we
 
   RooAbsData *data = NULL;
 
-#if ROOT_VERSION_CODE < ROOT_VERSION(5, 34, 00)
-
-  if (!fImportanceDensity) {
-    // no Importance Sampling
-    data = Generate(*fPdf, observables);
-  } else {
-    throw std::runtime_error("No importance sampling yet");
-
-    // Importance Sampling
-    RooArgSet *allVars = fPdf->getVariables();
-    RooArgSet *allVars2 = fImportanceDensity->getVariables();
-    allVars->add(*allVars2);
-    const RooArgSet *saveVars = (const RooArgSet *)allVars->snapshot();
-
-    // the number of events generated is either the given fNEvents or
-    // in case this is not given, the expected number of events of
-    // the pdf with a Poisson fluctuation
-    int forceEvents = 0;
-    if (fNEvents == 0) {
-      forceEvents = (int)fPdf->expectedEvents(observables);
-      forceEvents = RooRandom::randomGenerator()->Poisson(forceEvents);
-    }
-
-    // need to be careful here not to overwrite the current state of the
-    // nuisance parameters, ie they must not be part of the snapshot
-    if (fImportanceSnapshot)
-      *allVars = *fImportanceSnapshot;
-
-    // generate with the parameters configured in this class
-    //   NULL => no protoData
-    //   overwriteEvents => replaces fNEvents it would usually take
-    data = Generate(*fImportanceDensity, observables, NULL, forceEvents);
-
-    *allVars = *saveVars;
-    delete allVars;
-    delete allVars2;
-    delete saveVars;
-  }
-#else
   // no Importance Sampling defined in ToyMCSampler of 5.34
   data = Generate(*fPdf, observables);
-#endif
 
   if (saveNuis.getSize()) {
     RooArgSet pars(*fNuisancePars);
