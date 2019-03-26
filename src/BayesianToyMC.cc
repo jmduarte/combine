@@ -17,6 +17,9 @@
 #include "combine/CachingNLL.h"
 #include "combine/utils.h"
 
+#include <cmath>
+#include <cfloat>
+
 using namespace RooStats;
 
 int BayesianToyMC::numIters_ = 1000;
@@ -258,7 +261,7 @@ std::pair<double, double> BayesianToyMC::priorPredictiveDistribution(RooStats::M
       }
       double nllVal = nll->getVal();
       if (offset) {
-        if (isnan(*offset))
+        if (std::isnan(*offset))
           *offset = nllVal;
         nllVal -= *offset;
       }

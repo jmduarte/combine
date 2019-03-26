@@ -1,6 +1,8 @@
 Combine
 =======
 
+[![Build Status](https://travis-ci.com/guitargeek/combine.svg?branch=master)](https://travis-ci.com/guitargeek/combine)
+
 ## Introduction
 
 This is a fork of the [HiggsAnalysis-CombinedLimit tool](https://github.com/cms-analysis/higgsanalysis-combinedlimit), developed by the CMS collaboration. The original tool is used by many analyses in the collaboration, not only in the Higgs sector. For more information how to use it, follow the documentation in the original repository.
@@ -14,6 +16,10 @@ This fork was done on the 23. March 2019 from the `81x-root606` branch at the co
 * make the code nicer by applying __clang-format__ on the C++ code and formatting the Python code with __black__
 
 With version 1.0 of this fork, the code differs from the original only by the points listed above plus the removal of non-essantial files from the repository. It will be decided in the future if compatibility with the original will be kept or if the functionality will diverge to ensure a modern workflow, flexibility and ease of use.
+
+After version 1.0, the goals shifted a bit and with be outlined in the following.
+
+### Goals
 
 ## Installation
 

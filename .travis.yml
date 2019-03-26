@@ -1,0 +1,50 @@
+language: python
+dist: xenial
+
+os:
+  - linux
+
+sudo: true
+
+python:
+  - 2.7
+  - 3.5
+  - 3.6
+  - 3.7
+
+addons:
+  apt:
+    update: true
+    packages:
+      - python-setuptools
+      - cmake
+      - build-essential
+      - gcc-multilib
+      - g++-multilib
+      - libboost-all-dev
+
+before_install:
+- |
+  PY_CMD=$(which python)
+  OPT_DIR=~/opt
+  ROOT_TAR=root_v6.16.00.Linux-ubuntu16-x86_64-gcc5.4.tar.gz
+  mkdir $OPT_DIR
+  wget https://root.cern/download/$ROOT_TAR -O $OPT_DIR/$ROOT_TAR
+  tar -xf $OPT_DIR/$ROOT_TAR --directory=$OPT_DIR/
+  source $OPT_DIR/root/bin/thisroot.sh
+
+install:
+- |
+  REPO_DIR=$PWD
+  BUILD_DIR=cmake_build
+  patch $OPT_DIR/root/lib/ROOT.py patches/ROOTpy_v6.16.00.patch
+  rm -r src/pybind11/tests
+  mkdir $BUILD_DIR
+  cd $BUILD_DIR
+  cmake -DPYTHON_EXECUTABLE=$(which $PY_CMD) $REPO_DIR
+  make -j8
+  export COMBINE_LIB_DIR=$PWD/lib
+  export PYTHONPATH=$PYTHONDIR:$COMBINE_LIB_DIR
+  cd $REPO_DIR
+script:
+- python setup.py pytest

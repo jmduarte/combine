@@ -211,14 +211,36 @@ def combine(
     return out
 
 
-def significance(datacard, pvalue=False):
+def asymptotic_limits(datacard, **kwargs):
+
+    import numpy as np
+    import pandas as pd
+
+    out = combine(datacard, method="AsymptoticLimits", **kwargs)
+
+    df = pd.DataFrame(data=dict(limit=out.getLimit(), uncertainty=out.getLimitError(), quantile=out.getQuantileExpected()))
+    df.loc[df.index[:-1],"uncertainty"] = np.nan
+
+    return df
+
+
+def significance(datacard, pvalue=False, **kwargs):
     import scipy.stats
 
     significance = combine(
-        datacard, method="Significance", mass=125, toys=-1, expect_signal=1, significance=True
+        datacard, method="Significance", **kwargs
     ).getLimit()[-1]
 
     if pvalue:
         return scipy.stats.norm.sf(significance)
 
     return significance
+
+
+def bayesian_toy_mc(datacard, pvalue=False, **kwargs):
+
+    limit = combine(
+        datacard, method="BayesianToyMC", **kwargs
+    ).getLimit()[-1]
+
+    return limit

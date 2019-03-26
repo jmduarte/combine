@@ -1,0 +1,88 @@
+--- root/lib/ROOT.py	2019-03-26 18:08:01.718909610 +0100
++++ root/lib/ROOT_new.py	2019-03-26 18:09:23.598905995 +0100
+@@ -95,7 +95,7 @@
+ if sys.platform == 'darwin':
+    import warnings
+    warnings.filterwarnings( action='ignore', category=RuntimeWarning, module='ROOT',\
+-      message='class \S* already in TClassTable$' )
++      message=r'class \S* already in TClassTable$' )
+ 
+ ### load PyROOT C++ extension module, special case for linux and Sun ------------
+ _root = cppyy._backend
+@@ -776,37 +776,39 @@
+       sys.excepthook = sys.__excepthook__
+    __builtin__.__import__ = _orig_ihook
+ 
+-   facade = sys.modules[ __name__ ]
+-
+  # shutdown GUI thread, as appropriate (always save to call)
+    if hasattr( _root, 'RemoveGUIEventInputHook' ):
+       _root.RemoveGUIEventInputHook()
+ 
+- # prevent further spurious lookups into ROOT libraries
+-   del facade.__class__.__getattr__
+-   del facade.__class__.__setattr__
+-
+- # shutdown GUI thread, as appropriate
+-   if hasattr( facade, 'PyGUIThread' ):
+-      facade.keeppolling = 0
+-
+-    # if not shutdown from GUI (often the case), wait for it
+-      import threading
+-      if threading.currentThread() != facade.PyGUIThread:
+-         facade.PyGUIThread.join( 3. )                 # arbitrary
+-      del threading
+-
+- # remove otherwise (potentially) circular references
+-   import types
+-   items = facade.module.__dict__.items()
+-   for k, v in items:
+-      if type(v) == types.ModuleType:
+-         facade.module.__dict__[ k ] = None
+-   del v, k, items, types
+-
+- # destroy facade
+-   facade.__dict__.clear()
+-   del facade
++   if __name__ in sys.modules:
++
++      facade = sys.modules[ __name__ ]
++
++    # prevent further spurious lookups into ROOT libraries
++      del facade.__class__.__getattr__
++      del facade.__class__.__setattr__
++
++    # shutdown GUI thread, as appropriate
++      if hasattr( facade, 'PyGUIThread' ):
++         facade.keeppolling = 0
++
++       # if not shutdown from GUI (often the case), wait for it
++         import threading
++         if threading.currentThread() != facade.PyGUIThread:
++            facade.PyGUIThread.join( 3. )                 # arbitrary
++         del threading
++
++    # remove otherwise (potentially) circular references
++      import types
++      items = facade.module.__dict__.items()
++      for k, v in items:
++         if type(v) == types.ModuleType:
++            facade.module.__dict__[ k ] = None
++      del v, k, items, types
++
++    # destroy facade
++      facade.__dict__.clear()
++      del facade
+ 
+    if 'libPyROOT' in sys.modules:
+     # run part the gROOT shutdown sequence ... running it here ensures that
+@@ -823,7 +825,8 @@
+       del sys.modules[ 'libPyROOT' ]
+ 
+  # destroy ROOT module
+-   del sys.modules[ 'ROOT' ]
++   if 'ROOT' in sys.modules:
++      del sys.modules[ 'ROOT' ]
+ 
+ atexit.register( cleanup )
+ del cleanup, atexit

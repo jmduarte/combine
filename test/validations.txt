@@ -1,0 +1,6 @@
+combine -M AsymptoticLimits datacards/simple-counting-experiment.txt
+combine -M Significance datacards/simple-counting-experiment.txt
+combine -M Significance datacards/simple-counting-experiment.txt --pval
+combine -M Significance datacards/simple-counting-experiment.txt -t -1 --significance --expectSignal=1
+combine -M Significance datacards/simple-counting-experiment.txt -t -1 --significance --expectSignal=1 --pval
+combine -M BayesianToyMC datacards/simple-counting-experiment.txt
