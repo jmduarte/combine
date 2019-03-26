@@ -35,9 +35,6 @@ bool AsymptoticLimits::noFitAsimov_ = false;
 bool AsymptoticLimits::useGrid_ = false;
 bool AsymptoticLimits::newExpected_ = true;
 std::string AsymptoticLimits::minosAlgo_ = "stepping";
-//std::string AsymptoticLimits::minimizerAlgo_ = "Minuit2";
-//float       AsymptoticLimits::minimizerTolerance_ = 0.01;
-//int         AsymptoticLimits::minimizerStrategy_  = 0;
 double AsymptoticLimits::rValue_ = 1.0;
 bool AsymptoticLimits::strictBounds_ = false;
 
@@ -54,9 +51,6 @@ AsymptoticLimits::AsymptoticLimits() : LimitAlgo("AsymptoticLimits specific opti
       boost::program_options::value<std::string>(&what_)->default_value(what_),
       "What to run: both (default), observed, expected, blind.")(
       "singlePoint", boost::program_options::value<double>(&rValue_), "Just compute CLs for the given value of r")
-      //("minimizerAlgo",      boost::program_options::value<std::string>(&minimizerAlgo_)->default_value(minimizerAlgo_), "Choice of minimizer used for profiling (Minuit vs Minuit2)")
-      //("minimizerTolerance", boost::program_options::value<float>(&minimizerTolerance_)->default_value(minimizerTolerance_),  "Tolerance for minimizer used for profiling")
-      //("minimizerStrategy",  boost::program_options::value<int>(&minimizerStrategy_)->default_value(minimizerStrategy_),      "Stragegy for minimizer")
       ("qtilde",
        boost::program_options::value<bool>(&qtilde_)->default_value(qtilde_),
        "Allow only non-negative signal strengths (default is true).")(
@@ -128,11 +122,6 @@ bool AsymptoticLimits::run(RooWorkspace *w,
                            double &limitErr,
                            const double *hint) {
   RooFitGlobalKillSentry silence(g_verbose <= 1 ? RooFit::WARNING : RooFit::DEBUG);
-  /*
-    ProfileLikelihood::MinimizerSentry minimizerConfig(minimizerAlgo_, minimizerTolerance_);
-    if (g_verbose > 0) std::cout << "Will compute " << what_ << " limit(s) using minimizer " << minimizerAlgo_ 
-                        << " with strategy " << minimizerStrategy_ << " and tolerance " << minimizerTolerance_ << std::endl;
-    */
   hasDiscreteParams_ = false;
   if (params_.get() == 0)
     params_.reset(mc_s->GetPdf()->getParameters(data));

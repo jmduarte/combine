@@ -1,14 +1,22 @@
 language: python
 dist: xenial
+cache: false
 
 os:
   - linux
 
 addons:
   apt:
+    packages:
+    sources:
+    - travis-ci/sqlite3
     update: true
     packages:
+      - sqlite3
       - python-setuptools
+      - python-numpy
+      - python-pandas
+      - python-pytest
       - cmake
       - build-essential
       - gcc-multilib
@@ -51,5 +59,12 @@ install:
   patch $OPT_DIR/root/lib/ROOT.py patches/ROOTpy_v6.16.00.patch
   rm -r src/pybind11/tests
   export COMBINE_INCLUDE_DIR=$PWD/include
+  apt-get purge -y scipy
+  pip install scipy
 script:
-- python setup.py pytest
+- pip install .
+- python test/test_test.py
+- python test/test_asymptotic_limits_1.py
+- python test/test_asymptotic_limits_1.py
+- python test/test_bayesian_toy_mc.py
+- python test/test_significance.py

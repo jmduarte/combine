@@ -111,7 +111,7 @@ set(SOURCE_FILES
 find_package(Boost 1.40 COMPONENTS program_options filesystem system REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad Tree TreePlayer Rint Postscript
                                       Matrix Physics MathCore Thread MultiProc MathMore RooFit RooFitCore
-                                      RooStats Minuit Foam HistFactory)
+                                      RooStats Minuit Foam HistFactory vdt)
 include(${ROOT_USE_FILE})
 
 
