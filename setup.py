@@ -82,9 +82,13 @@ setup(
     ext_modules=ext_modules,
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    install_requires=[],
     test_suite="test",
     setup_requires=["pytest-runner"],
+    tests_require=["pytest"],
+    install_requires=[
+        "numpy",
+        "pandas",
+    ],
     scripts=[
         "scripts/combineCards.py",
         "scripts/commentUncerts.py",

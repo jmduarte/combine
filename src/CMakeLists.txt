@@ -108,15 +108,18 @@ set(SOURCE_FILES
     VectorizedCB.cc
 )
 
+find_package(Boost 1.40 COMPONENTS program_options filesystem system REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS Core Imt RIO Net Hist Graf Graf3d Gpad Tree TreePlayer Rint Postscript
                                       Matrix Physics MathCore Thread MultiProc MathMore RooFit RooFitCore
                                       RooStats Minuit Foam HistFactory)
 include(${ROOT_USE_FILE})
 
+
 ROOT_GENERATE_DICTIONARY(combine_xr ${COMBINE_HEADERS_DIR}/combine/classes.h
                          LINKDEF ${COMBINE_HEADERS_DIR}/combine/classesLinkDef.h)
+
 add_library(Combine SHARED ${SOURCE_FILES} combine_xr.cxx)
-target_link_libraries(Combine PUBLIC ${ROOT_LIBRARIES})
+target_link_libraries(Combine PUBLIC ${ROOT_LIBRARIES} Boost::program_options Boost::filesystem Boost::system)
 
 add_subdirectory(pybind11)
 

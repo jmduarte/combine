@@ -4,14 +4,6 @@ dist: xenial
 os:
   - linux
 
-sudo: true
-
-python:
-  - 2.7
-  - 3.5
-  - 3.6
-  - 3.7
-
 addons:
   apt:
     update: true
@@ -22,29 +14,42 @@ addons:
       - gcc-multilib
       - g++-multilib
       - libboost-all-dev
+      - dpkg-dev
+      - binutils
+      - libx11-dev
+      - libxpm-dev
+      - libxft-dev
+      - libxext-dev
+      - gfortran libssl-dev
+      - libpcre3-dev
+      - xlibmesa-glu-dev
+      - libglew1.5-dev
+      - libftgl-dev
+      - libmysqlclient-dev
+      - libfftw3-dev
+      - libcfitsio-dev
+      - graphviz-dev
+      - libavahi-compat-libdnssd-dev
+      - libldap2-dev
+      - python-dev
+      - libxml2-dev
+      - libkrb5-dev
+      - libgsl0-dev
+      - libqt4-dev
 
 before_install:
 - |
-  PY_CMD=$(which python)
   OPT_DIR=~/opt
   ROOT_TAR=root_v6.16.00.Linux-ubuntu16-x86_64-gcc5.4.tar.gz
   mkdir $OPT_DIR
   wget https://root.cern/download/$ROOT_TAR -O $OPT_DIR/$ROOT_TAR
   tar -xf $OPT_DIR/$ROOT_TAR --directory=$OPT_DIR/
-  source $OPT_DIR/root/bin/thisroot.sh
 
 install:
 - |
-  REPO_DIR=$PWD
-  BUILD_DIR=cmake_build
+  source $OPT_DIR/root/bin/thisroot.sh
   patch $OPT_DIR/root/lib/ROOT.py patches/ROOTpy_v6.16.00.patch
   rm -r src/pybind11/tests
-  mkdir $BUILD_DIR
-  cd $BUILD_DIR
-  cmake -DPYTHON_EXECUTABLE=$(which $PY_CMD) $REPO_DIR
-  make
-  export COMBINE_LIB_DIR=$PWD/lib
-  export PYTHONPATH=$PYTHONDIR:$COMBINE_LIB_DIR
-  cd $REPO_DIR
+  export COMBINE_INCLUDE_DIR=$PWD/include
 script:
 - python setup.py pytest

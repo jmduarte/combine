@@ -130,13 +130,27 @@ def text2workspace(
     MB.setPhysics(physics)
     MB.doModel()
 
+def get_module_file(name):
 
-import importlib
+    import sys
+
+    if sys.version_info < (3, 0):
+        import imp
+        return imp.find_module(name)[1]
+
+    elif sys.version_info < (3, 5):
+        import pkgutil
+        package = pkgutil.get_loader(name)
+        return package.filename
+
+    import importlib
+    spec = importlib.util.find_spec(name)
+    return spec.origin
+
 import os
 from ctypes import cdll
 
-spec = importlib.util.find_spec("_combine")
-library_file = os.path.join(os.path.dirname(spec.origin), "libCombine.so")
+library_file = os.path.join(os.path.dirname(get_module_file("_combine")), "libCombine.so")
 
 cdll.LoadLibrary(library_file)
 
