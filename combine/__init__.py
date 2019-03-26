@@ -165,6 +165,13 @@ def combine(
     keyword_value=[],
     text2workspace_kwargs={},
 ):
+
+    import os
+    cwd = os.getcwd()
+
+    if not datacard.startswith("/"):
+        datacard = os.path.join(cwd, datacard)
+
     tmp_file = None
     if not datacard.endswith(".root"):
         import tempfile

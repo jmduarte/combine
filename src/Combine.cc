@@ -177,9 +177,6 @@ Combine::Combine(float expectSignal)
       po::value<bool>(&rebuildSimPdf_)->default_value(false),
       "Rebuild simultaneous pdf from scratch to make sure constraints are correct (not needed in CMS workspaces)")(
       "compile", "Compile expressions instead of interpreting them")(
-      "tempDir",
-      po::value<bool>(&makeTempDir_)->default_value(false),
-      "Run the program from a temporary directory (automatically on for text datacards or if 'compile' is activated)")(
       "guessGenMode", "Guess if to generate binned or unbinned based on dataset")(
       "genBinnedChannels",
       po::value<std::string>(&genAsBinned_)->default_value(genAsBinned_),
@@ -207,8 +204,6 @@ void Combine::applyOptions(std::string const &method, const boost::program_optio
     throw std::logic_error("You can't set generateBinnedWorkaround and unbinned options at the same time");
   guessGenMode_ = vm.count("guessGenMode");
   compiledExpr_ = vm.count("compile");
-  if (compiledExpr_)
-    makeTempDir_ = true;
   hintUsesStatOnly_ = vm.count("hintStatOnly");
   saveWorkspace_ = vm.count("saveWorkspace");
   toysNoSystematics_ = vm.count("toysNoSystematics");
@@ -285,26 +280,9 @@ bool Combine::mklimit(RooWorkspace *w,
 }
 
 void Combine::run(
-    TString workspaceFile, const std::string &dataset, double &limit, double &limitErr, int &iToy, TTree *tree, int nToys) {
+    TString fileToLoad, const std::string &dataset, double &limit, double &limitErr, int &iToy, TTree *tree, int nToys) {
   ToCleanUp garbageCollect;  // use this to close and delete temporary files
 
-  TString tmpDir = "", tmpFile = "", pwd(gSystem->pwd());
-  if (makeTempDir_) {
-    tmpDir = "roostats-XXXXXX";
-    tmpFile = "model";
-    mkdtemp(const_cast<char *>(tmpDir.Data()));
-    gSystem->cd(tmpDir.Data());
-    garbageCollect.path = tmpDir.Data();  // request that we delete this dir when done
-  } else if (!workspaceFile.EndsWith(".root")) {
-    char buff[99];
-    snprintf(buff, 98, "roostats-XXXXXX");
-    int fd = mkstemp(buff);
-    close(fd);
-    tmpFile = buff;
-    unlink(tmpFile);  // this is to be deleted, since we'll use tmpFile+".root"
-  }
-
-  TString fileToLoad = (workspaceFile[0] == '/' ? workspaceFile : pwd + "/" + workspaceFile);
   if (!boost::filesystem::exists(fileToLoad.Data()))
     throw std::invalid_argument(("File " + fileToLoad + " does not exist").Data());
 
@@ -462,9 +440,6 @@ void Combine::run(
     if (w->var("MH"))
       g_mass = w->var("MH")->getVal();
   }
-
-
-  gSystem->cd(pwd);
 
   if (g_verbose <= 2)
     RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);

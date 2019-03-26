@@ -42,7 +42,7 @@ install:
   mkdir $BUILD_DIR
   cd $BUILD_DIR
   cmake -DPYTHON_EXECUTABLE=$(which $PY_CMD) $REPO_DIR
-  make -j8
+  make
   export COMBINE_LIB_DIR=$PWD/lib
   export PYTHONPATH=$PYTHONDIR:$COMBINE_LIB_DIR
   cd $REPO_DIR
