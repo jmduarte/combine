@@ -178,7 +178,11 @@ def combine(
     compiled=False,
     keyword_value=[],
     text2workspace_kwargs={},
+    toys_frequentist=False,
+    toys_no_systematics=False,
 ):
+    if toys_no_systematics and toys_frequentist:
+        raise ValueError("You can't set toysNoSystematics and toysFrequentist options at the same time")
 
     import os
     cwd = os.getcwd()
@@ -225,6 +229,8 @@ def combine(
         lower_limit,
         bypass_frequentist_fit,
         perf_counters,
+        toys_frequentist,
+        toys_no_systematics,
     )
 
     os.remove(tmp_file)

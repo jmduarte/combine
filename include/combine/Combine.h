@@ -60,7 +60,7 @@ namespace {
 
 class Combine {
 public:
-  Combine(float expectSignal);
+  Combine(float expectSignal, bool frequentistToys, bool toysNoSystematics);
 
   boost::program_options::options_description &statOptions() { return statOptions_; }
   boost::program_options::options_description &ioOptions() { return ioOptions_; }
@@ -100,8 +100,8 @@ private:
   float rMin_, rMax_;
   std::string prior_;
   bool hintUsesStatOnly_;
-  bool toysNoSystematics_;
-  bool toysFrequentist_;
+  const bool toysNoSystematics_;
+  const bool toysFrequentist_;
   float expectSignal_;
   bool expectSignalSet_;  // keep track of whether or not expectSignal was defaulted
   float expectSignalMass_;

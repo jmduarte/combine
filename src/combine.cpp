@@ -51,17 +51,17 @@ struct CombineOutput {
 
 std::unique_ptr<LimitAlgo> createLimitAlgo(std::string const& name) {
     if(name == "AsymptoticLimits") return std::make_unique<AsymptoticLimits>();
-    if(name =="BayesianSimple") return std::make_unique<BayesianFlatPrior>();
-    if(name =="BayesianToyMC") return std::make_unique<BayesianToyMC>();
-    if(name =="ChannelCompatibilityCheck") return std::make_unique<ChannelCompatibilityCheck>();
-    if(name =="FeldmanCousins") return std::make_unique<FeldmanCousins>();
-    if(name =="FitDiagnostics") return std::make_unique<FitDiagnostics>();
-    if(name =="GenerateOnly") return std::make_unique<GenerateOnly>();
-    if(name =="GoodnessOfFit") return std::make_unique<GoodnessOfFit>();
-    if(name =="HybridNew") return std::make_unique<HybridNew>();
-    if(name =="MarkovChainMC") return std::make_unique<MarkovChainMC>();
-    if(name =="MultiDimFit") return std::make_unique<MultiDimFit>();
-    if(name =="Significance") return std::make_unique<Significance>();
+    if(name == "BayesianSimple") return std::make_unique<BayesianFlatPrior>();
+    if(name == "BayesianToyMC") return std::make_unique<BayesianToyMC>();
+    if(name == "ChannelCompatibilityCheck") return std::make_unique<ChannelCompatibilityCheck>();
+    if(name == "FeldmanCousins") return std::make_unique<FeldmanCousins>();
+    if(name == "FitDiagnostics") return std::make_unique<FitDiagnostics>();
+    if(name == "GenerateOnly") return std::make_unique<GenerateOnly>();
+    if(name == "GoodnessOfFit") return std::make_unique<GoodnessOfFit>();
+    if(name == "HybridNew") return std::make_unique<HybridNew>();
+    if(name == "MarkovChainMC") return std::make_unique<MarkovChainMC>();
+    if(name == "MultiDimFit") return std::make_unique<MultiDimFit>();
+    if(name == "Significance") return std::make_unique<Significance>();
     return nullptr;
 }
 
@@ -77,7 +77,9 @@ CombineOutput combine(std::string const &datacard,
                int runToys,
                float expectSignal,
                int seed,
-               bool perfCounters) {
+               bool perfCounters,
+               bool frequentistToys,
+               bool toysNoSystematics) {
   using namespace std;
   using namespace boost;
   namespace po = boost::program_options;
@@ -87,7 +89,7 @@ CombineOutput combine(std::string const &datacard,
   vector<string> modelParamNameVector_;
   vector<string> modelParamValVector_;
 
-  Combine combiner(expectSignal);
+  Combine combiner(expectSignal, frequentistToys, toysNoSystematics);
 
   CascadeMinimizer::initOptions();
 
@@ -278,7 +280,9 @@ CombineOutput _combine(std::string const &datacard,
                 int seed,
                 bool lowerLimit,
                 bool bypassFrequentistFit,
-                bool perfCounters) {
+                bool perfCounters,
+                bool frequentistToys,
+                bool toysNoSystematics) {
   std::vector<char *> args;
 
   args.push_back(const_cast<char *>("combine"));
@@ -301,7 +305,9 @@ CombineOutput _combine(std::string const &datacard,
                  toys,
                  expectSignal,
                  seed,
-                 perfCounters);
+                 perfCounters,
+                 frequentistToys,
+                 toysNoSystematics);
 }
 
 PYBIND11_MODULE(_combine, m) {
