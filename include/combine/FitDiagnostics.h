@@ -36,8 +36,6 @@ protected:
                            double &limitErr,
                            const double *hint);
 
-  static std::string name_;
-
   static std::string minos_;
 
   static bool justFit_, skipBOnlyFit_, noErrors_;

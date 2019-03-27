@@ -130,22 +130,27 @@ def text2workspace(
     MB.setPhysics(physics)
     MB.doModel()
 
+
 def get_module_file(name):
 
     import sys
 
     if sys.version_info < (3, 0):
         import imp
+
         return imp.find_module(name)[1]
 
     elif sys.version_info < (3, 5):
         import pkgutil
+
         package = pkgutil.get_loader(name)
         return package.filename
 
     import importlib
+
     spec = importlib.util.find_spec(name)
     return spec.origin
+
 
 import os
 from ctypes import cdll
@@ -180,11 +185,13 @@ def combine(
     text2workspace_kwargs={},
     toys_frequentist=False,
     toys_no_systematics=False,
+    robust_fit=False,
 ):
     if toys_no_systematics and toys_frequentist:
         raise ValueError("You can't set toysNoSystematics and toysFrequentist options at the same time")
 
     import os
+
     cwd = os.getcwd()
 
     if not datacard.startswith("/"):
@@ -231,6 +238,7 @@ def combine(
         perf_counters,
         toys_frequentist,
         toys_no_systematics,
+        robust_fit,
     )
 
     os.remove(tmp_file)
@@ -245,8 +253,10 @@ def asymptotic_limits(datacard, **kwargs):
 
     out = combine(datacard, method="AsymptoticLimits", **kwargs)
 
-    df = pd.DataFrame(data=dict(limit=out.getLimit(), uncertainty=out.getLimitError(), quantile=out.getQuantileExpected()))
-    df.loc[df.index[:-1],"uncertainty"] = np.nan
+    df = pd.DataFrame(
+        data=dict(limit=out.getLimit(), uncertainty=out.getLimitError(), quantile=out.getQuantileExpected())
+    )
+    df.loc[df.index[:-1], "uncertainty"] = np.nan
 
     return df
 
@@ -254,9 +264,7 @@ def asymptotic_limits(datacard, **kwargs):
 def significance(datacard, pvalue=False, **kwargs):
     import scipy.stats
 
-    significance = combine(
-        datacard, method="Significance", **kwargs
-    ).getLimit()[-1]
+    significance = combine(datacard, method="Significance", **kwargs).getLimit()[-1]
 
     if pvalue:
         return scipy.stats.norm.sf(significance)
@@ -264,10 +272,23 @@ def significance(datacard, pvalue=False, **kwargs):
     return significance
 
 
-def bayesian_toy_mc(datacard, pvalue=False, **kwargs):
+def bayesian_toy_mc(datacard, **kwargs):
 
-    limit = combine(
-        datacard, method="BayesianToyMC", **kwargs
-    ).getLimit()[-1]
+    limit = combine(datacard, method="BayesianToyMC", **kwargs).getLimit()[-1]
 
     return limit
+
+
+def fit_diagnostics(datacard, **kwargs):
+
+    import numpy as np
+    import pandas as pd
+
+    out = combine(datacard, method="FitDiagnostics", **kwargs)
+
+    df = pd.DataFrame(
+        data=dict(limit=out.getLimit(), uncertainty=out.getLimitError(), quantile=out.getQuantileExpected())
+    )
+    df.loc[df.index[:-1], "uncertainty"] = np.nan
+
+    return df

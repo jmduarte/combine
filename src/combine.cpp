@@ -282,7 +282,8 @@ CombineOutput _combine(std::string const &datacard,
                 bool bypassFrequentistFit,
                 bool perfCounters,
                 bool frequentistToys,
-                bool toysNoSystematics) {
+                bool toysNoSystematics,
+                bool robustFit) {
   std::vector<char *> args;
 
   args.push_back(const_cast<char *>("combine"));
@@ -293,6 +294,8 @@ CombineOutput _combine(std::string const &datacard,
   g_doSignificance = significance;
   g_lowerLimit = lowerLimit;
   g_bypassFrequentistFit = bypassFrequentistFit;
+
+  FitterAlgoBase::g_robustFit = robustFit;
 
   return combine(datacard,
                  name,

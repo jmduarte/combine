@@ -66,8 +66,9 @@ script:
 - python test/test_test.py
 - python test/test_asymptotic_limits_1.py
 - python test/test_asymptotic_limits_1.py
-- python test/test_bayesian_toy_mc.py
+- python test/test_bayesian_toy_mc_1.py
 - python test/test_significance_1.py
 - python test/test_significance_2.py
 - python test/test_significance_3.py
 - python test/test_significance_4.py
+- python test/test_fit_diagnostics_1.py

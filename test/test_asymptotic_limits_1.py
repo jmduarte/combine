@@ -6,7 +6,7 @@ import combine
 
 class TestAsymptoticLimits1(unittest.TestCase):
     def test_asymptotic_limits_1_01(self):
-        """combine -M AsymptiticLimits datacards/simple-counting-experiment.txt
+        """-M AsymptiticLimits simple-counting-experiment.txt
         """
         ref = pd.read_csv("test/outputs/output01.csv", comment="#")
 
@@ -18,7 +18,7 @@ class TestAsymptoticLimits1(unittest.TestCase):
         np.testing.assert_array_almost_equal(ref["quantileExpected"].values, res["quantile"].values)
 
     def test_asymptotic_limits_1_02(self):
-        """combine -n LimitTest -m 120 -M AsymptoticLimits hgg_8TeV_MVA_cat0145.txt --run both
+        """-m 120 -M AsymptoticLimits hgg_8TeV_MVA_cat0145.txt --run both
         """
         ref = pd.read_csv("test/outputs/output02.csv", comment="#")
 

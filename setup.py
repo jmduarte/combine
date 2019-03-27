@@ -85,13 +85,6 @@ setup(
     test_suite="test",
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
-    install_requires=[
-        "numpy",
-        "pandas",
-    ],
-    scripts=[
-        "scripts/combineCards.py",
-        "scripts/commentUncerts.py",
-        "scripts/pruneUncerts.py",
-    ],
+    install_requires=["numpy", "pandas"],
+    scripts=["scripts/combineCards.py", "scripts/commentUncerts.py", "scripts/pruneUncerts.py"],
 )

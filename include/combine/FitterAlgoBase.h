@@ -33,6 +33,8 @@ public:
                    double &limitErr,
                    const double *hint);
 
+  static bool g_robustFit;
+
 protected:
   //static std::string minimizerAlgo_,
   static std::string minimizerAlgoForMinos_;
@@ -44,7 +46,8 @@ protected:
 
   static float preFitValue_;
 
-  static bool robustFit_, do95_, forceRecreateNLL_;
+  static bool do95_;
+  static bool forceRecreateNLL_;
   static float stepSize_;
   static int maxFailedSteps_;
 

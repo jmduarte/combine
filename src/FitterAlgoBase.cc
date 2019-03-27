@@ -48,7 +48,7 @@ float FitterAlgoBase::crossingTolerance_ = 1e-4;
 int FitterAlgoBase::minimizerStrategyForMinos_ = 0;  // also default from CascadeMinimizer
 float FitterAlgoBase::preFitValue_ = 1.0;
 float FitterAlgoBase::stepSize_ = 0.1;
-bool FitterAlgoBase::robustFit_ = false;
+bool FitterAlgoBase::g_robustFit = false;
 int FitterAlgoBase::maxFailedSteps_ = 5;
 bool FitterAlgoBase::do95_ = false;
 bool FitterAlgoBase::forceRecreateNLL_ = false;
@@ -73,9 +73,6 @@ FitterAlgoBase::FitterAlgoBase(const char *title) : LimitAlgo(title) {
           "do95",
           boost::program_options::value<bool>(&do95_)->default_value(do95_),
           "Compute also 2-sigma interval from delta(nll) = 1.92 instead of 0.5")(
-          "robustFit",
-          boost::program_options::value<bool>(&robustFit_)->default_value(robustFit_),
-          "Search manually for 1 and 2 sigma bands instead of using Minos")(
           "maxFailedSteps",
           boost::program_options::value<int>(&maxFailedSteps_)->default_value(maxFailedSteps_),
           "How many failed steps to retry before giving up")(
@@ -140,7 +137,7 @@ void FitterAlgoBase::applyOptionsBase(const boost::program_options::variables_ma
         DefaultTolerance();  // will reset this to the default from CascadeMinimizer unless set.
   }
 
-  if (robustFit_) {
+  if (g_robustFit) {
     if (g_verbose) {
       Logger::instance().log(
           std::string(
@@ -392,7 +389,7 @@ RooFitResult *FitterAlgoBase::doFit(RooAbsPdf &pdf,
 
     double r0 = r.getVal(), rMin = r.getMin(), rMax = r.getMax();
 
-    if (!robustFit_) {
+    if (!g_robustFit) {
       if (do95_) {
         int badFitResult = -1;
         throw std::runtime_error("95% CL errors with Minos are not working at the moment.");
