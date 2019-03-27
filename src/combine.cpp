@@ -49,6 +49,23 @@ struct CombineOutput {
   auto const& getQuantileExpected() { return quantileExpected; }
 };
 
+std::unique_ptr<LimitAlgo> createLimitAlgo(std::string const& name) {
+    if(name == "AsymptoticLimits") return std::make_unique<AsymptoticLimits>();
+    if(name =="BayesianSimple") return std::make_unique<BayesianFlatPrior>();
+    if(name =="BayesianToyMC") return std::make_unique<BayesianToyMC>();
+    if(name =="ChannelCompatibilityCheck") return std::make_unique<ChannelCompatibilityCheck>();
+    if(name =="FeldmanCousins") return std::make_unique<FeldmanCousins>();
+    if(name =="FitDiagnostics") return std::make_unique<FitDiagnostics>();
+    if(name =="GenerateOnly") return std::make_unique<GenerateOnly>();
+    if(name =="GoodnessOfFit") return std::make_unique<GoodnessOfFit>();
+    if(name =="HybridNew") return std::make_unique<HybridNew>();
+    if(name =="MarkovChainMC") return std::make_unique<MarkovChainMC>();
+    if(name =="MultiDimFit") return std::make_unique<MultiDimFit>();
+    if(name =="Significance") return std::make_unique<Significance>();
+    return nullptr;
+}
+
+
 CombineOutput combine(std::string const &datacard,
                std::string const &name,
                int argc,
@@ -72,40 +89,7 @@ CombineOutput combine(std::string const &datacard,
 
   Combine combiner(expectSignal);
 
-  map<string, LimitAlgo *> methods;
-  algo = new Significance();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new BayesianFlatPrior();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new BayesianToyMC();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new MarkovChainMC();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new HybridNew();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new FeldmanCousins();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new FitDiagnostics();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new AsymptoticLimits();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new GoodnessOfFit();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new ChannelCompatibilityCheck();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new MultiDimFit();
-  methods.insert(make_pair(algo->name(), algo));
-  algo = new GenerateOnly();
-  methods.insert(make_pair(algo->name(), algo));
-
   CascadeMinimizer::initOptions();
-
-  string methodsDesc("Method to extract upper limit. Supported methods are: ");
-  for (map<string, LimitAlgo *>::const_iterator i = methods.begin(); i != methods.end(); ++i) {
-    if (i != methods.begin())
-      methodsDesc += ", ";
-    methodsDesc += i->first;
-  }
 
   po::options_description desc("Main options");
   combiner.miscOptions().add_options()(
@@ -130,8 +114,8 @@ CombineOutput combine(std::string const &datacard,
   po::notify(vm0);
 
   // now search for algo, and add option
-  map<string, LimitAlgo *>::const_iterator it_algo = methods.find(whichMethod);
-  desc.add(it_algo->second->options());
+  algo = createLimitAlgo(whichMethod);
+  desc.add(algo->options());
 
   // parse the first time, now include options of the algo but not unregistered ones
   po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
@@ -140,12 +124,11 @@ CombineOutput combine(std::string const &datacard,
   combiner.applyOptions(whichMethod, vm);
   CascadeMinimizer::applyOptions(vm);
 
-  algo = it_algo->second;
   algo->applyOptions(vm);
   cout << ">>> method used is " << whichMethod << endl;
 
   if (!whichHintMethod.empty()) {
-    g_hintAlgo = methods.at(whichHintMethod);
+    g_hintAlgo = createLimitAlgo(whichHintMethod);
     g_hintAlgo->applyDefaultOptions();
     cout << ">>> method used to hint where the upper limit is " << whichHintMethod << endl;
   }
@@ -274,15 +257,8 @@ CombineOutput combine(std::string const &datacard,
   test->WriteTObject(tree);
   test->Close();
 
-  for (auto i = methods.begin(); i != methods.end(); ++i)
-    delete i->second;
-
   if (perfCounters)
     PerfCounter::printAll();
-
-  for(int i=0; i<output.limit.size(); i++) {
-      std::cout << output.limit[i] << " " << output.limitError[i] << " " << output.quantileExpected[i] << std::endl;
-  }
 
   return output;
 }

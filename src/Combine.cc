@@ -66,7 +66,8 @@ using namespace RooStats;
 using namespace RooFit;
 using namespace std;
 
-LimitAlgo *algo, *g_hintAlgo;
+std::unique_ptr<LimitAlgo> algo;
+std::unique_ptr<LimitAlgo> g_hintAlgo;
 
 Float_t g_quantileExpected = -1.0;
 TDirectory *g_outputFile = 0;

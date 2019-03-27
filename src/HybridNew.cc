@@ -12,7 +12,6 @@
 #include <TKey.h>
 #include <TLine.h>
 #include <TCanvas.h>
-#include <TGraphErrors.h>
 #include <TStopwatch.h>
 #include <TRandom3.h>
 #include "RooRealVar.h"

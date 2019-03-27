@@ -14,9 +14,9 @@
 #include <RooStats/HybridCalculator.h>
 #include <RooStats/ToyMCSampler.h>
 #include <TF1.h>
+#include <TGraphErrors.h>
 
 class RooRealVar;
-class TGraphErrors;
 class TDirectory;
 
 class HybridNew : public LimitAlgo {
