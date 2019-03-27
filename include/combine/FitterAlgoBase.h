@@ -22,7 +22,7 @@ class FitterAlgoBase : public LimitAlgo {
 public:
   FitterAlgoBase(const char *title = "<FillMe> specific options");
 
-  void applyOptionsBase(const boost::program_options::variables_map &vm);
+  void applyOptionsBase();
 
   // configures the minimizer and then calls runSpecific
   virtual bool run(RooWorkspace *w,

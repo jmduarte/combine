@@ -22,7 +22,7 @@ class RooRealVar;
 class AsymptoticLimits : public LimitAlgo {
 public:
   AsymptoticLimits();
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
   virtual void applyDefaultOptions();
 
   virtual bool run(RooWorkspace *w,

@@ -126,7 +126,7 @@ CombineOutput combine(std::string const &datacard,
   combiner.applyOptions(whichMethod, vm);
   CascadeMinimizer::applyOptions(vm);
 
-  algo->applyOptions(vm);
+  algo->applyOptions();
   cout << ">>> method used is " << whichMethod << endl;
 
   if (!whichHintMethod.empty()) {

@@ -29,7 +29,7 @@ public:
     static const std::string name("GenerateOnly");
     return name;
   }
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
 };
 
 #endif

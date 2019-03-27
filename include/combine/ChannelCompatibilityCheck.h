@@ -17,7 +17,7 @@ public:
     static const std::string name("ChannelCompatibilityCheck");
     return name;
   }
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
 
 protected:
   std::string nameForLabel(const char *label);

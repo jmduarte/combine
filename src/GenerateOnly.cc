@@ -6,7 +6,7 @@ using namespace RooStats;
 
 GenerateOnly::GenerateOnly() : LimitAlgo("GenerateOnly specific options: none") {}
 
-void GenerateOnly::applyOptions(const boost::program_options::variables_map &vm) {}
+void GenerateOnly::applyOptions() {}
 
 bool GenerateOnly::run(RooWorkspace *w,
                        RooStats::ModelConfig *mc_s,

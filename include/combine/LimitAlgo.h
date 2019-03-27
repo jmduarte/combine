@@ -21,7 +21,7 @@ public:
   LimitAlgo() {}
   LimitAlgo(const char *desc) : options_(desc) {}
   virtual ~LimitAlgo() {}
-  virtual void applyOptions(const boost::program_options::variables_map &vm) {}
+  virtual void applyOptions() {}
   virtual void applyDefaultOptions() {}
   virtual void setToyNumber(const int) {}
   virtual void setNToys(const int) {}

@@ -28,26 +28,9 @@ unsigned int BayesianToyMC::tries_ = 1;
 float BayesianToyMC::hintSafetyFactor_ = 5.;
 std::vector<std::string> BayesianToyMC::twoPoints_;
 
-BayesianToyMC::BayesianToyMC() : LimitAlgo("BayesianToyMC specific options") {
-  options_.add_options()("integrationType",
-                         boost::program_options::value<std::string>(&integrationType_)->default_value(integrationType_),
-                         "Integration algorithm to use")(
-      "tries",
-      boost::program_options::value<unsigned int>(&tries_)->default_value(tries_),
-      "Number of times to run the ToyMC on the same data")(
-      "numIters,i",
-      boost::program_options::value<int>(&numIters_)->default_value(numIters_),
-      "Number of iterations or calls used within iteration (0=ROOT Default)")(
-      "hintSafetyFactor",
-      boost::program_options::value<float>(&hintSafetyFactor_)->default_value(hintSafetyFactor_),
-      "set range of integration equal to this number of times the hinted limit")(
-      "twoPoints",
-      boost::program_options::value<std::vector<std::string> >(&twoPoints_)->multitoken(),
-      "Compute BF comparing two points in parameter space");
-  ;
-}
+BayesianToyMC::BayesianToyMC() : LimitAlgo("BayesianToyMC specific options") {}
 
-void BayesianToyMC::applyOptions(const boost::program_options::variables_map &vm) {
+void BayesianToyMC::applyOptions() {
   if (!g_withSystematics) {
     std::cout
         << "combine/BayesianToyMC: when running with no systematics, BayesianToyMC is identical to BayesianSimple."

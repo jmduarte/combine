@@ -74,105 +74,11 @@ RooArgList MultiDimFit::specifiedList_;
 bool MultiDimFit::saveInactivePOI_ = false;
 
 MultiDimFit::MultiDimFit() : FitterAlgoBase("MultiDimFit specific options") {
-  options_.add_options()("algo",
-                         boost::program_options::value<std::string>()->default_value("none"),
-                         "Algorithm to compute uncertainties")(
-      "parameters,P",
-      boost::program_options::value<std::vector<std::string> >(&poi_),
-      "Parameters to fit/scan (default = all parameters of interest)")(
-      "floatOtherPOIs",
-      boost::program_options::value<bool>(&floatOtherPOIs_)->default_value(floatOtherPOIs_),
-      "POIs other than the selected ones will be kept freely floating (1) or fixed (0, default)")(
-      "squareDistPoiStep", "POI step size based on distance from midpoint (max-min)/2 rather than linear")(
-      "skipInitialFit", "Skip initial fit (save time if snapshot is loaded from previous fit)")(
-      "points",
-      boost::program_options::value<unsigned int>(&points_)->default_value(points_),
-      "Points to use for grid or contour scans")(
-      "firstPoint",
-      boost::program_options::value<unsigned int>(&firstPoint_)->default_value(firstPoint_),
-      "First point to use")("lastPoint",
-                            boost::program_options::value<unsigned int>(&lastPoint_)->default_value(lastPoint_),
-                            "Last point to use")(
-      "autoRange",
-      boost::program_options::value<float>(&autoRange_)->default_value(autoRange_),
-      "Set to any X >= 0 to do the scan in the +/- X sigma range (where the sigma is from the initial fit, so it may "
-      "be fairly approximate)")("fixedPointPOIs",
-                                boost::program_options::value<std::string>(&fixedPointPOIs_)->default_value(""),
-                                "Parameter space point for --algo=fixed")(
-      "centeredRange",
-      boost::program_options::value<float>(&centeredRange_)->default_value(centeredRange_),
-      "Set to any X >= 0 to do the scan in the +/- X range centered on the nominal value")(
-      "fastScan", "Do a fast scan, evaluating the likelihood without profiling it.")(
-      "maxDeltaNLLForProf",
-      boost::program_options::value<float>(&maxDeltaNLLForProf_)->default_value(maxDeltaNLLForProf_),
-      "Last point to use")("saveSpecifiedNuis",
-                           boost::program_options::value<std::string>(&saveSpecifiedNuis_)->default_value(""),
-                           "Save specified parameters (default = none)")(
-      "saveSpecifiedFunc",
-      boost::program_options::value<std::string>(&saveSpecifiedFuncs_)->default_value(""),
-      "Save specified function values (default = none)")(
-      "saveSpecifiedIndex",
-      boost::program_options::value<std::string>(&saveSpecifiedIndex_)->default_value(""),
-      "Save specified indexes/discretes (default = none)")(
-      "saveInactivePOI",
-      boost::program_options::value<bool>(&saveInactivePOI_)->default_value(saveInactivePOI_),
-      "Save inactive POIs in output (1) or not (0, default)")(
-      "startFromPreFit",
-      boost::program_options::value<bool>(&startFromPreFit_)->default_value(startFromPreFit_),
-      "Start each point of the likelihood scan from the pre-fit values")(
-      "alignEdges",
-      boost::program_options::value<bool>(&alignEdges_)->default_value(alignEdges_),
-      "Align the grid points such that the endpoints of the ranges are included")(
-      "saveFitResult", "Save RooFitResult to muiltidimfit.root")(
-      "robustHesse",
-      boost::program_options::value<bool>(&robustHesse_)->default_value(robustHesse_),
-      "Use a more robust calculation of the hessian/covariance matrix")(
-      "robustHesseLoad",
-      boost::program_options::value<std::string>(&robustHesseLoad_)->default_value(robustHesseLoad_),
-      "Load the pre-calculated Hessian")(
-      "robustHesseSave",
-      boost::program_options::value<std::string>(&robustHesseSave_)->default_value(robustHesseSave_),
-      "Save the calculated Hessian");
 }
 
-void MultiDimFit::applyOptions(const boost::program_options::variables_map &vm) {
-  applyOptionsBase(vm);
-  std::string algo = vm["algo"].as<std::string>();
-  if (algo == "none") {
-    algo_ = None;
-  } else if (algo == "singles") {
-    algo_ = Singles;
-  } else if (algo == "cross") {
-    algo_ = Cross;
-  } else if (algo == "grid" || algo == "grid3x3") {
-    algo_ = Grid;
-    gridType_ = G1x1;
-    if (algo == "grid3x3")
-      gridType_ = G3x3;
-  } else if (algo == "fixed") {
-    algo_ = FixedPoint;
-  } else if (algo == "random") {
-    algo_ = RandomPoints;
-  } else if (algo == "contour2d") {
-    algo_ = Contour2D;
-  } else if (algo == "stitch2d") {
-    algo_ = Stitch2D;
-  } else if (algo == "impact") {
-    algo_ = Impact;
-    if (vm["floatOtherPOIs"].defaulted())
-      floatOtherPOIs_ = true;
-    if (vm["saveInactivePOI"].defaulted())
-      saveInactivePOI_ = true;
-  } else
-    throw std::invalid_argument(std::string("Unknown algorithm: " + algo));
-  fastScan_ = (vm.count("fastScan") > 0);
-  squareDistPoiStep_ = (vm.count("squareDistPoiStep") > 0);
-  skipInitialFit_ = (vm.count("skipInitialFit") > 0);
-  hasMaxDeltaNLLForProf_ = !vm["maxDeltaNLLForProf"].defaulted();
-  loadedSnapshot_ = !vm["snapshotName"].defaulted();
-  savingSnapshot_ = (!loadedSnapshot_) && vm.count("saveWorkspace");
-  name_ = vm["name"].defaulted() ? std::string() : vm["name"].as<std::string>();
-  saveFitResult_ = (vm.count("saveFitResult") > 0);
+void MultiDimFit::applyOptions() {
+  applyOptionsBase();
+  algo_ = Grid;
 }
 
 bool MultiDimFit::runSpecific(RooWorkspace *w,

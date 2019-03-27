@@ -45,59 +45,9 @@ float Significance::signalForSignificance_ = 0;
 std::string Significance::plot_ = "";
 
 Significance::Significance() : LimitAlgo("Significance specific options") {
-  options_.add_options()
-      //("minimizerAlgo",      boost::program_options::value<std::string>(&minimizerAlgo_)->default_value(minimizerAlgo_), "Choice of minimizer (Minuit vs Minuit2)")
-      //("minimizerTolerance", boost::program_options::value<float>(&minimizerTolerance_)->default_value(minimizerTolerance_),  "Tolerance for minimizer")
-      ("tries",
-       boost::program_options::value<int>(&tries_)->default_value(tries_),
-       "Compute PL limit N times, to check for numerical instabilities")(
-          "maxTries",
-          boost::program_options::value<int>(&maxTries_)->default_value(maxTries_),
-          "Stop trying after N attempts per point")(
-          "maxRelDeviation",
-          boost::program_options::value<float>(&maxRelDeviation_)->default_value(maxOutlierFraction_),
-          "Max absolute deviation of the results from the median")(
-          "maxOutlierFraction",
-          boost::program_options::value<float>(&maxOutlierFraction_)->default_value(maxOutlierFraction_),
-          "Ignore up to this fraction of results if they're too far from the median")(
-          "signalForSignificance",
-          boost::program_options::value<float>(&signalForSignificance_)->default_value(signalForSignificance_),
-          "Signal strength used when computing significances (default is zero, just background)")(
-          "maxOutliers",
-          boost::program_options::value<int>(&maxOutliers_)->default_value(maxOutliers_),
-          "Stop trying after finding N outliers")(
-          "plot",
-          boost::program_options::value<std::string>(&plot_)->default_value(plot_),
-          "Save a plot of the negative log of the profiled likelihood into the specified file")(
-          "uncapped",
-          boost::program_options::value<bool>(&uncapped_)->default_value(uncapped_),
-          "Report uncapped significances or p-value (i.e. negative in case of deficits)")(
-          "preFit", "Attept a fit before running the ProfileLikelihoodCalculator")(
-          "usePLC", "Compute PL limit using the ProfileLikelihoodCalculator (not default)")(
-          "useMinos", "Compute PL limit using Minos directly, bypassing the ProfileLikelihoodCalculator (default)")(
-          "bruteForce", "Compute PL limit by brute force, bypassing the ProfileLikelihoodCalculator and Minos")(
-          "setBruteForceAlgo",
-          boost::program_options::value<std::string>(&bfAlgo_)->default_value(bfAlgo_),
-          "NLL scan algorithm used for --bruteForce. Supported values are 'scale' (default), 'stepUp[Twice]', "
-          "'stepDown[Twice]'")(
-          "scanPoints", boost::program_options::value<int>(&points_)->default_value(points_), "Points for the scan")(
-          "setBruteForceTypeAndAlgo",
-          boost::program_options::value<std::string>(&minimizerAlgoForBF_)->default_value(minimizerAlgoForBF_),
-          "Choice of minimizer for brute-force search (default is Minuit2,simplex)")(
-          "setBruteForceTolerance",
-          boost::program_options::value<float>(&minimizerToleranceForBF_)->default_value(minimizerToleranceForBF_),
-          "Tolerance for minimizer when doing brute-force search");
 }
 
-void Significance::applyOptions(const boost::program_options::variables_map &vm) {
-  if (vm.count("usePLC"))
-    useMinos_ = false;
-  else if (vm.count("useMinos"))
-    useMinos_ = true;
-  else
-    useMinos_ = true;
-  bruteForce_ = vm.count("bruteForce");
-}
+void Significance::applyOptions() {}
 
 Significance::MinimizerSentry::MinimizerSentry(const std::string &minimizerAlgo, double tolerance)
     : minimizerTypeBackup(ROOT::Math::MinimizerOptions::DefaultMinimizerType()),

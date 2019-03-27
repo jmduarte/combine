@@ -27,7 +27,7 @@ public:
     static const std::string name("GoodnessOfFit");
     return name;
   }
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
 
   virtual bool runSaturatedModel(RooWorkspace *w,
                                  RooStats::ModelConfig *mc_s,

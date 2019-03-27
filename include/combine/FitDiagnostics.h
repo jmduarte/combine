@@ -23,7 +23,7 @@ public:
     return name;
   }
   ~FitDiagnostics();
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
   virtual void setToyNumber(const int);
   virtual void setNToys(const int);
 

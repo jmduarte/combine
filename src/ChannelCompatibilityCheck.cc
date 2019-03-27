@@ -25,23 +25,10 @@ bool ChannelCompatibilityCheck::saveFitResult_ = true;
 bool ChannelCompatibilityCheck::runMinos_ = true;
 std::vector<std::string> ChannelCompatibilityCheck::groups_;
 
-ChannelCompatibilityCheck::ChannelCompatibilityCheck() : FitterAlgoBase("ChannelCompatibilityCheck specific options") {
-  options_.add_options()("fixedSignalStrength",
-                         boost::program_options::value<float>(&mu_)->default_value(mu_),
-                         "Compute the compatibility for a fixed signal strength. If not specified, it's left floating")(
-      "saveFitResult", "Save fit results in output file")(
-      "group,g",
-      boost::program_options::value<std::vector<std::string> >(&groups_),
-      "Group together channels that contain a given name. Can be used multiple times.")(
-      "runMinos",
-      boost::program_options::value<bool>(&runMinos_)->default_value(runMinos_),
-      "Compute also uncertainties using profile likeilhood (MINOS or robust variants of it)");
-}
+ChannelCompatibilityCheck::ChannelCompatibilityCheck() : FitterAlgoBase("ChannelCompatibilityCheck specific options") {}
 
-void ChannelCompatibilityCheck::applyOptions(const boost::program_options::variables_map &vm) {
-  applyOptionsBase(vm);
-  fixedMu_ = !vm["fixedSignalStrength"].defaulted();
-  saveFitResult_ = vm.count("saveFitResult");
+void ChannelCompatibilityCheck::applyOptions() {
+  applyOptionsBase();
 }
 
 bool ChannelCompatibilityCheck::runSpecific(RooWorkspace *w,

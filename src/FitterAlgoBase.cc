@@ -62,80 +62,25 @@ double FitterAlgoBase::nll0Value_ = std::numeric_limits<double>::quiet_NaN();
 FitterAlgoBase::ProfilingMode FitterAlgoBase::profileMode_ = ProfileAll;
 
 FitterAlgoBase::FitterAlgoBase(const char *title) : LimitAlgo(title) {
-  options_.add_options()
-      //("minimizerAlgo",      boost::program_options::value<std::string>(&minimizerAlgo_)->default_value(minimizerAlgo_), "Choice of minimizer (Minuit vs Minuit2)")
-      //("minimizerTolerance", boost::program_options::value<float>(&minimizerTolerance_)->default_value(minimizerTolerance_),  "Tolerance for minimizer")
-      //("minimizerStrategy",  boost::program_options::value<int>(&minimizerStrategy_)->default_value(minimizerStrategy_),      "Stragegy for minimizer")
-      ("preFitValue",
-       boost::program_options::value<float>(&preFitValue_)->default_value(preFitValue_),
-       "Value of signal strength pre-fit, also used for pre-fit plots, normalisations and uncertainty calculations "
-       "(note this overrides --expectSignal for these features)")(
-          "do95",
-          boost::program_options::value<bool>(&do95_)->default_value(do95_),
-          "Compute also 2-sigma interval from delta(nll) = 1.92 instead of 0.5")(
-          "maxFailedSteps",
-          boost::program_options::value<int>(&maxFailedSteps_)->default_value(maxFailedSteps_),
-          "How many failed steps to retry before giving up")(
-          "stepSize",
-          boost::program_options::value<float>(&stepSize_)->default_value(stepSize_),
-          "Step size for robust fits (multiplier of the range)")(
-          "setRobustFitAlgo",
-          boost::program_options::value<std::string>(&minimizerAlgoForMinos_)->default_value(minimizerAlgoForMinos_),
-          "Choice of minimizer (Minuit vs Minuit2) for profiling in robust fits")(
-          "setRobustFitStrategy",
-          boost::program_options::value<int>(&minimizerStrategyForMinos_)->default_value(minimizerStrategyForMinos_),
-          "Stragegy for minimizer for profiling in robust fits")(
-          "setRobustFitTolerance",
-          boost::program_options::value<float>(&minimizerToleranceForMinos_)->default_value(minimizerToleranceForMinos_),
-          "Tolerance for minimizer for profiling in robust fits")(
-          "setCrossingTolerance",
-          boost::program_options::value<float>(&crossingTolerance_)->default_value(crossingTolerance_),
-          "Tolerance for finding the NLL crossing in robust fits")(
-          "profilingMode",
-          boost::program_options::value<std::string>()->default_value("all"),
-          "What to profile when computing uncertainties: all, none (at least for now).")(
-          "saveNLL",
-          "Save the negative log-likelihood at the minimum in the output tree (note: value is relative to the pre-fit "
-          "state)")("keepFailures", "Save the results even if the fit is declared as failed (for NLL studies)")(
-          "protectUnbinnedChannels", "Protect PDF from going negative in unbinned channels")(
-          "autoBoundsPOIs",
-          boost::program_options::value<std::string>(&autoBoundsPOIs_)->default_value(autoBoundsPOIs_),
-          "Adjust bounds for the POIs if they end up close to the boundary. Can be a list of POIs, or \"*\" to get "
-          "all")("autoMaxPOIs",
-                 boost::program_options::value<std::string>(&autoMaxPOIs_)->default_value(autoMaxPOIs_),
-                 "Adjust maxima for the POIs if they end up close to the boundary. Can be a list of POIs, or \"*\" to "
-                 "get all")(
-          "forceRecreateNLL",
-          "Always recreate NLL when running on multiple toys rather than re-using nll with new dataset");
 }
 
-void FitterAlgoBase::applyOptionsBase(const boost::program_options::variables_map &vm) {
-  saveNLL_ = vm.count("saveNLL");
-  keepFailures_ = vm.count("keepFailures");
-  forceRecreateNLL_ = vm.count("forceRecreateNLL");
-  protectUnbinnedChannels_ = vm.count("protectUnbinnedChannels");
-  std::string profileMode = vm["profilingMode"].as<std::string>();
-  if (profileMode == "all")
-    profileMode_ = ProfileAll;
-  else if (profileMode == "unconstrained")
-    profileMode_ = ProfileUnconstrained;
-  else if (profileMode == "poi")
-    profileMode_ = ProfilePOI;
-  else if (profileMode == "none")
-    profileMode_ = NoProfiling;
-  else
-    throw std::invalid_argument(
-        "option 'profilingMode' can only take as values 'all', 'none', 'poi' and 'unconstrained' (at least for now)\n");
+void FitterAlgoBase::applyOptionsBase() {
 
-  if (!vm.count("setRobustFitAlgo") || vm["setRobustFitAlgo"].defaulted()) {
-    minimizerAlgoForMinos_ = Form("%s,%s",
-                                  ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str(),
-                                  ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo().c_str());
-  }
-  if (!vm.count("setRobustFitTolerance") || vm["setRobustFitTolerance"].defaulted()) {
-    minimizerToleranceForMinos_ = ROOT::Math::MinimizerOptions::
-        DefaultTolerance();  // will reset this to the default from CascadeMinimizer unless set.
-  }
+  saveNLL_ = false;
+
+  keepFailures_ = false;
+  profileMode_ = ProfileAll;
+  forceRecreateNLL_ = false;
+  protectUnbinnedChannels_ = false;
+  profileMode_ = ProfileAll;
+
+  minimizerAlgoForMinos_ = Form("%s,%s",
+                                ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str(),
+                                ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo().c_str());
+
+  minimizerToleranceForMinos_ = ROOT::Math::MinimizerOptions::
+      DefaultTolerance();  // will reset this to the default from CascadeMinimizer unless set.
+
 
   if (g_robustFit) {
     if (g_verbose) {

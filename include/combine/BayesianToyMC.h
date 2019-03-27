@@ -28,7 +28,7 @@ public:
                               double &limit,
                               double &limitErr,
                               const double *hint);
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
   virtual const std::string &name() const {
     static const std::string name("BayesianToyMC");
     return name;

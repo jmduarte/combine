@@ -68,52 +68,6 @@ FitDiagnostics::FitDiagnostics()
       t_fit_b_(nullptr),
       t_fit_sb_(nullptr),
       t_prefit_(nullptr) {
-  options_.add_options()("minos",
-                         boost::program_options::value<std::string>(&minos_)->default_value(minos_),
-                         "Compute MINOS errors for: 'none', 'poi', 'all'")(
-      "noErrors",
-      "Don't compute uncertainties on the best fit value. Best if using toys (-t N) to evaluate distributions of "
-      "results")("out",
-                 boost::program_options::value<std::string>(&out_)->default_value(out_),
-                 "Directory to put the diagnostics output file in")(
-      "plots", "Make pre/post-fit RooPlots of 1D distributions of observables and fitted models")(
-      "rebinFactor",
-      boost::program_options::value<float>(&rebinFactor_)->default_value(rebinFactor_),
-      "Rebin by this factor before plotting (does not affect fitting!)")(
-      "signalPdfNames",
-      boost::program_options::value<std::string>(&signalPdfNames_)->default_value(signalPdfNames_),
-      "Names of signal pdfs in plots (separated by ,)")(
-      "backgroundPdfNames",
-      boost::program_options::value<std::string>(&backgroundPdfNames_)->default_value(backgroundPdfNames_),
-      "Names of background pdfs in plots (separated by ',')")(
-      "saveNormalizations", "Save post-fit normalizations RooArgSet (single toy only)")(
-      "savePredictionsPerToy", "Save post-fit normalizations and shapes per toy")(
-      "oldNormNames", "Name the normalizations as in the workspace, and not as channel/process")(
-      "saveShapes", "Save pre and post-fit distributions as TH1 in fitDiagnostics.root")(
-      "saveWithUncertainties",
-      "Save also pre/post-fit uncertainties on the shapes and normalizations (from resampling the covariance matrix)")(
-      "saveOverallShapes",
-      "Save total shapes (and covariance if used with --saveWithUncertainties), ie will produce TH1 (TH2) merging bins "
-      "across all channels")("numToysForShapes",
-                             boost::program_options::value<int>(&numToysForShapes_)->default_value(numToysForShapes_),
-                             "Choose number of toys for re-sampling of the covariance (for shapes with uncertainties)")(
-      "filterString",
-      boost::program_options::value<std::string>(&filterString_)->default_value(filterString_),
-      "Filter to search for when making covariance and shapes")(
-      "justFit", "Just do the S+B fit, don't do the B-only one, don't save output file")(
-      "robustHesse",
-      boost::program_options::value<bool>(&robustHesse_)->default_value(robustHesse_),
-      "Use a more robust calculation of the hessian/covariance matrix")("skipBOnlyFit",
-                                                                        "Skip the B-only fit (do only the S+B fit)")(
-      "initFromBonly",
-      "Use the values of the nuisance parameters from the background only fit as the starting point for the s+b fit. "
-      "Can help fit convergence")(
-      "customStartingPoint",
-      "Don't set the first POI to 0 for the background-only fit. Instead if using this option, the parameter will be "
-      "fixed to its default value, which can be set with the --setParameters option.")(
-      "ignoreCovWarning",
-      "Override the default behaviour of saveWithUncertainties being ignored if the covariance matrix is not "
-      "accurate.");
 
   // setup a few defaults
   currentToy_ = 0;
@@ -140,22 +94,25 @@ FitDiagnostics::~FitDiagnostics() {
 
 void FitDiagnostics::setToyNumber(const int iToy) { currentToy_ = iToy; }
 void FitDiagnostics::setNToys(const int iToy) { nToys = iToy; }
-void FitDiagnostics::applyOptions(const boost::program_options::variables_map &vm) {
-  applyOptionsBase(vm);
-  makePlots_ = vm.count("plots");
-  saveOverallShapes_ = vm.count("saveOverallShapes");
-  saveShapes_ = saveOverallShapes_ || vm.count("saveShapes");
-  saveNormalizations_ = saveShapes_ || vm.count("saveNormalizations");
-  savePredictionsPerToy_ = vm.count("savePredictionsPerToy");
-  oldNormNames_ = vm.count("oldNormNames");
-  saveWithUncertainties_ = vm.count("saveWithUncertainties");
+void FitDiagnostics::applyOptions() {
+  applyOptionsBase();
+
+  makePlots_ = false;
+
+  saveOverallShapes_ = false;
+  justFit_ = false;
+  saveShapes_ = saveOverallShapes_;
+  saveNormalizations_ = saveShapes_;
+  savePredictionsPerToy_ = false;
+  oldNormNames_ = false;
+  saveWithUncertainties_ = false;
   saveWithUncertsRequested_ = saveWithUncertainties_;
-  justFit_ = vm.count("justFit");
-  skipBOnlyFit_ = vm.count("skipBOnlyFit");
-  noErrors_ = vm.count("noErrors");
-  reuseParams_ = vm.count("initFromBonly");
-  customStartingPoint_ = vm.count("customStartingPoint");
-  ignoreCovWarning_ = vm.count("ignoreCovWarning");
+  justFit_ = false;
+  skipBOnlyFit_ = false;
+  noErrors_ = false;
+  reuseParams_ = false;
+  customStartingPoint_ = false;
+  ignoreCovWarning_ = false;
 
   if (justFit_) {
     out_ = "none";

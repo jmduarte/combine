@@ -45,39 +45,10 @@ std::vector<float> GoodnessOfFit::qVals_;
 std::string GoodnessOfFit::setParametersForFit_ = "";
 std::string GoodnessOfFit::setParametersForEval_ = "";
 
-GoodnessOfFit::GoodnessOfFit() : LimitAlgo("GoodnessOfFit specific options") {
-  options_.add_options()("algorithm",
-                         boost::program_options::value<std::string>(&algo_),
-                         "Goodness of fit algorithm. Supported algorithms are 'saturated', 'KS' and 'AD'.")(
-      "setParametersForFit",
-      boost::program_options::value<std::string>(&setParametersForFit_)->default_value(""),
-      "Set parameters values for the saturated model fitting step")(
-      "setParametersForEval",
-      boost::program_options::value<std::string>(&setParametersForEval_)->default_value(""),
-      "Set parameter values for the saturated model NLL eval step")
-      //      ("minimizerAlgo",      boost::program_options::value<std::string>(&minimizerAlgo_)->default_value(minimizerAlgo_), "Choice of minimizer (Minuit vs Minuit2)")
-      //      ("minimizerTolerance", boost::program_options::value<float>(&minimizerTolerance_)->default_value(minimizerTolerance_),  "Tolerance for minimizer")
-      //      ("minimizerStrategy",  boost::program_options::value<int>(&minimizerStrategy_)->default_value(minimizerStrategy_),      "Stragegy for minimizer")
-      ("fixedSignalStrength",
-       boost::program_options::value<float>(&mu_)->default_value(mu_),
-       "Compute the goodness of fit for a fixed signal strength. If not specified, it's left floating")(
-          "plots",
-          "Make plots containing information of the computation of the Anderson-Darling or Kolmogorov-Smirnov test "
-          "statistic");
-}
+GoodnessOfFit::GoodnessOfFit() : LimitAlgo("GoodnessOfFit specific options") {}
 
-void GoodnessOfFit::applyOptions(const boost::program_options::variables_map &vm) {
-  fixedMu_ = !vm["fixedSignalStrength"].defaulted();
-  if (algo_ == "saturated") {
-    std::cout << "Will use saturated models to compute goodness of fit for a binned likelihood" << std::endl;
-  } else if (algo_ == "AD") {
-    std::cout << "Will use the Anderson-Darling test to compute goodness of fit for a binned likelihood" << std::endl;
-  } else if (algo_ == "KS") {
-    std::cout << "Will use the Kolmogorov-Smirnov test to compute goodness of fit for a binned likelihood" << std::endl;
-  } else {
-    throw std::invalid_argument("GoodnessOfFit: algorithm " + algo_ + " not supported");
-  }
-  makePlots_ = vm.count("plots");
+void GoodnessOfFit::applyOptions() {
+  algo_ == "saturated";
 }
 
 bool GoodnessOfFit::run(RooWorkspace *w,

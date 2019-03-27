@@ -41,48 +41,9 @@ bool AsymptoticLimits::strictBounds_ = false;
 RooAbsData *AsymptoticLimits::asimovDataset_ = nullptr;
 
 AsymptoticLimits::AsymptoticLimits() : LimitAlgo("AsymptoticLimits specific options") {
-  options_.add_options()("rAbsAcc",
-                         boost::program_options::value<double>(&rAbsAccuracy_)->default_value(rAbsAccuracy_),
-                         "Absolute accuracy on r to reach to terminate the scan")(
-      "rRelAcc",
-      boost::program_options::value<double>(&rRelAccuracy_)->default_value(rRelAccuracy_),
-      "Relative accuracy on r to reach to terminate the scan")(
-      "run",
-      boost::program_options::value<std::string>(&what_)->default_value(what_),
-      "What to run: both (default), observed, expected, blind.")(
-      "singlePoint", boost::program_options::value<double>(&rValue_), "Just compute CLs for the given value of r")
-      ("qtilde",
-       boost::program_options::value<bool>(&qtilde_)->default_value(qtilde_),
-       "Allow only non-negative signal strengths (default is true).")(
-          "rule",
-          boost::program_options::value<std::string>(&rule_)->default_value(rule_),
-          "Rule to use: CLs, CLsplusb")("picky", "Abort on fit failures")(
-          "noFitAsimov", "Use the pre-fit asimov dataset")("getLimitFromGrid",
-                                                           boost::program_options::value<std::string>(&gridFileName_),
-                                                           "calculates the limit from a grid of r,cls values")(
-          "newExpected",
-          boost::program_options::value<bool>(&newExpected_)->default_value(newExpected_),
-          "Use the new formula for expected limits (default is true)")(
-          "minosAlgo",
-          boost::program_options::value<std::string>(&minosAlgo_)->default_value(minosAlgo_),
-          "Algorithm to use to get the median expected limit: 'minos' (fastest), 'bisection', 'stepping' (default, "
-          "most robust)")("strictBounds", "Take --rMax as a strict upper bound");
 }
 
-void AsymptoticLimits::applyOptions(const boost::program_options::variables_map &vm) {
-  if (vm.count("singlePoint") && !vm["singlePoint"].defaulted()) {
-    if (!vm["run"].defaulted())
-      throw std::invalid_argument("AsymptoticLimits: when using --singlePoint you can't use --run (at least for now)");
-    what_ = "singlePoint";
-  } else {
-    if (what_ != "observed" && what_ != "expected" && what_ != "both" && what_ != "blind")
-      throw std::invalid_argument(
-          "combine/AsymptoticLimits: option 'run' can only be 'observed', 'expected' or 'both' (the default) or "
-          "'blind' "
-          "(a-priori expected)");
-  }
-  picky_ = vm.count("picky");
-  noFitAsimov_ = vm.count("noFitAsimov") || vm.count("bypassFrequentistFit");  // aslo pick up base option from combine
+void AsymptoticLimits::applyOptions() {
 
   if (rule_ == "CLs")
     doCLs_ = true;
@@ -97,8 +58,6 @@ void AsymptoticLimits::applyOptions(const boost::program_options::variables_map 
   }
   if (noFitAsimov_)
     std::cout << "Will use a-priori expected background instead of a-posteriori one." << std::endl;
-  strictBounds_ = vm.count("strictBounds");
-  useGrid_ = vm.count("getLimitFromGrid");
 
   if (useGrid_) {
     std::cout << "Will calculate limit from grid" << std::endl;

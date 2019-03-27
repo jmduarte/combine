@@ -19,7 +19,7 @@ public:
     static const std::string name("MultiDimFit");
     return name;
   }
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
 
 protected:
   virtual bool runSpecific(RooWorkspace *w,

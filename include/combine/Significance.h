@@ -29,7 +29,7 @@ public:
     static const std::string name("Significance");
     return name;
   }
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
 
   /// Setup Minimizer configuration on creation, reset the previous one on destruction.
   class MinimizerSentry {

@@ -18,7 +18,7 @@ namespace RooStats {
 class MarkovChainMC : public LimitAlgo {
 public:
   MarkovChainMC();
-  virtual void applyOptions(const boost::program_options::variables_map &vm);
+  virtual void applyOptions();
   bool run(RooWorkspace *w,
            RooStats::ModelConfig *mc_s,
            RooStats::ModelConfig *mc_b,

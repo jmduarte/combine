@@ -5,7 +5,6 @@ project(_combine)
 set(SOURCE_FILES
     AsimovUtils.cc
     CloseCoutSentry.cc
-    GBRMath.cc
     HZZ4L_RooSpinZeroPdf_1D_fast.cc
     ProfilingTools.cc
     RooNCSplineFactory_1D.cc

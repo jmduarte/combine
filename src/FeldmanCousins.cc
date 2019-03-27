@@ -14,19 +14,9 @@ float FeldmanCousins::toysFactor_ = 1;
 float FeldmanCousins::rAbsAccuracy_ = 0.1;
 float FeldmanCousins::rRelAccuracy_ = 0.02;
 
-FeldmanCousins::FeldmanCousins() : LimitAlgo("FeldmanCousins specific options") {
-  options_.add_options()("rAbsAcc",
-                         boost::program_options::value<float>(&rAbsAccuracy_)->default_value(rAbsAccuracy_),
-                         "Absolute accuracy on r to reach to terminate the scan")(
-      "rRelAcc",
-      boost::program_options::value<float>(&rRelAccuracy_)->default_value(rRelAccuracy_),
-      "Relative accuracy on r to reach to terminate the scan")(
-      "toysFactor",
-      boost::program_options::value<float>(&toysFactor_)->default_value(toysFactor_),
-      "Increase the toys per point by this factor w.r.t. the minimum from adaptive sampling");
-}
+FeldmanCousins::FeldmanCousins() : LimitAlgo("FeldmanCousins specific options") {}
 
-void FeldmanCousins::applyOptions(const boost::program_options::variables_map &vm) {}
+void FeldmanCousins::applyOptions() {}
 
 bool FeldmanCousins::run(RooWorkspace *w,
                          RooStats::ModelConfig *mc_s,

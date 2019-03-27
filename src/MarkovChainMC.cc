@@ -56,95 +56,10 @@ float MarkovChainMC::cropNSigmas_ = 0;
 int MarkovChainMC::debugProposal_ = false;
 std::vector<std::string> MarkovChainMC::discreteModelPoints_;
 
-MarkovChainMC::MarkovChainMC() : LimitAlgo("Markov Chain MC specific options") {
-  options_.add_options()("iteration,i",
-                         boost::program_options::value<unsigned int>(&iterations_)->default_value(iterations_),
-                         "Number of iterations")(
-      "tries",
-      boost::program_options::value<unsigned int>(&tries_)->default_value(tries_),
-      "Number of times to run the MCMC on the same data")(
-      "burnInSteps,b",
-      boost::program_options::value<unsigned int>(&burnInSteps_)->default_value(burnInSteps_),
-      "Burn in steps (absolute number)")(
-      "burnInFraction",
-      boost::program_options::value<float>(&burnInFraction_)->default_value(burnInFraction_),
-      "Burn in steps (fraction of total accepted steps)")(
-      "adaptiveBurnIn",
-      boost::program_options::value<bool>(&adaptiveBurnIn_)->default_value(adaptiveBurnIn_),
-      "Adaptively determine burn in steps (experimental!).")(
-      "proposal",
-      boost::program_options::value<std::string>(&proposalTypeName_)->default_value(proposalTypeName_),
-      "Proposal function to use: 'fit', 'uniform', 'gaus', 'ortho' (also known as 'test')")(
-      "runMinos", "Run MINOS when fitting the data")("noReset", "Don't reset variable state after fit")(
-      "updateHint", "Update hint with the results")(
-      "updateProposalParams",
-      boost::program_options::value<bool>(&updateProposalParams_)->default_value(updateProposalParams_),
-      "Control ProposalHelper::SetUpdateProposalParameters")(
-      "propHelperWidthRangeDivisor",
-      boost::program_options::value<float>(&proposalHelperWidthRangeDivisor_)
-          ->default_value(proposalHelperWidthRangeDivisor_),
-      "Sets the fractional size of the gaussians in the proposal")(
-      "alwaysStepPOI",
-      boost::program_options::value<bool>(&alwaysStepPoi_)->default_value(alwaysStepPoi_),
-      "When using 'ortho' proposal, always step also the parameter of interest. On by default, as it improves "
-      "convergence, but you can turn it off (e.g. if you turn off --optimizeSimPdf)")(
-      "propHelperUniformFraction",
-      boost::program_options::value<float>(&proposalHelperUniformFraction_)
-          ->default_value(proposalHelperUniformFraction_),
-      "Add a fraction of uniform proposals to the algorithm")(
-      "debugProposal",
-      boost::program_options::value<int>(&debugProposal_)->default_value(debugProposal_),
-      "Printout the first N proposals")(
-      "cropNSigmas",
-      boost::program_options::value<float>(&cropNSigmas_)->default_value(cropNSigmas_),
-      "crop range of all parameters to N times their uncertainty")(
-      "truncatedMeanFraction",
-      boost::program_options::value<float>(&truncatedMeanFraction_)->default_value(truncatedMeanFraction_),
-      "Discard this fraction of the results before computing the mean and rms")(
-      "adaptiveTruncation",
-      boost::program_options::value<bool>(&adaptiveTruncation_)->default_value(adaptiveTruncation_),
-      "When averaging multiple runs, ignore results that are more far away from the median than the inter-quartile "
-      "range")("hintSafetyFactor",
-               boost::program_options::value<float>(&hintSafetyFactor_)->default_value(hintSafetyFactor_),
-               "set range of integration equal to this number of times the hinted limit")(
-      "saveChain", "Save MarkovChain to output file")(
-      "noSlimChain", "Include also nuisance parameters in the chain that is saved to file")(
-      "mergeChains", "Merge MarkovChains instead of averaging limits")(
-      "readChains", "Just read MarkovChains from toysFile instead of running MCMC directly")(
-      "discreteModelPoints",
-      boost::program_options::value<std::vector<std::string> >(&discreteModelPoints_)->multitoken(),
-      "Define multiple points in a subset of the POI space among which to step discretely (works only with ortho and "
-      "test proposals)");
-  ;
-}
+MarkovChainMC::MarkovChainMC() : LimitAlgo("Markov Chain MC specific options") {}
 
-void MarkovChainMC::applyOptions(const boost::program_options::variables_map &vm) {
-  if (proposalTypeName_ == "fit")
-    proposalType_ = FitP;
-  else if (proposalTypeName_ == "uniform")
-    proposalType_ = UniformP;
-  else if (proposalTypeName_ == "gaus")
-    proposalType_ = MultiGaussianP;
-  else if (proposalTypeName_ == "ortho")
-    proposalType_ = TestP;
-  else if (proposalTypeName_ == "test")
-    proposalType_ = TestP;
-  else {
-    std::cerr << "combine/MarkovChainMC: proposal type " << proposalTypeName_ << " not known."
-              << "\n"
-              << options_ << std::endl;
-    throw std::invalid_argument("MarkovChainMC: unsupported proposal");
-  }
-
-  runMinos_ = vm.count("runMinos");
-  noReset_ = vm.count("noReset");
-  updateHint_ = vm.count("updateHint");
-
-  mass_ = vm["mass"].as<float>();
-  saveChain_ = vm.count("saveChain");
-  noSlimChain_ = vm.count("noSlimChain");
-  mergeChains_ = vm.count("mergeChains");
-  readChains_ = vm.count("readChains");
+void MarkovChainMC::applyOptions() {
+  proposalType_ = FitP;
 
   if (mergeChains_ && !saveChain_ && !readChains_)
     chains_.SetOwner(true);
