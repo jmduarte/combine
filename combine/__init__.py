@@ -123,21 +123,23 @@ def text2workspace(
     nuisancesToExclude=[],
     stat=False,
     verbose=0,
-    **kwargs,
+    **kwargs
 ):
 
     if fileName.endswith(".gz"):
         import gzip
 
-        file = gzip.open(fileName, "rb")
+        f = gzip.open(fileName, "rb")
         fileName = fileName[:-3]
     else:
-        file = open(fileName, "r")
+        f = open(fileName, "r")
 
     ## Parse text file
     DC = parseCard(
-        file, bin, noJMax, allowNoSignal, allowNoBackground, evaluateEdits, nuisancesToExclude, stat, verbose
+        f, bin, noJMax, allowNoSignal, allowNoBackground, evaluateEdits, nuisancesToExclude, stat, verbose
     )
+
+    f.close()
 
     return dc2workspace(DC, stat=stat, verbose=verbose, filename=fileName, **kwargs)
 

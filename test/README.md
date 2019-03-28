@@ -6,6 +6,14 @@ Therefore, I encourage everyone who wants to use it to test it to validate again
 
 Since the reference output of the original combine should one change, it is sufficient to extrast the relevant output information of a given method in combine from the output ROOT file and hardcode in these unit tests.
 
+The unit tests require an agreement of __at least 6 digits__. Don't require any unit test with looser requirements!
+
+Travis CI is used to automatically run the unit tests for the validation of every commit. The testing platform has the following environment:
+
+* Ubuntu 16.04 Xenial Xerus
+* Python 2.7
+* ROOT 6.16
+
 ## List of implemented validations
 
 You can fine [a list of the equivalent commands in the original combine](validations.txt) which got implemented as unit tests.
