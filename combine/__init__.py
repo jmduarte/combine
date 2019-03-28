@@ -8,8 +8,9 @@ from combine.PhysicsModel import *
 from sys import modules
 
 
-def text2workspace(
-    fileName,
+def dc2workspace(
+    DC,
+    filename="./",
     stat=False,
     fixpars=False,
     cexpr=False,
@@ -28,36 +29,18 @@ def text2workspace(
     moreOptimizeSimPdf="none",
     doMasks=False,
     useHistPdf="never",
-    nuisancesToExclude=[],
     nuisancesToRescale=[],
     nuisanceFunctions=[],
     nuisanceGroupFunctions=[],
     forceNonSimPdf=False,
     noCheckNorm=False,
-    noJMax=False,
-    allowNoSignal=False,
-    allowNoBackground=False,
     optimizeExistingTemplates=True,
     optimizeBoundNuisances=True,
     optimizeTemplateBins=True,
     physModel="combine.PhysicsModel:defaultModel",
     physOpt=[],
     dumpCard=False,
-    evaluateEdits=True,
 ):
-
-    if fileName.endswith(".gz"):
-        import gzip
-
-        file = gzip.open(fileName, "rb")
-        fileName = fileName[:-3]
-    else:
-        file = open(fileName, "r")
-
-    ## Parse text file
-    DC = parseCard(
-        file, bin, noJMax, allowNoSignal, allowNoBackground, evaluateEdits, nuisancesToExclude, stat, verbose
-    )
 
     if dumpCard:
         DC.print_structure()
@@ -82,7 +65,7 @@ def text2workspace(
             fixpars,
             defMorph,
             mass,
-            fileName,
+            filename,
             bin,
             out,
             verbose,
@@ -99,7 +82,7 @@ def text2workspace(
         MB = CountingModelBuilder(
             DC,
             mass,
-            fileName,
+            filename,
             bin,
             out,
             verbose,
@@ -129,6 +112,35 @@ def text2workspace(
     ## Attach to the tools, and run
     MB.setPhysics(physics)
     MB.doModel()
+
+
+def text2workspace(
+    fileName,
+    noJMax=False,
+    allowNoSignal=False,
+    allowNoBackground=False,
+    evaluateEdits=True,
+    nuisancesToExclude=[],
+    stat=False,
+    verbose=0,
+    **kwargs,
+):
+
+    if fileName.endswith(".gz"):
+        import gzip
+
+        file = gzip.open(fileName, "rb")
+        fileName = fileName[:-3]
+    else:
+        file = open(fileName, "r")
+
+    ## Parse text file
+    DC = parseCard(
+        file, bin, noJMax, allowNoSignal, allowNoBackground, evaluateEdits, nuisancesToExclude, stat, verbose
+    )
+
+    return dc2workspace(DC, stat=stat, verbose=verbose, filename=fileName, **kwargs)
+
 
 
 def get_module_file(name):
@@ -241,7 +253,8 @@ def combine(
         robust_fit,
     )
 
-    os.remove(tmp_file)
+    if not tmp_file is None:
+        os.remove(tmp_file)
 
     return out
 
@@ -261,15 +274,11 @@ def asymptotic_limits(datacard, **kwargs):
     return df
 
 
-def significance(datacard, pvalue=False, **kwargs):
-    import scipy.stats
+def bayesian_simple(datacard, **kwargs):
 
-    significance = combine(datacard, method="Significance", **kwargs).getLimit()[-1]
+    limit = combine(datacard, method="BayesianSimple", **kwargs).getLimit()[-1]
 
-    if pvalue:
-        return scipy.stats.norm.sf(significance)
-
-    return significance
+    return limit
 
 
 def bayesian_toy_mc(datacard, **kwargs):
@@ -292,3 +301,21 @@ def fit_diagnostics(datacard, **kwargs):
     df.loc[df.index[:-1], "uncertainty"] = np.nan
 
     return df
+
+
+def hybrid_new(datacard, **kwargs):
+
+    res = combine(datacard, method="HybridNew", **kwargs)
+
+    return res.getLimit()[-1], res.getLimitError()[-1]
+
+
+def significance(datacard, pvalue=False, **kwargs):
+    import scipy.stats
+
+    significance = combine(datacard, method="Significance", **kwargs).getLimit()[-1]
+
+    if pvalue:
+        return scipy.stats.norm.sf(significance)
+
+    return significance

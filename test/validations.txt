@@ -1,12 +1,14 @@
 -M AsymptoticLimits simple-counting-experiment.txt
+-M AsymptoticLimits hgg_8TeV_MVA_cat0145.txt -m 120 --run both
+-M AsymptoticLimits hgg_8TeV_MVA_cat0145.txt -m 125 --run both
+-M BayesianSimple simple-counting-experiment.txt
 -M BayesianToyMC simple-counting-experiment.txt
--M FitDiagnostics -m 125 hgg_8TeV_MVA_cat0145.txt --robustFit=1
--n LimitTest -m 120 -M AsymptoticLimits hgg_8TeV_MVA_cat0145.txt --run both
--n LimitTest -m 125 -M AsymptoticLimits hgg_8TeV_MVA_cat0145.txt --run both
+-M FitDiagnostics hgg_8TeV_MVA_cat0145.txt -m 125 --robustFit=1
+-M HybridNew simple-counting-experiment.txt
 -M Significance simple-counting-experiment.txt
 -M Significance simple-counting-experiment.txt --pval
 -M Significance simple-counting-experiment.txt -t -1 --significance --expectSignal=1
 -M Significance simple-counting-experiment.txt -t -1 --significance --expectSignal=1 --pval
--M Significance --significance -m 125 hgg_8TeV_MVA_cat0145.txt
--M Significance --significance -m 125 hgg_8TeV_MVA_cat0145.txt -t -1 --expectSignal=1
--M Significance --significance -m 125 hgg_8TeV_MVA_cat0145.txt -t -1 --expectSignal=1 --toysFreq
+-M Significance hgg_8TeV_MVA_cat0145.txt --significance -m 125
+-M Significance hgg_8TeV_MVA_cat0145.txt --significance -m 125 -t -1 --expectSignal=1
+-M Significance hgg_8TeV_MVA_cat0145.txt --significance -m 125 -t -1 --expectSignal=1 --toysFreq

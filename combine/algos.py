@@ -5,7 +5,7 @@ from .DatacardParser import *
 from .ModelTools import *
 from .ShapeTools import *
 from .PhysicsModel import *
-from . import combine
+import combine
 
 from sys import exit
 from optparse import OptionParser
@@ -63,11 +63,6 @@ def binned_shape_significance(processes, signal_process, low, up, nbins, integra
 
     del hists
 
-    parser = OptionParser()
-    addDatacardParserOptions(parser)
-    options, args = parser.parse_args()
-    options.bin = True  # make a binary workspace
-
     DC = Datacard()
     MB = None
 
@@ -94,25 +89,10 @@ def binned_shape_significance(processes, signal_process, low, up, nbins, integra
     DC.groups = {}
     DC.discretes = []
 
-    ###### User defined options #############################################
+    combine.dc2workspace(DC, out=root_file_name)
 
-    options.out = roof_file_name  # Output workspace name
-    options.fileName = "./"  # Path to input ROOT files
-    options.verbose = 1  # Verbosity
-
-    ##########################################################################
-
-    if DC.hasShapes:
-        MB = ShapeBuilder(DC, options)
-    else:
-        MB = CountingModelBuilder(DC, options)
-
-    # Set physics models
-    MB.setPhysics(defaultModel)
-    MB.doModel()
-
-    res = combine(
-        roof_file_name, method="Significance", mass=125, toys=-1, expect_signal=1, significance=True, systematics=0
+    res = combine.significance(
+        roof_file_name, mass=125, toys=-1, expect_signal=1, significance=True, systematics=0
     )
     os.remove(hist_file_name)
     os.remove(roof_file_name)
