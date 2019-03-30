@@ -4,9 +4,9 @@ It is crucial that this fork of combine is well tested and validated such that i
 
 Therefore, I encourage everyone who wants to use it to test it to validate against the official version of combine and implement this validation as a unit test here. This way, the next user who has the same usecase does not to do the validation herself.
 
-Since the reference output of the original combine should one change, it is sufficient to extrast the relevant output information of a given method in combine from the output ROOT file and hardcode in these unit tests.
+Since the reference output of the original combine should not change, it is sufficient to extrast the relevant output information of a given method in combine from the output ROOT file and hardcode it in these unit tests.
 
-The unit tests require an agreement of __at least 6 digits__. Don't require any unit test with looser requirements!
+The unit tests require an agreement of __at least 6 digits__. Please don't require any unit test with looser requirements!
 
 Travis CI is used to automatically run the unit tests for the validation of every commit. The testing platform has the following environment:
 
