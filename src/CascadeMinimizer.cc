@@ -23,10 +23,6 @@ int CascadeMinimizer::approxPreFitStrategy_ = 0;
 int CascadeMinimizer::preFit_ = 0;
 bool CascadeMinimizer::poiOnlyFit_;
 bool CascadeMinimizer::singleNuisFit_;
-bool CascadeMinimizer::setZeroPoint_ = true;
-bool CascadeMinimizer::oldFallback_ = false;
-bool CascadeMinimizer::firstHesse_ = false;
-bool CascadeMinimizer::lastHesse_ = false;
 int CascadeMinimizer::minuit2StorageLevel_ = 0;
 bool CascadeMinimizer::runShortCombinations = true;
 float CascadeMinimizer::nuisancePruningThreshold_ = 0;
@@ -695,65 +691,6 @@ bool CascadeMinimizer::multipleMinimize(const RooArgSet &reallyCleanParameters,
 }
 
 void CascadeMinimizer::initOptions() {
-  options_.add_options()("cminPoiOnlyFit", "Do first a fit floating only the parameter of interest")(
-      "cminPreScan", "Do a scan before first minimization")(
-      "cminPreFit",
-      boost::program_options::value<int>(&preFit_)->default_value(preFit_),
-      "if set to a value N > 0, it will perform a pre-fit with strategy (N-1) with frozen nuisance parameters.")(
-      "cminApproxPreFitTolerance",
-      boost::program_options::value<double>(&approxPreFitTolerance_)->default_value(approxPreFitTolerance_),
-      "If non-zero, do first a pre-fit with this tolerance (or 10 times the final tolerance, whichever is largest)")(
-      "cminApproxPreFitStrategy",
-      boost::program_options::value<int>(&approxPreFitStrategy_)->default_value(approxPreFitStrategy_),
-      "Strategy to use in the pre-fit")("cminSingleNuisFit",
-                                        "Do first a minimization of each nuisance parameter individually")(
-      "cminFallbackAlgo",
-      boost::program_options::value<std::vector<std::string>>(),
-      "Fallback algorithms if the default minimizer fails (can use multiple ones). Syntax is "
-      "algo[,subalgo][,strategy][:tolerance]")(
-      "cminSetZeroPoint",
-      boost::program_options::value<bool>(&setZeroPoint_)->default_value(setZeroPoint_),
-      "Change the reference point of the NLL to be zero during minimization")(
-      "cminOldRobustMinimize",
-      boost::program_options::value<bool>(&oldFallback_)->default_value(oldFallback_),
-      "Use the old 'robustMinimize' logic in addition to the cascade (for debug only)")(
-      "cminInitialHesse",
-      boost::program_options::value<bool>(&firstHesse_)->default_value(firstHesse_),
-      "Call Hesse before the minimization")("cminFinalHesse",
-                                            boost::program_options::value<bool>(&lastHesse_)->default_value(lastHesse_),
-                                            "Call Hesse after the minimization")(
-      "cminDefaultMinimizerType",
-      boost::program_options::value<std::string>(&defaultMinimizerType_)->default_value(defaultMinimizerType_),
-      "Set the default minimizer Type")(
-      "cminDefaultMinimizerAlgo",
-      boost::program_options::value<std::string>(&defaultMinimizerAlgo_)->default_value(defaultMinimizerAlgo_),
-      "Set the default minimizer Algo")(
-      "cminDefaultMinimizerTolerance",
-      boost::program_options::value<double>(&defaultMinimizerTolerance_)->default_value(defaultMinimizerTolerance_),
-      "Set the default minimizer Tolerance")(
-      "cminDefaultMinimizerPrecision",
-      boost::program_options::value<double>(&defaultMinimizerPrecision_)->default_value(defaultMinimizerPrecision_),
-      "Set the default minimizer precision")("cminDefaultMinimizerStrategy",
-                                             boost::program_options::value<int>(&strategy_)->default_value(strategy_),
-                                             "Set the default minimizer (initial) strategy")(
-      "cminRunAllDiscreteCombinations", "Run all combinations for discrete nuisances")(
-      "cminDiscreteMinTol",
-      boost::program_options::value<double>(&discreteMinTol_)->default_value(discreteMinTol_),
-      "tolerance on min NLL for discrete combination iterations")(
-      "cminM2StorageLevel",
-      boost::program_options::value<int>(&minuit2StorageLevel_)->default_value(minuit2StorageLevel_),
-      "storage level for minuit2 (0 = don't store intermediate covariances, 1 = store them)")
-      //("cminNuisancePruning", boost::program_options::value<float>(&nuisancePruningThreshold_)->default_value(nuisancePruningThreshold_), "if non-zero, discard constrained nuisances whose effect on the NLL when changing by 0.2*range is less than the absolute value of the threshold; if threshold is negative, repeat afterwards the fit with these floating")
-
-      //("cminDefaultIntegratorEpsAbs", boost::program_options::value<double>(), "RooAbsReal::defaultIntegratorConfig()->setEpsAbs(x)")
-      //("cminDefaultIntegratorEpsRel", boost::program_options::value<double>(), "RooAbsReal::defaultIntegratorConfig()->setEpsRel(x)")
-      //("cminDefaultIntegrator1D", boost::program_options::value<std::string>(), "RooAbsReal::defaultIntegratorConfig()->method1D().setLabel(x)")
-      //("cminDefaultIntegrator1DOpen", boost::program_options::value<std::string>(), "RooAbsReal::defaultIntegratorConfig()->method1DOpen().setLabel(x)")
-      //("cminDefaultIntegrator2D", boost::program_options::value<std::string>(), "RooAbsReal::defaultIntegratorConfig()->method2D().setLabel(x)")
-      //("cminDefaultIntegrator2DOpen", boost::program_options::value<std::string>(), "RooAbsReal::defaultIntegratorConfig()->method2DOpen().setLabel(x)")
-      //("cminDefaultIntegratorND", boost::program_options::value<std::string>(), "RooAbsReal::defaultIntegratorConfig()->methodND().setLabel(x)")
-      //("cminDefaultIntegratorNDOpen", boost::program_options::value<std::string>(), "RooAbsReal::defaultIntegratorConfig()->methodNDOpen().setLabel(x)")
-      ;
 }
 
 bool CascadeMinimizer::checkAlgoInType(std::string type, std::string algo) {
@@ -770,27 +707,13 @@ bool CascadeMinimizer::checkAlgoInType(std::string type, std::string algo) {
 
 void CascadeMinimizer::applyOptions(const boost::program_options::variables_map &vm) {
   using namespace std;
-  preScan_ = vm.count("cminPreScan");
-  poiOnlyFit_ = vm.count("cminPoiOnlyFit");
-  singleNuisFit_ = vm.count("cminSingleNuisFit");
-  setZeroPoint_ = vm.count("cminSetZeroPoint");
-  runShortCombinations = !(vm.count("cminRunAllDiscreteCombinations"));
+  preScan_ = 0;
+  poiOnlyFit_ = 0;
+  singleNuisFit_ = 0;
+  runShortCombinations = 1;
 
-  // check default minimizer type/algo if they are set and make sense
-  if (vm.count("cminDefaultMinimizerAlgo")) {
-    if (!checkAlgoInType(defaultMinimizerType_, defaultMinimizerAlgo_)) {
-      std::cerr << Form(
-          "The combination of minimizer type/algo %s/%s, is not recognized. Please set these with "
-          "--cminDefaultMinimizerType and --cminDefaultMinimizerAlgo",
-          defaultMinimizerType_.c_str(),
-          defaultMinimizerAlgo_.c_str());
-      //Logger::instance().log(std::string(Form("CascadeMinimizer.cc: %d -- The combination of minimizer type/algo %s/%s, is not recognized. Please set these with --cminDefaultMinimizerType and --cminDefaultMinimizerAlgo",__LINE__,defaultMinimizerType_.c_str(),defaultMinimizerAlgo_.c_str())),Logger::kLogLevelError,__func__);
-      exit(0);
-    }
-  }
-
-  if (vm.count("cminFallbackAlgo")) {
-    vector<string> falls(vm["cminFallbackAlgo"].as<vector<string>>());
+  if (false) {
+    vector<string> falls = {};
     for (vector<string>::const_iterator it = falls.begin(), ed = falls.end(); it != ed; ++it) {
       std::string algo = *it;
       std::string type;
@@ -854,30 +777,8 @@ void CascadeMinimizer::applyOptions(const boost::program_options::variables_map 
     ROOT::Math::MinimizerOptions::SetDefaultPrecision(defaultMinimizerPrecision_);
   }
   ROOT::Math::MinimizerOptions::SetDefaultStrategy(strategy_);
-
-  //if (vm.count("cminDefaultIntegratorEpsAbs")) RooAbsReal::defaultIntegratorConfig()->setEpsAbs(vm["cminDefaultIntegratorEpsAbs"].as<double>());
-  //if (vm.count("cminDefaultIntegratorEpsRel")) RooAbsReal::defaultIntegratorConfig()->setEpsRel(vm["cminDefaultIntegratorEpsRel"].as<double>());
-  //if (vm.count("cminDefaultIntegrator1D")) setDefaultIntegrator(RooAbsReal::defaultIntegratorConfig()->method1D(), vm["cminDefaultIntegrator1D"].as<std::string>());
-  //if (vm.count("cminDefaultIntegrator1DOpen")) setDefaultIntegrator(RooAbsReal::defaultIntegratorConfig()->method1DOpen(), vm["cminDefaultIntegrator1DOpen"].as<std::string>());
-  //if (vm.count("cminDefaultIntegrator2D")) setDefaultIntegrator(RooAbsReal::defaultIntegratorConfig()->method2D(), vm["cminDefaultIntegrator2D"].as<std::string>());
-  //if (vm.count("cminDefaultIntegrator2DOpen")) setDefaultIntegrator(RooAbsReal::defaultIntegratorConfig()->method2DOpen(), vm["cminDefaultIntegrator2DOpen"].as<std::string>());
-  //if (vm.count("cminDefaultIntegratorND")) setDefaultIntegrator(RooAbsReal::defaultIntegratorConfig()->methodND(), vm["cminDefaultIntegratorND"].as<std::string>());
-  //if (vm.count("cminDefaultIntegratorNDOpen")) setDefaultIntegrator(RooAbsReal::defaultIntegratorConfig()->methodNDOpen(), vm["cminDefaultIntegratorNDOpen"].as<std::string>());
 }
 
-//void CascadeMinimizer::setDefaultIntegrator(RooCategory &cat, const std::string & val) {
-//    if (val == "list") {
-//        std::cout << "States for " << cat.GetName() << std::endl;
-//        int i0 = cat.getBin();
-//        for (int i = 0, n = cat.numBins((const char *)0); i < n; ++i) {
-//            cat.setBin(i); std::cout << " - " << cat.getLabel() <<  ( i == i0 ? " (current default)" : "") << std::endl;
-//        }
-//        std::cout << std::endl;
-//        cat.setBin(i0);
-//    } else {
-//        cat.setLabel(val.c_str());
-//    }
-//}
 
 void CascadeMinimizer::trivialMinimize(const RooAbsReal &nll, RooRealVar &r, int points) const {
   double rMin = r.getMin(), rMax = r.getMax(), rStep = (rMax - rMin) / (points - 1);

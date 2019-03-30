@@ -88,11 +88,12 @@ private:
   /// do first a minimization of each nuisance individually
   static float nuisancePruningThreshold_;
   /// do first a fit of only the POI
-  static bool setZeroPoint_;
+  bool setZeroPoint_ = true;
   /// don't do old fallback using robustMinimize
-  static bool oldFallback_;
+  bool oldFallback_ = false;
   /// call Hesse before or after the minimization
-  static bool firstHesse_, lastHesse_;
+  bool firstHesse_ = false;
+  bool lastHesse_ = false;
   /// storage level for minuit2 (toggles storing of intermediate covariances)
   static int minuit2StorageLevel_;
 
