@@ -6,7 +6,7 @@ Therefore, I encourage everyone who wants to use it to test it to validate again
 
 Since the reference output of the original combine should not change, it is sufficient to extrast the relevant output information of a given method in combine from the output ROOT file and hardcode it in these unit tests.
 
-The unit tests require an agreement of __at least 6 digits__. Please don't require any unit test with looser requirements!
+The unit tests require an agreement of __at least 4 decimal places__. Please don't implement any unit test with looser requirements!
 
 Travis CI is used to automatically run the unit tests for the validation of every commit. The testing platform has the following environment:
 

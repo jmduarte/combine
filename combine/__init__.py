@@ -200,6 +200,9 @@ def combine(
     toys_frequentist=False,
     toys_no_systematics=False,
     robust_fit=False,
+    algo=0,
+    points=50,
+    parameter_ranges=""
 ):
     if toys_no_systematics and toys_frequentist:
         raise ValueError("You can't set toysNoSystematics and toysFrequentist options at the same time")
@@ -253,6 +256,9 @@ def combine(
         toys_frequentist,
         toys_no_systematics,
         robust_fit,
+        algo,
+        points,
+        parameter_ranges
     )
 
     if not tmp_file is None:
@@ -310,6 +316,30 @@ def hybrid_new(datacard, **kwargs):
     res = combine(datacard, method="HybridNew", **kwargs)
 
     return res.getLimit()[-1], res.getLimitError()[-1]
+
+
+def multi_dim_fit(datacard, algo=None, **kwargs):
+     
+    algos = {None : 0,
+            "singles" : 1,
+            "cross" : 2,
+            "grid" : 3,
+            "grid3x3" : 3, # note gridType_ should be G3x3 here
+            "random" : 4,
+            "contour2d" : 5,
+            "stitch2d" : 6,
+            "fixed" : 7,
+            "impact" : 8,
+            }
+
+    if algo in algos:
+        algo = algos[algo]
+    else:
+        raise ValueError("Unknown algorithm: " + algo)
+
+    res = combine(datacard, method="MultiDimFit", algo=algo, **kwargs)
+
+    return res.getR(), res.getDeltaNLL()
 
 
 def significance(datacard, pvalue=False, **kwargs):

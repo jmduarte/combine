@@ -43,10 +43,14 @@ struct CombineOutput {
   std::vector<double> limit;
   std::vector<double> limitError;
   std::vector<float> quantileExpected;
+  std::vector<float> r;
+  std::vector<float> deltaNLL;
 
   auto const& getLimit() { return limit; }
   auto const& getLimitError() { return limitError; }
   auto const& getQuantileExpected() { return quantileExpected; }
+  auto const& getR() { return r; }
+  auto const& getDeltaNLL() { return deltaNLL; }
 };
 
 std::unique_ptr<LimitAlgo> createLimitAlgo(std::string const& name) {
@@ -183,6 +187,7 @@ CombineOutput combine(std::string const &datacard,
   tree->Branch("iToy", &iToy, "iToy/I");
   tree->Branch("iChannel", &iChannel, "iChannel/I");
   tree->Branch("quantileExpected", &g_quantileExpected, "quantileExpected/F");
+
   for (unsigned int mpi = 0; mpi < modelParamNameVector_.size(); ++mpi) {
     std::string name = modelParamNameVector_[mpi];
     tree->Branch(Form("%s", name.c_str()), &modelParamValVector_[mpi]);
@@ -247,6 +252,13 @@ CombineOutput combine(std::string const &datacard,
     test->Close();
   }
 
+  float r;
+  float deltaNLL;
+  if(whichMethod == "MultiDimFit") {
+    tree->SetBranchAddress("r", &r);
+    tree->SetBranchAddress("deltaNLL", &deltaNLL);
+  }
+
   CombineOutput output;
 
   for(int i=0; i<tree->GetEntries(); i++) {
@@ -254,6 +266,10 @@ CombineOutput combine(std::string const &datacard,
       output.limit.push_back(limit.value);
       output.limitError.push_back(limit.error);
       output.quantileExpected.push_back(g_quantileExpected);
+      if(whichMethod == "MultiDimFit") {
+          output.r.push_back(r);
+          output.deltaNLL.push_back(deltaNLL);
+      }
   }
 
   test->WriteTObject(tree);
@@ -283,7 +299,10 @@ CombineOutput _combine(std::string const &datacard,
                 bool perfCounters,
                 bool frequentistToys,
                 bool toysNoSystematics,
-                bool robustFit) {
+                bool robustFit,
+                int algo,
+                int points,
+                std::string const& parameterRanges) {
   std::vector<char *> args;
 
   args.push_back(const_cast<char *>("combine"));
@@ -294,8 +313,11 @@ CombineOutput _combine(std::string const &datacard,
   g_doSignificance = significance;
   g_lowerLimit = lowerLimit;
   g_bypassFrequentistFit = bypassFrequentistFit;
+  g_setPhysicsModelParameterRangeExpression = parameterRanges;
 
   FitterAlgoBase::g_robustFit = robustFit;
+  MultiDimFit::g_algo = static_cast<MultiDimFit::Algo>(algo);
+  MultiDimFit::g_points = points;
 
   return combine(datacard,
                  name,
@@ -319,6 +341,8 @@ PYBIND11_MODULE(_combine, m) {
   pybind11::class_<CombineOutput>(m, "CombineOutput")
         .def("getLimit", &CombineOutput::getLimit)
         .def("getLimitError", &CombineOutput::getLimitError)
-        .def("getQuantileExpected", &CombineOutput::getQuantileExpected);
+        .def("getQuantileExpected", &CombineOutput::getQuantileExpected)
+        .def("getR", &CombineOutput::getR)
+        .def("getDeltaNLL", &CombineOutput::getDeltaNLL);
   m.def("_combine", &_combine, "CMS Higgs Combination toolkit.");
 }

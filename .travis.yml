@@ -74,3 +74,4 @@ script:
 - python test/test_significance_2.py
 - python test/test_significance_3.py
 - python test/test_significance_4.py
+- python test/test_multi_dim_fit_1.py

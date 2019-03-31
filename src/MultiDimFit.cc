@@ -27,14 +27,14 @@
 using namespace RooStats;
 
 std::string MultiDimFit::name_ = "";
-MultiDimFit::Algo MultiDimFit::algo_ = None;
+MultiDimFit::Algo MultiDimFit::g_algo = MultiDimFit::Algo::None;
 MultiDimFit::GridType MultiDimFit::gridType_ = G1x1;
 std::vector<std::string> MultiDimFit::poi_;
 std::vector<RooRealVar *> MultiDimFit::poiVars_;
 std::vector<float> MultiDimFit::poiVals_;
 RooArgList MultiDimFit::poiList_;
 float MultiDimFit::deltaNLL_ = 0;
-unsigned int MultiDimFit::points_ = 50;
+unsigned int MultiDimFit::g_points = 50;
 unsigned int MultiDimFit::firstPoint_ = 0;
 unsigned int MultiDimFit::lastPoint_ = std::numeric_limits<unsigned int>::max();
 bool MultiDimFit::floatOtherPOIs_ = false;
@@ -78,7 +78,7 @@ MultiDimFit::MultiDimFit() : FitterAlgoBase("MultiDimFit specific options") {
 
 void MultiDimFit::applyOptions() {
   applyOptionsBase();
-  algo_ = Grid;
+  g_algo = Algo::Grid;
 }
 
 bool MultiDimFit::runSpecific(RooWorkspace *w,
@@ -132,7 +132,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
   std::unique_ptr<RooFitResult> res;
   if (g_verbose <= 3)
     RooAbsReal::setEvalErrorLoggingMode(RooAbsReal::CountErrors);
-  bool doHesse = (algo_ == Singles || algo_ == Impact) || (saveFitResult_);
+  bool doHesse = (g_algo == Algo::Singles || g_algo == Algo::Impact) || (saveFitResult_);
   if (!skipInitialFit_) {
     res.reset(doFit(pdf,
                     data,
@@ -149,7 +149,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
       std::cout << "\n ---------------------------" << std::endl;
       std::cout << "\n " << std::endl;
     }
-    if (algo_ == Impact && res.get()) {
+    if (g_algo == Algo::Impact && res.get()) {
       // Set the floating parameters back to the best-fit value
       // before we write an entry into the output TTree
       w->allVars().assignValueOnly(res.get()->floatParsFinal());
@@ -174,7 +174,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
       } else
         poiVals_[i] = poiVars_[i]->getVal();
     }
-    //if (algo_ != None) {
+    //if (g_algo != Algo::None) {
     for (unsigned int j = 0; j < specifiedNuis_.size(); j++) {
       specifiedVals_[j] = specifiedVars_[j]->getVal();
     }
@@ -233,8 +233,8 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
     }
   }
 
-  switch (algo_) {
-    case None: {
+  switch (g_algo) {
+    case Algo::None: {
       std::cout << "\n --- MultiDimFit ---" << std::endl;
       std::cout << "best fit parameter values: " << std::endl;
       int len = poi_[0].length();
@@ -248,7 +248,7 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
       if (res.get() && saveFitResult_)
         saveResult(*res);
       break;
-    case Singles:
+    case Algo::Singles:
       if (res.get()) {
         doSingles(*res);
         if (saveFitResult_) {
@@ -256,25 +256,25 @@ bool MultiDimFit::runSpecific(RooWorkspace *w,
         }
       }
       break;
-    case Cross:
+    case Algo::Cross:
       doBox(*nll, g_confidenceLevel, "box", true);
       break;
-    case Grid:
+    case Algo::Grid:
       doGrid(w, *nll);
       break;
-    case RandomPoints:
+    case Algo::RandomPoints:
       doRandomPoints(w, *nll);
       break;
-    case FixedPoint:
+    case Algo::FixedPoint:
       doFixedPoint(w, *nll);
       break;
-    case Contour2D:
+    case Algo::Contour2D:
       doContour2D(w, *nll);
       break;
-    case Stitch2D:
+    case Algo::Stitch2D:
       doStitch2D(w, *nll);
       break;
-    case Impact:
+    case Algo::Impact:
       if (res.get())
         doImpact(*res, *nll);
       break;
@@ -603,20 +603,20 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
   params->snapshot(snap);
   //snap.Print("V");
   if (n == 1) {
-    double xspacing = (pmax[0] - pmin[0]) / points_;
+    double xspacing = (pmax[0] - pmin[0]) / g_points;
     double xspacingOffset = 0.5;
     if (alignEdges_) {
-      xspacing = (pmax[0] - pmin[0]) / (points_ - 1);
-      if (points_ == 1)
+      xspacing = (pmax[0] - pmin[0]) / (g_points - 1);
+      if (g_points == 1)
         xspacing = 0;
       xspacingOffset = 0.0;
     }
-    // can do a more intellegent spacing of points
+    // can do a more intellegent spacing of g_points
     double xbestpoint = (p0[0] - pmin[0]) / xspacing;
     if (lastPoint_ == std::numeric_limits<unsigned int>::max()) {
-      lastPoint_ = points_ - 1;
+      lastPoint_ = g_points - 1;
     }
-    for (unsigned int i = 0; i < points_; ++i) {
+    for (unsigned int i = 0; i < g_points; ++i) {
       if (i < firstPoint_)
         continue;
       if (i > lastPoint_)
@@ -624,7 +624,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
       double x = pmin[0] + (i + xspacingOffset) * xspacing;
       // If we're aligning with the edges and this is the last point,
       // set x to pmax[0] exactly
-      if (alignEdges_ && i == (points_ - 1)) {
+      if (alignEdges_ && i == (g_points - 1)) {
         x = pmax[0];
       }
       if (xbestpoint > lastPoint_) {
@@ -642,8 +642,8 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
         }
       }
 
-      //if (g_verbose > 1) std::cout << "Point " << i << "/" << points_ << " " << poiVars_[0]->GetName() << " = " << x << std::endl;
-      std::cout << "Point " << i << "/" << points_ << " " << poiVars_[0]->GetName() << " = " << x << std::endl;
+      //if (g_verbose > 1) std::cout << "Point " << i << "/" << g_points << " " << poiVars_[0]->GetName() << " = " << x << std::endl;
+      std::cout << "Point " << i << "/" << g_points << " " << poiVars_[0]->GetName() << " = " << x << std::endl;
       *params = snap;
       poiVals_[0] = x;
       poiVars_[0]->setVal(x);
@@ -681,7 +681,7 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
       }
     }
   } else if (n == 2) {
-    unsigned int sqrn = ceil(sqrt(double(points_)));
+    unsigned int sqrn = ceil(sqrt(double(g_points)));
     unsigned int ipoint = 0, nprint = ceil(0.005 * sqrn * sqrn);
     RooAbsReal::setEvalErrorLoggingMode(RooAbsReal::CountErrors);
     CloseCoutSentry sentry(g_verbose < 2);
@@ -833,21 +833,21 @@ void MultiDimFit::doGrid(RooWorkspace *w, RooAbsReal &nll) {
 
   } else {  // Use utils routine if n > 2
 
-    unsigned int rootn = ceil(TMath::Power(double(points_), double(1. / n)));
+    unsigned int rootn = ceil(TMath::Power(double(g_points), double(1. / n)));
     unsigned int ipoint = 0, nprint = ceil(0.005 * TMath::Power((double)rootn, (double)n));
 
     RooAbsReal::setEvalErrorLoggingMode(RooAbsReal::CountErrors);
     CloseCoutSentry sentry(g_verbose < 2);
 
     // Create permutations
-    std::vector<int> axis_points;
+    std::vector<int> axis_g_points;
 
     for (unsigned int poi_i = 0; poi_i < n; poi_i++) {
-      axis_points.push_back((int)rootn);
+      axis_g_points.push_back((int)rootn);
     }
 
-    std::vector<std::vector<int> > permutations = utils::generateCombinations(axis_points);
-    // Step through points
+    std::vector<std::vector<int> > permutations = utils::generateCombinations(axis_g_points);
+    // Step through g_points
     std::vector<std::vector<int> >::iterator perm_it = permutations.begin();
     int npermutations = permutations.size();
     for (; perm_it != permutations.end(); perm_it++) {
@@ -938,7 +938,7 @@ void MultiDimFit::doRandomPoints(RooWorkspace *w, RooAbsReal &nll) {
     minim.setAutoMax(&autoMaxPOISet_);
   //minim.setStrategy(minimizerStrategy_);
   unsigned int n = poi_.size();
-  for (unsigned int j = 0; j < points_; ++j) {
+  for (unsigned int j = 0; j < g_points; ++j) {
     for (unsigned int i = 0; i < n; ++i) {
       poiVars_[i]->randomize();
       poiVals_[i] = poiVars_[i]->getVal();
@@ -1046,14 +1046,14 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
   g_verbose--;  // reduce verbosity to avoid messages from findCrossing
   // ===== Get relative min/max of x for several fixed y values =====
   yv->setConstant(true);
-  for (unsigned int j = 0; j <= points_; ++j) {
+  for (unsigned int j = 0; j <= g_points; ++j) {
     if (j < firstPoint_)
       continue;
     if (j > lastPoint_)
       break;
-    // take points uniformly spaced in polar angle in the case of a perfect circle
+    // take g_points uniformly spaced in polar angle in the case of a perfect circle
     double yc = 0.5 * (yMax + yMin), yr = 0.5 * (yMax - yMin);
-    yv->setVal(yc + yr * std::cos(j * M_PI / double(points_)));
+    yv->setVal(yc + yr * std::cos(j * M_PI / double(g_points)));
     // ===== Get the best fit x (could also do without profiling??) =====
     xv->setConstant(false);
     xv->setVal(x0);
@@ -1105,52 +1105,6 @@ void MultiDimFit::doContour2D(RooWorkspace *, RooAbsReal &nll) {
 void MultiDimFit::doStitch2D(RooWorkspace *, RooAbsReal &nll) {
   if (poi_.size() != 2)
     throw std::logic_error("Contour2D works only in 2 dimensions");
-  //RooRealVar *xv = poiVars_[0]; double x0 = poiVals_[0]; float &x = poiVals_[0];
-  //RooRealVar *yv = poiVars_[1]; double y0 = poiVals_[1]; float &y = poiVals_[1];
-
-  //double threshold = nll.getVal() + 0.5*ROOT::Math::chisquared_quantile_c(1-cl,2+nOtherFloatingPoi_);
-  //if (g_verbose>0) std::cout << "Best fit point is for " << xv->GetName() << ", "  << yv->GetName() << " =  " << x0 << ", " << y0 << std::endl;
-
-  // make a box
-  //doBox(nll, g_confidenceLevel, "box");
-  //double xMin = xv->getMin("box"), xMax = xv->getMax("box");
-  //double yMin = yv->getMin("box"), yMax = yv->getMax("box");
-
-  //    g_verbose--; // reduce verbosity to avoid messages from findCrossing
-  //    // ===== Get relative min/max of x for several fixed y values =====
-  //    yv->setConstant(true);
-  //    for (unsigned int j = 0; j <= points_; ++j) {
-  //        if (j < firstPoint_) continue;
-  //        if (j > lastPoint_)  break;
-  //        // take points uniformly spaced in polar angle in the case of a perfect circle
-  //        double yc = 0.5*(yMax + yMin), yr = 0.5*(yMax - yMin);
-  //        yv->setVal( yc + yr * std::cos(j*M_PI/double(points_)) );
-  //        // ===== Get the best fit x (could also do without profiling??) =====
-  //        xv->setConstant(false);  xv->setVal(x0);
-  //        CascadeMinimizer minimXI(nll, CascadeMinimizer::Unconstrained, xv);
-  //        minimXI.setStrategy(minimizerStrategy_);
-  //        {
-  //            CloseCoutSentry sentry(g_verbose < 3);
-  //            minimXI.minimize(g_verbose-1);
-  //        }
-  //        double xc = xv->getVal(); xv->setConstant(true);
-  //        if (g_verbose>-1) std::cout << "Best fit " << xv->GetName() << " for  " << yv->GetName() << " = " << yv->getVal() << " is at " << xc << std::endl;
-  //        // ===== Then get the range =====
-  //        CascadeMinimizer minim(nll, CascadeMinimizer::Constrained);
-  //        double xup = findCrossing(minim, nll, *xv, threshold, xc, xMax);
-  //        if (!std::isnan(xup)) {
-  //            x = xup; y = yv->getVal(); Combine::commitPoint(true, /*quantile=*/1-cl);
-  //            if (g_verbose>-1) std::cout << "Minimum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName() << " = " << y << " is " << x << std::endl;
-  //        }
-  //
-  //        double xdn = findCrossing(minim, nll, *xv, threshold, xc, xMin);
-  //        if (!std::isnan(xdn)) {
-  //            x = xdn; y = yv->getVal(); Combine::commitPoint(true, /*quantile=*/1-cl);
-  //            if (g_verbose>-1) std::cout << "Maximum of " << xv->GetName() << " at " << g_confidenceLevel << " CL for " << yv->GetName() << " = " << y << " is " << x << std::endl;
-  //        }
-  //    }
-  //
-  //    g_verbose++; // restore verbosity
 }
 
 void MultiDimFit::doBox(RooAbsReal &nll, double g_confidenceLevel, const char *name, bool commitPoints) {

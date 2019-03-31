@@ -122,10 +122,7 @@ Combine::Combine(float expectSignal, bool frequentistToys, bool toysNoSystematic
       po::value<string>(&g_setPhysicsModelParameterExpression)->default_value(""),
       "Set the values of relevant physics model parameters. Give a comma separated list of parameter value "
       "assignments. Example: CV=1.0,CF=1.0")(
-      "setParameterRanges",
-      po::value<string>(&g_setPhysicsModelParameterRangeExpression)->default_value(""),
-      "Set the range of relevant physics model parameters. Give a colon separated list of parameter ranges. Example: "
-      "CV=0.0,2.0:CF=0.0,5.0")("defineBackgroundOnlyModelParameters",
+      "defineBackgroundOnlyModelParameters",
                                po::value<string>(&g_defineBackgroundOnlyModelParameterExpression)->default_value(""),
                                "If no background only (null) model is explicitly provided in physics model, one will "
                                "be defined as these values of the POIs (default is r=0)")(

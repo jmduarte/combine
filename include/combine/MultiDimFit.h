@@ -21,6 +21,12 @@ public:
   }
   virtual void applyOptions();
 
+  enum class Algo { None, Singles, Cross, Grid, RandomPoints, Contour2D, Stitch2D, FixedPoint, Impact };
+
+  static Algo g_algo;
+  static unsigned int g_points;
+  static unsigned int firstPoint_, lastPoint_;
+
 protected:
   virtual bool runSpecific(RooWorkspace *w,
                            RooStats::ModelConfig *mc_s,
@@ -29,9 +35,6 @@ protected:
                            double &limit,
                            double &limitErr,
                            const double *hint);
-
-  enum Algo { None, Singles, Cross, Grid, RandomPoints, Contour2D, Stitch2D, FixedPoint, Impact };
-  static Algo algo_;
 
   enum GridType { G1x1, G3x3 };
   static GridType gridType_;
@@ -48,7 +51,6 @@ protected:
   std::unique_ptr<TFile> fitOut;
 
   // options
-  static unsigned int points_, firstPoint_, lastPoint_;
   static bool floatOtherPOIs_;
   static bool squareDistPoiStep_;
   static bool skipInitialFit_;
