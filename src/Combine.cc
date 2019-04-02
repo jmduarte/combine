@@ -231,7 +231,7 @@ void Combine::applyOptions(std::string const &method, const boost::program_optio
   }
 }
 
-bool Combine::mklimit(RooWorkspace *w,
+bool Combine::mklimit(RooWorkspace *workspace,
                       RooStats::ModelConfig *mc_s,
                       RooStats::ModelConfig *mc_b,
                       RooAbsData &data,
@@ -246,15 +246,15 @@ bool Combine::mklimit(RooWorkspace *w,
     if (g_hintAlgo) {
       if (hintUsesStatOnly_ && g_withSystematics) {
         g_withSystematics = false;
-        hashint = g_hintAlgo->run(w, mc_s, mc_b, data, hint, hintErr, 0);
+        hashint = g_hintAlgo->run(workspace, mc_s, mc_b, data, hint, hintErr, 0);
         g_withSystematics = true;
       } else {
-        hashint = g_hintAlgo->run(w, mc_s, mc_b, data, hint, hintErr, 0);
+        hashint = g_hintAlgo->run(workspace, mc_s, mc_b, data, hint, hintErr, 0);
       }
-      w->loadSnapshot("clean");
+      workspace->loadSnapshot("clean");
     }
     limitErr = 0;  // start with 0, as some algorithms don't compute it
-    ret = algo->run(w, mc_s, mc_b, data, limit, limitErr, (hashint ? &hint : 0));
+    ret = algo->run(workspace, mc_s, mc_b, data, limit, limitErr, (hashint ? &hint : 0));
   } catch (std::exception &ex) {
     std::cerr << "Caught exception " << ex.what() << std::endl;
     return false;
@@ -264,7 +264,7 @@ bool Combine::mklimit(RooWorkspace *w,
     std::cout << "  --- DATA ---\n";
     utils::printRAD(&data);
     std::cout << "  --- MODEL ---\n";
-    w->Print("V");
+    workspace->Print("V");
   } */
   timer.Stop();
   return ret;
@@ -291,15 +291,15 @@ void Combine::run(
   if (g_verbose <= 2)
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
   // Load the model, but going in a temporary directory to avoid polluting the current one with garbage from 'cexpr'
-  RooWorkspace *w = 0;
+  RooWorkspace *workspace = 0;
   RooStats::ModelConfig *mc = 0, *mc_bonly = 0;
   std::unique_ptr<RooStats::HLFactory> hlf = nullptr;
 
   TFile *fIn = TFile::Open(fileToLoad);
   garbageCollect.tfile = fIn;  // request that we close this file when done
 
-  w = dynamic_cast<RooWorkspace *>(fIn->Get(workspaceName_.c_str()));
-  if (w == 0) {
+  workspace = dynamic_cast<RooWorkspace *>(fIn->Get(workspaceName_.c_str()));
+  if (workspace == nullptr) {
     std::cerr << "Could not find workspace '" << workspaceName_ << "' in file " << fileToLoad << std::endl;
     fIn->ls();
     throw std::invalid_argument("Missing Workspace");
@@ -307,16 +307,16 @@ void Combine::run(
 
   if (g_verbose > 3) {
     std::cout << "Input workspace '" << workspaceName_ << "': \n";
-    w->Print("V");
+    workspace->Print("V");
   }
-  RooRealVar *MH = w->var("MH");
+  RooRealVar *MH = workspace->var("MH");
   if (MH != 0) {
     if (g_verbose > 2)
       std::cerr << "Setting variable 'MH' in workspace to the higgs mass " << g_mass << std::endl;
     MH->setVal(g_mass);
   }
-  mc = dynamic_cast<RooStats::ModelConfig *>(w->genobj(modelConfigName_.c_str()));
-  mc_bonly = dynamic_cast<RooStats::ModelConfig *>(w->genobj(modelConfigNameB_.c_str()));
+  mc = dynamic_cast<RooStats::ModelConfig *>(workspace->genobj(modelConfigName_.c_str()));
+  mc_bonly = dynamic_cast<RooStats::ModelConfig *>(workspace->genobj(modelConfigNameB_.c_str()));
 
   if (mc == 0) {
     std::cerr << "Could not find ModelConfig '" << modelConfigName_ << "' in workspace '" << workspaceName_
@@ -344,13 +344,13 @@ void Combine::run(
   if (rebuildSimPdf_ && typeid(*mc->GetPdf()) == typeid(RooSimultaneous)) {
     RooSimultaneous *newpdf =
         utils::rebuildSimPdf(*mc->GetObservables(), dynamic_cast<RooSimultaneous *>(mc->GetPdf()));
-    w->import(*newpdf);
+    workspace->import(*newpdf);
     mc->SetPdf(*newpdf);
   }
   if (optSimPdf_ && typeid(*mc->GetPdf()) == typeid(RooSimultaneous)) {
     RooSimultaneousOpt *optpdf = new RooSimultaneousOpt(static_cast<RooSimultaneous &>(*mc->GetPdf()),
                                                         TString(mc->GetPdf()->GetName()) + "_opt");
-    w->import(*optpdf);
+    workspace->import(*optpdf);
     mc->SetPdf(*optpdf);
   }
   if (mc_bonly == 0 && !noMCbonly_) {
@@ -371,23 +371,23 @@ void Combine::run(
         } else {
           std::string expr = SetParameterExpression[0];
           double expval = atof(SetParameterExpression[1].c_str());
-          w->factory(Form("_%s_background_only_[%g]", expr.c_str(), expval));
+          workspace->factory(Form("_%s_background_only_[%g]", expr.c_str(), expval));
 
           make_model_s.replaceArg(*POI->selectByName(expr.c_str())->first(),
-                                  *w->var(Form("_%s_background_only_", expr.c_str())));
+                                  *workspace->var(Form("_%s_background_only_", expr.c_str())));
           std::cerr << "   " << expr << " to " << expval << std::endl;
         }
       }
     } else {
       std::cerr << "Will make one from the signal ModelConfig '" << modelConfigName_ << "' setting signal strenth '"
                 << POI->first()->GetName() << "' to zero" << std::endl;
-      w->factory("_zero_[0]");
-      make_model_s.replaceArg(*POI->first(), *w->var("_zero_"));
+      workspace->factory("_zero_[0]");
+      make_model_s.replaceArg(*POI->first(), *workspace->var("_zero_"));
     }
 
     RooAbsPdf *model_b = dynamic_cast<RooAbsPdf *>(make_model_s.build());
     model_b->SetName("_model_bonly_");
-    w->import(*model_b);
+    workspace->import(*model_b);
     mc_bonly = new RooStats::ModelConfig(*mc);
     mc_bonly->SetPdf(*model_b);
   }
@@ -403,7 +403,7 @@ void Combine::run(
   }
 
   if (snapshotName_ != "") {
-    bool loaded = w->loadSnapshot(snapshotName_.c_str());
+    bool loaded = workspace->loadSnapshot(snapshotName_.c_str());
     assert(loaded);
     if (MH) {
       //make sure mass value used is really the one from the loaded snapshot unless explicitly requested to override it
@@ -416,20 +416,20 @@ void Combine::run(
   }
 
   if (g_setPhysicsModelParameterRangeExpression != "") {
-    utils::setModelParameterRanges(g_setPhysicsModelParameterRangeExpression, w->allVars());
+    utils::setModelParameterRanges(g_setPhysicsModelParameterRangeExpression, workspace->allVars());
   }
   //*********************************************
   //set physics model parameters    after loading the snapshot
   //*********************************************
   if (g_setPhysicsModelParameterExpression != "") {
-    RooArgSet allParams(w->allVars());
-    //if (w->genobj("discreteParams")) allParams.add(*(RooArgSet*)w->genobj("discreteParams"));
-    allParams.add(w->allCats());
+    RooArgSet allParams(workspace->allVars());
+    //if (workspace->genobj("discreteParams")) allParams.add(*(RooArgSet*)workspace->genobj("discreteParams"));
+    allParams.add(workspace->allCats());
     utils::setModelParameters(g_setPhysicsModelParameterExpression, allParams);
     // also allow for "discrete" parameters to be set
     // Possible that MH value was re-set above, so make sure mass is set to the correct value and not over-ridden later.
-    if (w->var("MH"))
-      g_mass = w->var("MH")->getVal();
+    if (workspace->var("MH"))
+      g_mass = workspace->var("MH")->getVal();
   }
 
   if (g_verbose <= 2)
@@ -500,17 +500,17 @@ void Combine::run(
         throw std::invalid_argument(std::string("Cannot find a dataset named ") + dname + " in file " + filename +
                                     ", workspace " + wspname);
     }
-    w->import(*data, RooFit::Rename(dataset.c_str()));
+    workspace->import(*data, RooFit::Rename(dataset.c_str()));
     file->Close();
     pwd->cd();
   }
-  if (w->data(dataset.c_str()) == 0) {
+  if (workspace->data(dataset.c_str()) == 0) {
     TFile *fIn = TFile::Open(fileToLoad);
     garbageCollect.tfile = fIn;  // request that we close this file when done
     RooDataSet *data_obs = dynamic_cast<RooDataSet *>(fIn->Get(dataset.c_str()));
     if (data_obs) {
       data_obs->SetName(dataset.c_str());
-      w->import(*data_obs);
+      workspace->import(*data_obs);
     } else {
       std::cout << "Dataset " << dataset.c_str() << " not found." << std::endl;
     }
@@ -523,7 +523,7 @@ void Combine::run(
   }
 
   if (redefineSignalPOIs_ != "") {
-    RooArgSet newPOIs(w->argSet(redefineSignalPOIs_.c_str()));
+    RooArgSet newPOIs(workspace->argSet(redefineSignalPOIs_.c_str()));
     TIterator *np = newPOIs.createIterator();
     while (RooRealVar *arg = (RooRealVar *)np->Next()) {
       RooRealVar *rrv = dynamic_cast<RooRealVar *>(arg);
@@ -534,8 +534,8 @@ void Combine::run(
       }
       arg->setConstant(0);
       // also set ignoreConstraint flag for constraint PDF
-      if (w->pdf(Form("%s_Pdf", arg->GetName())))
-        w->pdf(Form("%s_Pdf", arg->GetName()))->setAttribute("ignoreConstraint");
+      if (workspace->pdf(Form("%s_Pdf", arg->GetName())))
+        workspace->pdf(Form("%s_Pdf", arg->GetName()))->setAttribute("ignoreConstraint");
     }
     if (g_verbose > 0) {
       std::cout << "Redefining the POIs to be: ";
@@ -561,7 +561,7 @@ void Combine::run(
   }
 
   if (floatNuisances_ != "") {
-    RooArgSet toFloat((floatNuisances_ == "all") ? *nuisances : (w->argSet(floatNuisances_.c_str())));
+    RooArgSet toFloat((floatNuisances_ == "all") ? *nuisances : (workspace->argSet(floatNuisances_.c_str())));
     if (g_verbose > 0) {
       std::cout << "Set floating the following parameters: ";
       toFloat.Print("");
@@ -602,7 +602,7 @@ void Combine::run(
       freezeNuisances_ = boost::replace_all_copy(freezeNuisances_, ",,", ",");
     }
 
-    RooArgSet toFreeze((freezeNuisances_ == "all") ? *nuisances : (w->argSet(freezeNuisances_.c_str())));
+    RooArgSet toFreeze((freezeNuisances_ == "all") ? *nuisances : (workspace->argSet(freezeNuisances_.c_str())));
     if (g_verbose > 0) {
       std::cout << "Freezing the following parameters: ";
       toFreeze.Print("");
@@ -636,11 +636,11 @@ void Combine::run(
         (*ng_it).erase(0, 1);
       }
 
-      if (!w->set(Form("group_%s", (*ng_it).c_str()))) {
+      if (!workspace->set(Form("group_%s", (*ng_it).c_str()))) {
         std::cerr << "Unknown nuisance group: " << (*ng_it) << std::endl;
         throw std::invalid_argument("Unknown nuisance group name");
       }
-      RooArgSet groupNuisances(*(w->set(Form("group_%s", (*ng_it).c_str()))));
+      RooArgSet groupNuisances(*(workspace->set(Form("group_%s", (*ng_it).c_str()))));
       RooArgSet toFreeze;
 
       if (freeze_complement) {
@@ -670,16 +670,16 @@ void Combine::run(
   if (mc->GetPriorPdf() == 0 && !noDefaultPrior_) {
     if (prior_ == "flat") {
       RooAbsPdf *prior = new RooUniform("prior", "prior", *POI);
-      w->import(*prior);
+      workspace->import(*prior);
       mc->SetPriorPdf(*prior);
     } else if (prior_ == "1/sqrt(r)") {
       std::cout << "Will use prior 1/sqrt(" << POI->first()->GetName() << std::endl;
       TString priorExpr = TString::Format("EXPR::prior(\"1/sqrt(@0)\",%s)", POI->first()->GetName());
-      w->factory(priorExpr.Data());
-      mc->SetPriorPdf(*w->pdf("prior"));
-    } else if (!prior_.empty() && w->pdf(prior_.c_str()) != 0) {
+      workspace->factory(priorExpr.Data());
+      mc->SetPriorPdf(*workspace->pdf("prior"));
+    } else if (!prior_.empty() && workspace->pdf(prior_.c_str()) != 0) {
       std::cout << "Will use prior '" << prior_ << "' in from the input workspace" << std::endl;
-      mc->SetPriorPdf(*w->pdf(prior_.c_str()));
+      mc->SetPriorPdf(*workspace->pdf(prior_.c_str()));
     } else {
       std::cerr << "Unknown prior '" << prior_ << "'. It's not 'flat' '1/sqrt(r)' or the name of a pdf in the model.\n"
                 << std::endl;
@@ -720,10 +720,10 @@ void Combine::run(
     utils::setAllConstant(*mc_bonly->GetGlobalObservables(), true);
 
   // Setup the CascadeMinimizer with discrete nuisances
-  addDiscreteNuisances(w);
+  addDiscreteNuisances(workspace);
   // and give him the regular nuisances too
   addNuisances(nuisances);
-  addFloatingParameters(w->allVars());
+  addFloatingParameters(workspace->allVars());
   addPOI(POI);
 
   tree_ = tree;
@@ -740,7 +740,7 @@ void Combine::run(
         std::cout << "interpreting " << reg_esp << " as regex " << std::endl;
         std::regex rgx(reg_esp, std::regex::ECMAScript);
 
-        RooArgSet allParams(w->allVars());
+        RooArgSet allParams(workspace->allVars());
         std::unique_ptr<TIterator> iter(allParams.createIterator());
         for (RooAbsArg *a = (RooAbsArg *)iter->Next(); a != 0; a = (RooAbsArg *)iter->Next()) {
           RooAbsReal *tmp = dynamic_cast<RooAbsReal *>(a);
@@ -754,7 +754,7 @@ void Combine::run(
         }
         token = strtok(0, ",");
       } else {
-        RooAbsReal *a = (RooAbsReal *)w->obj(token);
+        RooAbsReal *a = (RooAbsReal *)workspace->obj(token);
         if (a == 0)
           throw std::invalid_argument(std::string("Parameter ") + (token) + " not in model.");
         Combine::trackedParametersMap_.push_back(std::pair<RooAbsReal *, float>(a, a->getVal()));
@@ -796,8 +796,8 @@ void Combine::run(
   }
 
   bool isExtended = mc->GetPdf()->canBeExtended();
-  MH = w->var("MH");
-  RooAbsData *dobs = w->data(dataset.c_str());
+  MH = workspace->var("MH");
+  RooAbsData *dobs = workspace->data(dataset.c_str());
   // Generate with signal model if r or other physics model parameters are defined
   RooAbsPdf *genPdf = (expectSignal_ > 0 || g_setPhysicsModelParameterExpression != "" || !mc_bonly)
                           ? mc->GetPdf()
@@ -856,11 +856,11 @@ void Combine::run(
   }
 
   // Ok now we're ready to go lets save a "clean snapshot" for the current parameters state
-  // w->allVars() misses the RooCategories, useful for some things - so need to include them. Set up a utils function for that
-  w->saveSnapshot("clean", utils::returnAllVars(w));
+  // workspace->allVars() misses the RooCategories, useful for some things - so need to include them. Set up a utils function for that
+  workspace->saveSnapshot("clean", utils::returnAllVars(workspace));
 
   if (nToys <= 0) {  // observed or asimov
-    w->saveSnapshot("toyGenSnapshot", utils::returnAllVars(w));
+    workspace->saveSnapshot("toyGenSnapshot", utils::returnAllVars(workspace));
     iToy = nToys;
     if (iToy == -1) {
       if (g_readToysFromHere != 0) {
@@ -881,7 +881,7 @@ void Combine::run(
           }
           RooArgSet gobs(*mc->GetGlobalObservables());
           gobs.assignValueOnly(*snap);
-          w->saveSnapshot("clean", utils::returnAllVars(w));
+          workspace->saveSnapshot("clean", utils::returnAllVars(workspace));
         }
       } else {
         if (genPdf == 0)
@@ -889,7 +889,7 @@ void Combine::run(
               "You can't generate background-only toys if you have no background-only pdf in the workspace and you "
               "have set --noMCbonly");
         if (toysFrequentist_) {
-          w->saveSnapshot("reallyClean", utils::returnAllVars(w));
+          workspace->saveSnapshot("reallyClean", utils::returnAllVars(workspace));
           if (dobs == 0)
             throw std::invalid_argument("Frequentist Asimov datasets can't be generated without a real dataset to fit");
           RooArgSet gobsAsimov;
@@ -904,7 +904,7 @@ void Combine::run(
             gobs = gobsAsimov;
           }
           utils::setAllConstant(*mc->GetParametersOfInterest(), false);
-          w->saveSnapshot("clean", utils::returnAllVars(w));
+          workspace->saveSnapshot("clean", utils::returnAllVars(workspace));
         } else {
           toymcoptutils::SimPdfGenInfo newToyMC(*genPdf, *observables, !unbinned_);
 
@@ -954,7 +954,7 @@ void Combine::run(
       MH->setVal(g_mass);
     if (g_verbose > (isExtended ? 3 : 2))
       utils::printRAD(dobs);
-    if (mklimit(w, mc, mc_bonly, *dobs, limit, limitErr))
+    if (mklimit(workspace, mc, mc_bonly, *dobs, limit, limitErr))
       commitPoint(0, g_quantileExpected);  //tree->Fill();
 
     // Set the global flag to write output to the tree again since some Methods overwrite this to avoid the fill above.
@@ -971,9 +971,9 @@ void Combine::run(
     toymcoptutils::SimPdfGenInfo newToyMC(*genPdf, *observables, !unbinned_);
     double expLimit = 0;
     unsigned int nLimits = 0;
-    w->loadSnapshot("clean");
+    workspace->loadSnapshot("clean");
     RooDataSet *systDs = 0;
-    RooArgSet allFloatingParameters = w->allVars();
+    RooArgSet allFloatingParameters = workspace->allVars();
     allFloatingParameters.remove(*mc->GetParametersOfInterest());
     int nFloatingNonPoiParameters = utils::countFloating(allFloatingParameters);
     if (nFloatingNonPoiParameters && !toysNoSystematics_ && (g_readToysFromHere == 0)) {
@@ -986,7 +986,7 @@ void Combine::run(
       if (toysFrequentist_) {
         if (mc->GetGlobalObservables() == 0)
           throw std::logic_error("Cannot use toysFrequentist with no global observables");
-        w->saveSnapshot("reallyClean", utils::returnAllVars(w));
+        workspace->saveSnapshot("reallyClean", utils::returnAllVars(workspace));
         if (!g_bypassFrequentistFit) {
           utils::setAllConstant(*mc->GetParametersOfInterest(), true);
           if (dobs == 0)
@@ -1003,7 +1003,7 @@ void Combine::run(
           minim.setStrategy(1);
           minim.minimize();
           utils::setAllConstant(*mc->GetParametersOfInterest(), false);
-          w->saveSnapshot("clean", utils::returnAllVars(w));
+          workspace->saveSnapshot("clean", utils::returnAllVars(workspace));
         }
         if (nuisancePdf.get())
           systDs = nuisancePdf->generate(*mc->GetGlobalObservables(), nToys);
@@ -1019,7 +1019,7 @@ void Combine::run(
       algo->setToyNumber(iToy - 1);
       RooAbsData *absdata_toy = 0;
       if (g_readToysFromHere == 0) {
-        w->loadSnapshot("clean");
+        workspace->loadSnapshot("clean");
         if (g_verbose > 3)
           utils::printPdf(genPdf);
         if (g_withSystematics && !toysNoSystematics_) {
@@ -1028,7 +1028,7 @@ void Combine::run(
               *vars = *systDs->get(iToy - 1);
           }
           if (toysFrequentist_)
-            w->saveSnapshot("clean", utils::returnAllVars(w));
+            workspace->saveSnapshot("clean", utils::returnAllVars(workspace));
           if (g_verbose > 3)
             utils::printPdf(genPdf);
         }
@@ -1062,7 +1062,7 @@ void Combine::run(
           absdata_toy = data_toy;
         }
       } else {
-        w->loadSnapshot(
+        workspace->loadSnapshot(
             "clean");  // (*) this is needed in case running over toys+fits, to avoid starting from previous fit
         //-- constraints are set to toy values if frequentist (below) or set back to 0 (unecessarily) here.
         absdata_toy = dynamic_cast<RooAbsData *>(g_readToysFromHere->Get(TString::Format("toys/toy_%d", iToy)));
@@ -1082,18 +1082,18 @@ void Combine::run(
           }
           vars->assignValueOnly(*snap);
           // note, we save over the "clean" values also for the parameters, so we've made sure they are the same as they were in (*)
-          w->saveSnapshot("clean", utils::returnAllVars(w));
+          workspace->saveSnapshot("clean", utils::returnAllVars(workspace));
         }
       }
       if (g_verbose > (isExtended ? 3 : 2))
         utils::printRAD(absdata_toy);
       if (!toysFrequentist_)
-        w->saveSnapshot("toyGenSnapshot", utils::returnAllVars(w));
-      w->loadSnapshot("clean");
+        workspace->saveSnapshot("toyGenSnapshot", utils::returnAllVars(workspace));
+      workspace->loadSnapshot("clean");
       if (toysFrequentist_)
-        w->saveSnapshot("toyGenSnapshot", utils::returnAllVars(w));
-      //if (g_verbose > 1) utils::printPdf(w, "model_b");
-      if (mklimit(w, mc, mc_bonly, *absdata_toy, limit, limitErr)) {
+        workspace->saveSnapshot("toyGenSnapshot", utils::returnAllVars(workspace));
+      //if (g_verbose > 1) utils::printPdf(workspace, "model_b");
+      if (mklimit(workspace, mc, mc_bonly, *absdata_toy, limit, limitErr)) {
         commitPoint(0, g_quantileExpected);  //tree->Fill();
         ++nLimits;
         expLimit += limit;
@@ -1142,9 +1142,9 @@ void Combine::run(
   }
 
   if (saveWorkspace_) {
-    w->SetName(workspaceName_.c_str());
-    w->loadSnapshot("clean");
-    g_outputFile->WriteTObject(w, workspaceName_.c_str());
+    workspace->SetName(workspaceName_.c_str());
+    workspace->loadSnapshot("clean");
+    g_outputFile->WriteTObject(workspace, workspaceName_.c_str());
   }
 }
 
@@ -1169,7 +1169,7 @@ void Combine::addBranch(const char *name, void *address, const char *leaflist) {
   tree_->Branch(name, address, leaflist);
 }
 void Combine::addPOI(const RooArgSet *poi) {
-  // RooArgSet *nuisances = (RooArgSet*) w->set("nuisances");
+  // RooArgSet *nuisances = (RooArgSet*) workspace->set("nuisances");
   CascadeMinimizerGlobalConfigs::O().parametersOfInterest = RooArgList();
   if (poi != 0) {
     TIterator *pp = poi->createIterator();
@@ -1179,7 +1179,7 @@ void Combine::addPOI(const RooArgSet *poi) {
 }
 
 void Combine::addNuisances(const RooArgSet *nuisances) {
-  // RooArgSet *nuisances = (RooArgSet*) w->set("nuisances");
+  // RooArgSet *nuisances = (RooArgSet*) workspace->set("nuisances");
   CascadeMinimizerGlobalConfigs::O().nuisanceParameters = RooArgList();
   if (nuisances != 0) {
     TIterator *np = nuisances->createIterator();
@@ -1197,8 +1197,8 @@ void Combine::addFloatingParameters(const RooArgSet &parameters) {
   }
   //}
 }
-void Combine::addDiscreteNuisances(RooWorkspace *w) {
-  RooArgSet *discreteParameters = (RooArgSet *)w->genobj("discreteParams");
+void Combine::addDiscreteNuisances(RooWorkspace *workspace) {
+  RooArgSet *discreteParameters = (RooArgSet *)workspace->genobj("discreteParams");
 
   CascadeMinimizerGlobalConfigs::O().pdfCategories = RooArgList();
   CascadeMinimizerGlobalConfigs::O().allRooMultiPdfParams = RooArgList();
@@ -1221,7 +1221,7 @@ void Combine::addDiscreteNuisances(RooWorkspace *w) {
   }
   // Run through all of the categories in the workspace and look for "pdfindex" -> fall back option
   else if (runtimedef::get("ADD_DISCRETE_FALLBACK")) {
-    RooArgSet discreteParameters_C = w->allCats();
+    RooArgSet discreteParameters_C = workspace->allCats();
     TIterator *dp = discreteParameters_C.createIterator();
     while (RooAbsArg *arg = (RooAbsArg *)dp->Next()) {
       RooCategory *cat = dynamic_cast<RooCategory *>(arg);
@@ -1241,7 +1241,7 @@ void Combine::addDiscreteNuisances(RooWorkspace *w) {
   }
   // Now lets go through the list of parameters which are associated to this discrete nuisance
   RooArgSet clients;
-  utils::getClients(CascadeMinimizerGlobalConfigs::O().pdfCategories, (w->allPdfs()), clients);
+  utils::getClients(CascadeMinimizerGlobalConfigs::O().pdfCategories, (workspace->allPdfs()), clients);
   TIterator *it = clients.createIterator();
   while (RooAbsArg *arg = (RooAbsArg *)it->Next()) {
     RooAbsPdf *pdf = dynamic_cast<RooAbsPdf *>(arg);
