@@ -61,14 +61,4 @@
 #include "combine/RooNCSpline_3D_fast.h"
 #include "combine/RooFuncPdf.h"
 
-namespace {
-  struct dictionary {
-    RooBernsteinFast<1> my_RooBernsteinFast_1;
-    RooBernsteinFast<2> my_RooBernsteinFast_2;
-    RooBernsteinFast<3> my_RooBernsteinFast_3;
-    RooBernsteinFast<4> my_RooBernsteinFast_4;
-    RooBernsteinFast<5> my_RooBernsteinFast_5;
-    RooBernsteinFast<6> my_RooBernsteinFast_6;
-    RooBernsteinFast<7> my_RooBernsteinFast_7;
-  };
-}  // namespace
+#include "combine/RooTaylorExpansion.h"

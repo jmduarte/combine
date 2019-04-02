@@ -217,5 +217,6 @@
 #pragma link C++ class cmsmath::SequentialMinimizer;
 #pragma link C++ class rVrFLikelihood;
 #pragma link C++ class TestProposal;
+#pragma link C++ class RooTaylorExpansion;
 
 #endif

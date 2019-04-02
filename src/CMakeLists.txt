@@ -38,6 +38,7 @@ set(SOURCE_FILES
     HWWLVJJRooPdfs.cc
     HZZ4L_RooSpinZeroPdf_phase.cc
     RooDoubleCBFast.cc
+    RooTaylorExpansion.cc
     RooParametricShapeBinPdf.cc
     SimplerLikelihoodRatioTestStatExt.cc
     VectorizedSimplePdfs.cc
